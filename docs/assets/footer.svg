@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 150" width="1200" height="150" role="img" aria-labelledby="title">
+  <title id="title">Made with care for farmers across India</title>
+  <defs>
+    <linearGradient id="w1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#22c55e" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#14532d" stop-opacity=".9"/>
+    </linearGradient>
+    <linearGradient id="w2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#15803d"/>
+      <stop offset="1" stop-color="#0b2e22"/>
+    </linearGradient>
+    <style>
+      .f { font: 600 18px 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #ecfccb; }
+    </style>
+  </defs>
+  <path fill="url(#w1)">
+    <animate attributeName="d" dur="7s" repeatCount="indefinite"
+      values="M0 60 C 200 30 400 90 600 60 C 800 30 1000 90 1200 60 L1200 150 L0 150 Z;
+              M0 60 C 200 90 400 30 600 60 C 800 90 1000 30 1200 60 L1200 150 L0 150 Z;
+              M0 60 C 200 30 400 90 600 60 C 800 30 1000 90 1200 60 L1200 150 L0 150 Z"/>
+  </path>
+  <path fill="url(#w2)">
+    <animate attributeName="d" dur="9s" repeatCount="indefinite"
+      values="M0 85 C 250 110 450 65 600 85 C 750 105 950 65 1200 85 L1200 150 L0 150 Z;
+              M0 85 C 250 65 450 110 600 85 C 750 65 950 105 1200 85 L1200 150 L0 150 Z;
+              M0 85 C 250 110 450 65 600 85 C 750 105 950 65 1200 85 L1200 150 L0 150 Z"/>
+  </path>
+  <text x="600" y="128" text-anchor="middle" class="f">Made with care for farmers across India 🌾</text>
+</svg>

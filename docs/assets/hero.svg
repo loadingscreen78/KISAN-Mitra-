@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="1200" height="420" role="img" aria-labelledby="title desc">
+  <title id="title">KisanMitra</title>
+  <desc id="desc">Animated banner: crops grow under a rising sun while a phone scans a tomato leaf and reports late blight.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#062a1f"/>
+      <stop offset="0.55" stop-color="#0b4430"/>
+      <stop offset="1" stop-color="#14613f"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffd76a" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#ffd76a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hillBack" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f7a4d"/>
+      <stop offset="1" stop-color="#145c39"/>
+    </linearGradient>
+    <linearGradient id="hillFront" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2f9e5f"/>
+      <stop offset="1" stop-color="#1b7444"/>
+    </linearGradient>
+    <linearGradient id="titleFill" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.5" stop-color="#d9f99d"/>
+      <stop offset="1" stop-color="#ffffff"/>
+      <animate attributeName="x1" values="-1;1" dur="6s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="0;2" dur="6s" repeatCount="indefinite"/>
+    </linearGradient>
+    <linearGradient id="leafFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4ade80"/>
+      <stop offset="1" stop-color="#15803d"/>
+    </linearGradient>
+    <linearGradient id="scan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a3e635" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#a3e635" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#a3e635" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="screen"><rect x="902" y="78" width="176" height="300" rx="18"/></clipPath>
+    <clipPath id="typing">
+      <rect x="70" y="232" height="40" width="0">
+        <animate attributeName="width" values="0;0;520;520;0" keyTimes="0;0.06;0.5;0.92;1" dur="8s" repeatCount="indefinite"/>
+      </rect>
+    </clipPath>
+    <style>
+      .title { font: 800 76px 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; letter-spacing: -1px; }
+      .hindi { font: 600 30px 'Nirmala UI', 'Noto Sans Devanagari', 'Kohinoor Devanagari', 'Mangal', sans-serif; fill: #bbf7d0; }
+      .tag { font: 500 25px 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #ecfccb; }
+      .chip { font: 600 15px 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #ffffff; }
+      .small { font: 600 13px 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #14532d; }
+      .label { font: 700 13px 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; letter-spacing: 2px; fill: #86efac; }
+      .sway { transform-box: fill-box; transform-origin: 50% 100%; animation: sway 4s ease-in-out infinite; }
+      .sway.b { animation-delay: -1.3s; }
+      .sway.c { animation-delay: -2.6s; }
+      @keyframes sway { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+      .grow { stroke-dasharray: 90; stroke-dashoffset: 90; animation: grow 8s ease-out infinite; }
+      @keyframes grow { 0% { stroke-dashoffset: 90; } 30%, 90% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 90; } }
+      .float { animation: float 6s ease-in-out infinite; }
+      @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+      @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    </style>
+  </defs>
+
+  <rect width="1200" height="420" fill="url(#sky)"/>
+
+  <!-- drifting stars / pollen -->
+  <g fill="#d9f99d">
+    <circle cx="140" cy="60" r="1.6"><animate attributeName="opacity" values="0.2;1;0.2" dur="3s" repeatCount="indefinite"/></circle>
+    <circle cx="330" cy="38" r="1.2"><animate attributeName="opacity" values="1;0.2;1" dur="4s" repeatCount="indefinite"/></circle>
+    <circle cx="520" cy="72" r="1.8"><animate attributeName="opacity" values="0.3;1;0.3" dur="5s" repeatCount="indefinite"/></circle>
+    <circle cx="700" cy="44" r="1.3"><animate attributeName="opacity" values="1;0.3;1" dur="3.5s" repeatCount="indefinite"/></circle>
+    <circle cx="610" cy="140" r="1.4"><animate attributeName="opacity" values="0.2;0.9;0.2" dur="4.5s" repeatCount="indefinite"/></circle>
+  </g>
+
+  <!-- sun -->
+  <g transform="translate(780 110)">
+    <circle r="110" fill="url(#sunGlow)">
+      <animate attributeName="r" values="100;120;100" dur="6s" repeatCount="indefinite"/>
+    </circle>
+    <g stroke="#fde68a" stroke-width="3" stroke-linecap="round" opacity="0.8">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="40s" repeatCount="indefinite"/>
+      <line x1="0" y1="-62" x2="0" y2="-80"/><line x1="0" y1="62" x2="0" y2="80"/>
+      <line x1="-62" y1="0" x2="-80" y2="0"/><line x1="62" y1="0" x2="80" y2="0"/>
+      <line x1="44" y1="44" x2="57" y2="57"/><line x1="-44" y1="-44" x2="-57" y2="-57"/>
+      <line x1="44" y1="-44" x2="57" y2="-57"/><line x1="-44" y1="44" x2="-57" y2="57"/>
+    </g>
+    <circle r="46" fill="#fcd34d"/>
+  </g>
+
+  <!-- hills -->
+  <path d="M0 330 C 180 270 360 300 520 290 C 700 278 860 250 1200 300 L1200 420 L0 420 Z" fill="url(#hillBack)">
+    <animateTransform attributeName="transform" type="translate" values="0 0;-14 0;0 0" dur="16s" repeatCount="indefinite"/>
+  </path>
+  <path d="M0 360 C 220 320 420 350 640 340 C 860 330 1000 320 1200 345 L1200 420 L0 420 Z" fill="url(#hillFront)"/>
+
+  <!-- crop rows growing -->
+  <g stroke="#bbf7d0" stroke-width="3" stroke-linecap="round" fill="none">
+    <g class="sway"><path class="grow" d="M90 400 Q 92 370 88 342"/><path class="grow" d="M88 360 q 14 -8 22 -2" stroke="#86efac"/></g>
+    <g class="sway b"><path class="grow" d="M170 404 Q 172 372 168 340" style="animation-delay:.3s"/><path class="grow" d="M168 362 q -14 -8 -22 -2" stroke="#86efac"/></g>
+    <g class="sway c"><path class="grow" d="M250 402 Q 252 372 248 344" style="animation-delay:.6s"/><path class="grow" d="M248 364 q 14 -8 22 -2" stroke="#86efac"/></g>
+    <g class="sway"><path class="grow" d="M330 400 Q 332 370 328 342" style="animation-delay:.9s"/><path class="grow" d="M328 360 q -14 -8 -22 -2" stroke="#86efac"/></g>
+    <g class="sway b"><path class="grow" d="M410 402 Q 412 372 408 344" style="animation-delay:1.2s"/><path class="grow" d="M408 362 q 14 -8 22 -2" stroke="#86efac"/></g>
+    <g class="sway c"><path class="grow" d="M490 400 Q 492 370 488 344" style="animation-delay:1.5s"/><path class="grow" d="M488 362 q -14 -8 -22 -2" stroke="#86efac"/></g>
+    <g class="sway"><path class="grow" d="M570 404 Q 572 374 568 346" style="animation-delay:1.8s"/><path class="grow" d="M568 364 q 14 -8 22 -2" stroke="#86efac"/></g>
+    <g class="sway b"><path class="grow" d="M650 402 Q 652 372 648 346" style="animation-delay:2.1s"/><path class="grow" d="M648 362 q -14 -8 -22 -2" stroke="#86efac"/></g>
+    <g class="sway c"><path class="grow" d="M730 400 Q 732 372 728 346" style="animation-delay:2.4s"/><path class="grow" d="M728 362 q 14 -8 22 -2" stroke="#86efac"/></g>
+    <g class="sway"><path class="grow" d="M810 404 Q 812 374 808 348" style="animation-delay:2.7s"/><path class="grow" d="M808 366 q -14 -8 -22 -2" stroke="#86efac"/></g>
+  </g>
+
+  <!-- title -->
+  <text x="70" y="96" class="label">AI CROP DOCTOR · FOR INDIAN FARMERS</text>
+  <text x="66" y="178" class="title" fill="url(#titleFill)">KisanMitra</text>
+  <text x="72" y="220" class="hindi">किसान मित्र · the farmer's friend</text>
+
+  <!-- typing tagline -->
+  <g clip-path="url(#typing)">
+    <text x="72" y="262" class="tag">Snap a leaf. Know the disease. Save the crop.</text>
+  </g>
+  <rect x="72" y="240" width="3" height="28" fill="#d9f99d">
+    <animate attributeName="x" values="72;72;588;588;72" keyTimes="0;0.06;0.5;0.92;1" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;0;1" dur="0.9s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- phone scanning a leaf -->
+  <g class="float">
+    <rect x="890" y="62" width="200" height="332" rx="30" fill="#0f172a" stroke="#334155" stroke-width="3"/>
+    <rect x="964" y="70" width="52" height="6" rx="3" fill="#1e293b"/>
+    <g clip-path="url(#screen)">
+      <rect x="902" y="78" width="176" height="300" fill="#ecfdf5"/>
+      <text x="914" y="104" class="small">Diagnose</text>
+      <!-- leaf -->
+      <g transform="translate(990 200)">
+        <path d="M0 -78 C 52 -60 64 10 0 74 C -64 10 -52 -60 0 -78 Z" fill="url(#leafFill)"/>
+        <path d="M0 -70 L0 70 M0 -30 L26 -50 M0 -30 L-26 -50 M0 0 L32 -20 M0 0 L-32 -20 M0 30 L24 12 M0 30 L-24 12" stroke="#14532d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- blight spots -->
+        <g fill="#713f12">
+          <ellipse cx="22" cy="-14" rx="11" ry="8" opacity="0.85"/>
+          <ellipse cx="-18" cy="20" rx="9" ry="7" opacity="0.8"/>
+          <ellipse cx="14" cy="34" rx="6" ry="5" opacity="0.75"/>
+        </g>
+      </g>
+      <!-- scan line -->
+      <rect x="902" y="110" width="176" height="26" fill="url(#scan)">
+        <animate attributeName="y" values="110;290;110" dur="3s" repeatCount="indefinite"/>
+      </rect>
+      <!-- result chip -->
+      <g opacity="0">
+        <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.45;0.55;0.92;1" dur="8s" repeatCount="indefinite"/>
+        <rect x="910" y="318" width="160" height="48" rx="12" fill="#b91c1c"/>
+        <text x="922" y="338" class="chip">Tomato · Late Blight</text>
+        <rect x="922" y="347" width="120" height="7" rx="3.5" fill="#fecaca" opacity="0.35"/>
+        <rect x="922" y="347" width="0" height="7" rx="3.5" fill="#fecaca">
+          <animate attributeName="width" values="0;0;119;119;0" keyTimes="0;0.5;0.62;0.92;1" dur="8s" repeatCount="indefinite"/>
+        </rect>
+        <text x="1048" y="356" class="chip" style="font-size:11px">99%</text>
+      </g>
+    </g>
+  </g>
+</svg>

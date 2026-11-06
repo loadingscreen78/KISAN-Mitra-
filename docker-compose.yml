@@ -1,0 +1,15 @@
+services:
+  kisan-mitra:
+    build: .
+    image: kisan-mitra:latest
+    container_name: kisan-mitra
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - S3_BUCKET=${S3_BUCKET:-}
+    # The host also runs other workloads, so keep this container from starving them
+    mem_limit: 1800m

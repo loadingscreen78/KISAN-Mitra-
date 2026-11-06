@@ -1,0 +1,243 @@
+{
+  "greeting": {
+    "good_morning": "🌱 Good Morning",
+    "good_afternoon": "🌞 Good Afternoon", 
+    "good_evening": "🌙 Good Evening"
+  },
+  "navigation": {
+    "home": "Home",
+    "diagnose": "Diagnose",
+    "treatments": "Treatments", 
+    "shop": "Shop",
+    "advisory": "Advisory",
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "mitra": "Mitra",
+    "back": "Back",
+    "more": "More"
+  },
+  "home": {
+    "title": "KisanMitra",
+    "subtitle": "Your Farming Assistant",
+    "greeting_with_name": "Good Morning, {{name}} Ji!",
+    "ready_to_help": "Ready to help with your farming needs today!",
+    "weather_card": "Weather",
+    "location_unavailable": "Location unavailable",
+    "market_trends": "Market Trends",
+    "price_alerts": "Price Alerts", 
+    "today_prices": "Today's Prices",
+    "todays_mandi_prices": "Today's Mandi Prices",
+    "view_all": "View All",
+    "more": "More",
+    "quick_actions": "Quick Actions",
+    "ai_powered": "AI Powered",
+    "plant_diagnosis": "Plant Diagnosis",
+    "diagnose_plant_health": "Diagnose Plant Health",
+    "take_photo_check_diseases": "Take a photo to check diseases",
+    "start": "Start",
+    "check_plant_health": "Check plant health with AI",
+    "sections": {
+      "soil_fertilizer": "🧪 Soil & Fertilizer",
+      "marketplace": "🛒 Marketplace",
+      "my_farm": "🌱 My Farm"
+    },
+    "soil_health": "Soil Health",
+    "check_nutrient_levels": "Check nutrient levels",
+    "fertilizer_guide": "Fertilizer Guide",
+    "get_nutrient_advice": "Get nutrient advice",
+    "see_prices": "See Prices",
+    "sell_crops": "Sell Crops",
+    "order_fertilizers": "Order Fertilizers",
+    "shop_nutrients": "Shop nutrients",
+    "nearby_shops": "Nearby Shops",
+    "find_agri_stores": "Find agri stores",
+    "active_treatments": "Active Treatments",
+    "ongoing_sprays": "ongoing sprays",
+    "cultivation_guides": "Cultivation Guides",
+    "growing_tips": "Growing tips",
+    "my_orders": "My Orders",
+    "track_purchases": "Track purchases",
+    "my_listings": "My Listings",
+    "manage_crop_listings": "Manage crop listings",
+    "marketplace": "Marketplace", 
+    "buy_sell_produce": "Buy & sell produce",
+    "soil_testing": "Soil Testing",
+    "test_soil_quality": "Test soil quality",
+    "weather_forecast": "Weather Forecast",
+    "plan_your_farming": "Plan your farming",
+    "expert_guidance": "Expert Guidance",
+    "get_farming_tips": "Get farming tips",
+    "humidity": "Humidity",
+    "trending_up": "Trending up",
+    "trending_down": "Trending down"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "search_placeholder": "Search notifications...",
+    "filters": {
+      "all": "All",
+      "unread": "Unread", 
+      "action_required": "Action Required"
+    },
+    "groups": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "this_week": "This Week"
+    },
+    "actions": {
+      "mark_all_read": "Mark All Read",
+      "clear_all": "Clear All",
+      "track_order": "Track Order",
+      "contact_buyer": "Contact Buyer",
+      "view_market": "View Market",
+      "check_weather": "Check Weather",
+      "mark_done": "Mark Done"
+    },
+    "empty": {
+      "title": "No notifications yet",
+      "message": "When you have new updates, they'll appear here."
+    }
+  },
+  "diagnosis": {
+    "title": "Plant Diagnosis",
+    "capture_image": "Capture Plant Image", 
+    "take_photo": "Take a Photo",
+    "upload_gallery": "Upload from Gallery",
+    "start_diagnosis": "Start Diagnosis",
+    "select_image_first": "Select an Image First",
+    "photo_ready": "✓ Image ready for diagnosis",
+    "photography_tips": "Photography Tips",
+    "get_better_results": "Get better diagnosis results",
+    "tips": {
+      "good_lighting": {
+        "title": "Good Lighting",
+        "description": "Take photos in natural daylight"
+      },
+      "focus_affected": {
+        "title": "Focus on Affected Area", 
+        "description": "Zoom in on diseased or damaged parts"
+      },
+      "avoid_shadows": {
+        "title": "Avoid Shadows",
+        "description": "Keep the plant well-lit and clear"
+      },
+      "clear_sharp": {
+        "title": "Clear & Sharp",
+        "description": "Ensure the image is not blurry"
+      }
+    }
+  },
+  "diagnosis_results": {
+    "title": "Diagnosis Results",
+    "complete": "Diagnosis Complete",
+    "analyzed_on": "Analyzed on",
+    "analyzed_image": "Analyzed Image",
+    "confidence": "Confidence",
+    "healthy": "HEALTHY",
+    "needs_attention": "NEEDS ATTENTION",
+    "affected_area": "Affected Area",
+    "stage": "Stage",
+    "treatment_timeline": "Treatment Timeline",
+    "recovery_duration": "Recovery Duration", 
+    "success_rate": "Success Rate",
+    "farmers_recovered": "farmers recovered",
+    "best_treatment_time": "Best Treatment Time",
+    "early_morning": "Early morning",
+    "treatment_steps": "Treatment Steps",
+    "ai_generated": "AI-generated steps for best results",
+    "save_treatment": "Save Treatment Plan",
+    "track_progress": "Track progress with daily reminders and monitoring",
+    "duration": "Duration",
+    "recovery": "recovery",
+    "save_to_treatments": "Save to My Treatments",
+    "recommended_fertilizers": "Recommended Fertilizers",
+    "order_now": "Order Now",
+    "check_alternatives": "Check Alternatives",
+    "visit_nearby_shops": "Visit Nearby Fertilizer Shops",
+    "get_directions": "Get directions and contact details",
+    "shops_within": "shops within 5km",
+    "gps_navigation": "GPS navigation available",
+    "expert_advice": "Expert advice included",
+    "find_nearest": "Find Nearest Shops",
+    "next_steps": "Next Steps Summary:",
+    "steps": {
+      "add_treatments": "1. Add to active treatments for monitoring",
+      "order_fertilizers": "2. Order recommended fertilizers", 
+      "apply_treatment": "3. Apply treatment in early morning",
+      "monitor_progress": "4. Monitor progress daily",
+      "expect_recovery": "5. Expect recovery in"
+    }
+  },
+  "soil_health": {
+    "title": "Soil Health Assessment",
+    "measurement_guide": "How to Test Your Soil",
+    "follow_steps": "Follow these simple steps to assess your soil health",
+    "ph_testing": {
+      "title": "Soil pH Testing",
+      "description": "Use a pH strip or digital meter. Mix 1 part soil with 1 part clean water, wait 30 minutes, then test. Ideal range: 6.0-7.5 for most crops."
+    },
+    "moisture_check": {
+      "title": "Soil Moisture Check", 
+      "description": "Squeeze test: Dry = crumbles apart, Medium = holds shape but crumbles when poked, Wet = water drips out when squeezed."
+    },
+    "organic_assessment": {
+      "title": "Organic Matter Assessment",
+      "description": "Check soil color: Good = dark brown/black with visible organic bits, Moderate = medium brown, Poor = light brown/sandy color."
+    },
+    "enter_measurements": "Enter Your Soil Measurements",
+    "use_instructions": "Use the instructions above to fill in these values", 
+    "ph_level": "Soil pH Level",
+    "moisture_level": "Soil Moisture Level",
+    "organic_matter": "Organic Matter Level",
+    "dry": "Dry",
+    "medium": "Medium", 
+    "wet": "Wet",
+    "poor": "Poor",
+    "moderate": "Moderate",
+    "good": "Good",
+    "squeeze_test": "Choose based on squeeze test results",
+    "soil_color": "Based on soil color and visible organic matter",
+    "calculate_health": "Calculate Soil Health",
+    "score": "Score",
+    "healthy_soil": "Healthy Soil Health",
+    "moderate_soil": "Moderate Soil Health",
+    "poor_soil": "Poor Soil Health",
+    "primary_recommendation": "Primary Recommendation",
+    "action_steps": "Action Steps:",
+    "score_breakdown": "Score Breakdown:",
+    "pro_tip": "Pro Tip: Test your soil 2-3 times per year (before planting seasons) for best results. For detailed nutrient analysis, contact your local agricultural extension office.",
+    "recommendations": {
+      "healthy": "Soil is healthy. Maintain current practices.",
+      "moderate": "Soil health is moderate. Consider irrigation adjustment and adding organic matter.",
+      "poor": "Soil health is poor. Add compost/organic matter, adjust irrigation, and correct pH."
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "no_data": "No data",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "refresh": "Refresh",
+    "try_again": "Try Again"
+  },
+  "buttons": {
+    "get_started": "Get Started",
+    "learn_more": "Learn More",
+    "contact_us": "Contact Us",
+    "sign_up": "Sign Up",
+    "log_in": "Log In",
+    "sign_out": "Sign Out"
+  },
+  "messages": {
+    "treatment_saved": "Treatment Saved!",
+    "treatment_saved_desc": "Added to your active treatments with AI-powered guidance and fertilizer recommendations."
+  }
+}

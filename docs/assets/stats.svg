@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 210" width="1200" height="210" role="img" aria-labelledby="title desc">
+  <title id="title">Measured results</title>
+  <desc id="desc">On 380 labelled PlantVillage photos the model was correct 98 percent of the time when it gave an answer, 347 of 354. It covers 38 classes across 14 crops, declined all 10 non-plant test images, and answers in about 1 second.</desc>
+  <defs>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f3d2c"/>
+      <stop offset="1" stop-color="#0b2e22"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22c55e"/>
+      <stop offset="1" stop-color="#bef264"/>
+    </linearGradient>
+    <style>
+      .n { font: 800 46px 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #f0fdf4; }
+      .l { font: 600 15px 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #bbf7d0; }
+      .d { font: 500 12.5px 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #86efac; }
+      .in { opacity: 0; animation: in 7s ease-out infinite; }
+      .in.b { animation-delay: .25s; } .in.c { animation-delay: .5s; } .in.d2 { animation-delay: .75s; }
+      @keyframes in { 0% { opacity: 0; transform: translateY(10px); } 12%, 90% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; } }
+      @media (prefers-reduced-motion: reduce) { .in { animation: none; opacity: 1; } }
+    </style>
+  </defs>
+
+  <g class="in">
+    <rect x="10" y="10" width="280" height="190" rx="18" fill="url(#card)" stroke="#22c55e" stroke-opacity=".35"/>
+    <text x="34" y="74" class="n">98%</text>
+    <text x="34" y="104" class="l">correct when it answers</text>
+    <rect x="34" y="124" width="232" height="10" rx="5" fill="#14532d"/>
+    <rect x="34" y="124" width="0" height="10" rx="5" fill="url(#bar)">
+      <animate attributeName="width" values="0;227;227;0" keyTimes="0;0.15;0.9;1" dur="7s" repeatCount="indefinite"/>
+    </rect>
+    <text x="34" y="160" class="d">347 of 354 lab-style test photos</text>
+    <text x="34" y="180" class="d">26 more declined as "not sure"</text>
+  </g>
+
+  <g class="in b">
+    <rect x="310" y="10" width="280" height="190" rx="18" fill="url(#card)" stroke="#22c55e" stroke-opacity=".35"/>
+    <text x="334" y="74" class="n">38</text>
+    <text x="334" y="104" class="l">diseases &amp; healthy states</text>
+    <g fill="#4ade80">
+      <circle cx="342" cy="134" r="5"/><circle cx="360" cy="134" r="5"/><circle cx="378" cy="134" r="5"/><circle cx="396" cy="134" r="5"/><circle cx="414" cy="134" r="5"/><circle cx="432" cy="134" r="5"/><circle cx="450" cy="134" r="5"/>
+      <animate attributeName="opacity" values=".4;1;.4" dur="2s" repeatCount="indefinite"/>
+    </g>
+    <text x="334" y="170" class="d">across 14 crops: tomato, potato,</text>
+    <text x="334" y="188" class="d">corn, grape, apple and more</text>
+  </g>
+
+  <g class="in c">
+    <rect x="610" y="10" width="280" height="190" rx="18" fill="url(#card)" stroke="#22c55e" stroke-opacity=".35"/>
+    <text x="634" y="74" class="n">10 / 10</text>
+    <text x="634" y="104" class="l">non-plant photos declined</text>
+    <g transform="translate(634 120)">
+      <rect width="232" height="30" rx="8" fill="#422006"/>
+      <text x="12" y="20" class="d" style="fill:#fde68a">"Could not identify" — retake photo</text>
+    </g>
+    <text x="634" y="176" class="d">by the leaf model, instead of</text>
+    <text x="634" y="194" class="d">guessing a disease</text>
+  </g>
+
+  <g class="in d2">
+    <rect x="910" y="10" width="280" height="190" rx="18" fill="url(#card)" stroke="#22c55e" stroke-opacity=".35"/>
+    <text x="934" y="74" class="n">~1 s</text>
+    <text x="934" y="104" class="l">per diagnosis</text>
+    <g transform="translate(1110 62)" fill="none" stroke="#bef264" stroke-width="4" stroke-linecap="round">
+      <circle r="26" stroke="#14532d"/>
+      <path d="M0 -26 A 26 26 0 0 1 26 0">
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="1.2s" repeatCount="indefinite"/>
+      </path>
+    </g>
+    <text x="934" y="160" class="d">CPU-only, inside the container</text>
+    <text x="934" y="180" class="d">8–14 s when Gemini is consulted</text>
+  </g>
+</svg>
