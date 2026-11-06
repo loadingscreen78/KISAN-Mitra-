@@ -215,8 +215,7 @@ read -rs GEMINI && sed -i '/^GEMINI_API_KEY=/d' .env && printf 'GEMINI_API_KEY=%
 docker compose up -d
 ```
 
-> [!TIP]
-> The public IP changes whenever the instance stops and starts. Attach an Elastic IP for a stable address.
+> 💡 **Tip:** the public IP changes whenever the instance stops and starts. Attach an Elastic IP for a stable address.
 
 </details>
 
