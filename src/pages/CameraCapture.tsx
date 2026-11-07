@@ -1,403 +1,298 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Camera, 
-  Upload, 
-  ArrowLeft, 
-  RefreshCw,
-  Check,
-  X,
-  Sparkles
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
+import {
+  ArrowCounterClockwiseIcon,
+  CameraRotateIcon,
+  CameraSlashIcon,
+  CheckIcon,
+  ImageSquareIcon,
+  XIcon,
+} from '@phosphor-icons/react';
 import { toast } from '@/components/ui/use-toast';
+import { useGoBack } from '@/hooks/useGoBack';
+import { captureFrame, shrinkImage } from '@/lib/image';
+import { cn } from '@/lib/utils';
 
+type Facing = 'environment' | 'user';
+type CameraState = 'starting' | 'live' | 'unavailable';
+
+const reasonFor = (error: unknown) => {
+  const name = error instanceof DOMException ? error.name : '';
+  if (name === 'NotAllowedError' || name === 'SecurityError') return 'ui.camera_denied';
+  if (name === 'NotFoundError' || name === 'OverconstrainedError') return 'ui.camera_missing';
+  if (name === 'NotReadableError') return 'ui.camera_busy';
+  return 'ui.camera_denied';
+};
+
+/**
+ * Full screen camera in the style of a native camera app. The viewfinder takes
+ * whatever height is left between the header and the controls, so the shutter
+ * is always on screen, from a phone to a wide desktop window.
+ */
 const CameraCapture = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
+  const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  // Bumped on every start and on unmount, so a slow permission prompt that
+  // resolves late cannot leave a stream running.
+  const sessionRef = useRef(0);
+  const [facing, setFacing] = useState<Facing>('environment');
+  const [cameraState, setCameraState] = useState<CameraState>('starting');
+  const [reason, setReason] = useState('ui.camera_denied');
+  const [canFlip, setCanFlip] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [isCamera, setIsCamera] = useState(true);
-
-  const startCamera = useCallback(async () => {
-    try {
-      // Try multiple approaches for camera access
-      let getUserMedia = null;
-      
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        getUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-      } else if ((navigator as any).getUserMedia) {
-        getUserMedia = (navigator as any).getUserMedia.bind(navigator);
-      } else if ((navigator as any).webkitGetUserMedia) {
-        getUserMedia = (navigator as any).webkitGetUserMedia.bind(navigator);
-      } else if ((navigator as any).mozGetUserMedia) {
-        getUserMedia = (navigator as any).mozGetUserMedia.bind(navigator);
-      }
-
-      if (!getUserMedia) {
-        throw new Error('getUserMedia not supported');
-      }
-
-      // Try to access camera with different constraint sets
-      let mediaStream = null;
-      
-      try {
-        // Try with environment camera first
-        mediaStream = await getUserMedia({
-          video: { 
-            facingMode: 'environment',
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-          }
-        });
-      } catch (envError) {
-        console.log('Environment camera failed, trying any camera:', envError);
-        try {
-          // Fallback to any available camera
-          mediaStream = await getUserMedia({
-            video: {
-              width: { ideal: 1280 },
-              height: { ideal: 720 }
-            }
-          });
-        } catch (anyError) {
-          console.log('Any camera failed, trying basic constraints:', anyError);
-          // Final fallback with minimal constraints
-          mediaStream = await getUserMedia({
-            video: true
-          });
-        }
-      }
-
-      if (mediaStream) {
-        setStream(mediaStream);
-        if (videoRef.current) {
-          videoRef.current.srcObject = mediaStream;
-        }
-        console.log('Camera started successfully');
-      } else {
-        throw new Error('Failed to get media stream');
-      }
-
-    } catch (error) {
-      console.error('Error accessing camera:', error);
-      let errorMessage = "Unable to access camera. ";
-      
-      if (error.name === 'NotAllowedError') {
-        errorMessage += "Please allow camera permissions when prompted by your browser.";
-      } else if (error.name === 'NotFoundError') {
-        errorMessage += "No camera found on this device.";
-      } else if (error.name === 'NotSupportedError') {
-        errorMessage += "Camera not supported on this device.";
-      } else if (error.name === 'NotReadableError') {
-        errorMessage += "Camera is being used by another application.";
-      } else if (error.name === 'SecurityError' || error.message.includes('secure')) {
-        errorMessage += "Camera access requires HTTPS for security. Please use the Gallery option instead.";
-      } else {
-        errorMessage += "Please try using the Gallery option instead.";
-      }
-      
-      toast({
-        title: "Camera Error",
-        description: errorMessage,
-        variant: "destructive"
-      });
-      
-      // Automatically switch to gallery mode
-      setIsCamera(false);
-    }
-  }, []);
+  const [flash, setFlash] = useState(false);
 
   const stopCamera = useCallback(() => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
-    }
-  }, [stream]);
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
+  }, []);
 
-  const capturePhoto = useCallback(() => {
-    if (videoRef.current && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const video = videoRef.current;
-      const context = canvas.getContext('2d');
-      
-      if (context) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0);
-        
-        const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-        setCapturedImage(imageDataUrl);
-        stopCamera();
+  const startCamera = useCallback(async (mode: Facing) => {
+    stopCamera();
+    const session = ++sessionRef.current;
+    if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
+      setReason('ui.camera_insecure');
+      setCameraState('unavailable');
+      return;
+    }
+    setCameraState('starting');
+    try {
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: mode }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+          audio: false,
+        });
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'NotAllowedError') throw error;
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
       }
+      if (session !== sessionRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play().catch(() => undefined);
+      }
+      setCameraState('live');
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      setCanFlip(devices.filter((device) => device.kind === 'videoinput').length > 1);
+    } catch (error) {
+      if (session !== sessionRef.current) return;
+      console.error('Error accessing camera:', error);
+      setReason(reasonFor(error));
+      setCameraState('unavailable');
     }
   }, [stopCamera]);
 
+  useEffect(() => {
+    if (!capturedImage) startCamera(facing);
+  }, [facing, capturedImage, startCamera]);
+
+  // Never leave the camera running after this screen closes.
+  useEffect(
+    () => () => {
+      sessionRef.current += 1;
+      stopCamera();
+    },
+    [stopCamera],
+  );
+
+  const leave = () => {
+    stopCamera();
+    goBack('/diagnose');
+  };
+
+  const capturePhoto = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    const frame = captureFrame(video);
+    if (!frame) return;
+    setFlash(true);
+    navigator.vibrate?.(12);
+    setCapturedImage(frame);
+    stopCamera();
+  };
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      // Check file size (limit to 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        toast({
-          title: "File Too Large",
-          description: "Please select an image smaller than 10MB.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Check file type
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: "Invalid File Type",
-          description: "Please select an image file (JPG, PNG, etc.).",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setCapturedImage(result);
-        toast({
-          title: "Image Uploaded",
-          description: "Image ready for analysis!",
-          variant: "default"
-        });
-      };
-      reader.readAsDataURL(file);
+    event.target.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast({ title: 'That file is not a photo', description: 'Choose a JPEG, PNG or WebP image.', variant: 'destructive' });
+      return;
     }
+    shrinkImage(file)
+      .then((image) => {
+        stopCamera();
+        setCapturedImage(image);
+      })
+      .catch(() => {
+        toast({ title: 'Could not read this image', description: 'Choose a JPEG, PNG or WebP photo.', variant: 'destructive' });
+      });
   };
 
-  const proceedWithAnalysis = () => {
-    if (capturedImage) {
-      // Store image in localStorage for the diagnosis process
+  const usePhoto = () => {
+    if (!capturedImage) return;
+    try {
       localStorage.setItem('plant_image', capturedImage);
       navigate('/diagnose/analyze');
-    }
-  };
-
-  const retakePhoto = () => {
-    setCapturedImage(null);
-    if (isCamera) {
-      startCamera();
-    }
-  };
-
-  // Start camera when component mounts - but check network access first
-  useEffect(() => {
-    const isNetworkAccess = !window.location.hostname.includes('localhost') && 
-                           !window.location.hostname.includes('127.0.0.1') &&
-                           window.location.protocol === 'http:';
-    
-    // Check if we're on mobile and using network URL
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isNetworkAccess || (isMobile && window.location.protocol === 'http:')) {
-      // Network access via HTTP or mobile HTTP - camera won't work, switch to gallery
-      setIsCamera(false);
+    } catch {
       toast({
-        title: "Camera Unavailable",
-        description: isMobile 
-          ? "Camera requires HTTPS on mobile devices. Using Gallery mode instead." 
-          : "Camera requires HTTPS when accessing from network. Using Gallery mode instead.",
-        variant: "default"
+        title: 'Could not keep this photo',
+        description: 'The photo is too large to store on this device. Try a smaller one.',
+        variant: 'destructive',
       });
-    } else if (isCamera) {
-      startCamera();
     }
-  }, [isCamera, startCamera]);
+  };
+
+  const retake = () => setCapturedImage(null);
+
+  const sideButton = 'glass-dark grid h-14 w-14 shrink-0 place-items-center rounded-full transition-transform duration-500 ease-spring active:scale-90';
 
   return (
-    <div className="mobile-container">
-      {/* Header */}
-      <div className="mobile-header bg-agri-cream">
-        <div className="flex items-center space-x-3">
-          <button 
-            onClick={() => {
-              stopCamera();
-              navigate('/diagnose');
-            }}
-            className="p-2 hover:bg-agri-light rounded-full transition-colors"
-          >
-            <ArrowLeft className="w-6 h-6 text-agri-accent" />
-          </button>
-          <h1 className="text-xl font-bold text-agri-accent">
-            {capturedImage ? 'Review Image' : 'Capture Plant Image'}
-          </h1>
-        </div>
-      </div>
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-field-950 text-white">
+      <header className="flex shrink-0 items-center justify-between gap-3 px-4 pb-3 pt-[max(12px,env(safe-area-inset-top))]">
+        <button type="button" onClick={leave} aria-label={t('navigation.back')} className="glass-dark grid h-11 w-11 place-items-center rounded-full">
+          <XIcon size={20} weight="bold" aria-hidden="true" />
+        </button>
+        <h1 className="title-3 truncate">{capturedImage ? t('ui.camera_review') : t('ui.camera_title')}</h1>
+        <span className="h-11 w-11" aria-hidden="true" />
+      </header>
 
-      <div className="mobile-content space-y-6 pt-4">
-        {!capturedImage ? (
-          <>
-            {/* Camera View */}
-            <div className="relative bg-black rounded-2xl overflow-hidden aspect-[4/3]">
-              {isCamera ? (
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-agri-light">
-                  <Upload className="w-16 h-16 text-agri-primary" />
+      <main className="flex min-h-0 flex-1 flex-col items-center px-4">
+        <div className="relative min-h-0 w-full max-w-4xl flex-1 overflow-hidden rounded-3xl bg-black shadow-[inset_0_0_0_1px_rgb(255_255_255/0.08)]">
+          {capturedImage ? (
+            <img src={capturedImage} alt="Captured leaf" className="absolute inset-0 h-full w-full animate-fade-in object-contain" />
+          ) : (
+            <>
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className={cn(
+                  'absolute inset-0 h-full w-full object-cover transition-opacity duration-500',
+                  cameraState === 'live' ? 'opacity-100' : 'opacity-0',
+                  facing === 'user' && '-scale-x-100',
+                )}
+              />
+
+              {cameraState === 'live' && (
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 animate-fade-in">
+                  <div className="absolute left-1/2 top-1/2 aspect-square w-[min(72%,26rem)] -translate-x-1/2 -translate-y-1/2">
+                    <span className="absolute left-0 top-0 h-10 w-10 rounded-tl-3xl border-l-[3px] border-t-[3px] border-white/85" />
+                    <span className="absolute right-0 top-0 h-10 w-10 rounded-tr-3xl border-r-[3px] border-t-[3px] border-white/85" />
+                    <span className="absolute bottom-0 left-0 h-10 w-10 rounded-bl-3xl border-b-[3px] border-l-[3px] border-white/85" />
+                    <span className="absolute bottom-0 right-0 h-10 w-10 rounded-br-3xl border-b-[3px] border-r-[3px] border-white/85" />
+                  </div>
+                  <p className="glass-dark caption-1 absolute bottom-4 left-1/2 max-w-[calc(100%-32px)] -translate-x-1/2 rounded-full px-4 py-2 text-center">
+                    {t('ui.camera_hint')}
+                  </p>
                 </div>
               )}
-              
-              {/* Camera Overlay */}
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute inset-6 border-2 border-white/50 rounded-2xl" />
-                <div className="absolute top-4 left-4 bg-black/20 rounded-full px-3 py-1">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                    <span className="text-white text-sm">Live</span>
+
+              {cameraState === 'starting' && (
+                <p className="caption-1 absolute inset-0 grid place-items-center text-white/70" role="status">
+                  {t('ui.camera_starting')}
+                </p>
+              )}
+
+              {cameraState === 'unavailable' && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center">
+                  <span className="glass-dark grid h-16 w-16 place-items-center rounded-2xl">
+                    <CameraSlashIcon size={32} weight="duotone" aria-hidden="true" />
+                  </span>
+                  <div className="max-w-sm">
+                    <h2 className="heading-6">{t('ui.camera_unavailable')}</h2>
+                    <p className="body-6 mt-2 text-white/70">{t(reason)}</p>
+                  </div>
+                  <div className="flex flex-wrap justify-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="button-md inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-field-900 transition-transform duration-500 ease-spring active:scale-95"
+                    >
+                      <ImageSquareIcon size={20} aria-hidden="true" />
+                      {t('ui.upload_gallery')}
+                    </button>
+                    {reason !== 'ui.camera_insecure' && (
+                      <button type="button" onClick={() => startCamera(facing)} className="glass-dark button-md h-12 rounded-full px-6">
+                        {t('ui.try_again')}
+                      </button>
+                    )}
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Controls */}
-            <div className="space-y-4">
-              {/* Capture Methods */}
-              <div className="flex space-x-4">
-                <Button
-                  onClick={() => {
-                    setIsCamera(true);
-                    startCamera();
-                  }}
-                  variant={isCamera ? "default" : "outline"}
-                  className="flex-1"
-                >
-                  <Camera className="w-4 h-4 mr-2" />
-                  Camera
-                </Button>
-                <Button
-                  onClick={() => {
-                    setIsCamera(false);
-                    stopCamera();
-                    fileInputRef.current?.click();
-                  }}
-                  variant={!isCamera ? "default" : "outline"}
-                  className="flex-1"
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  Gallery
-                </Button>
-              </div>
-
-              {/* Capture Button */}
-              {isCamera && stream && (
-                <div className="flex justify-center">
-                  <button
-                    onClick={capturePhoto}
-                    className="w-20 h-20 bg-white border-4 border-agri-primary rounded-full flex items-center justify-center shadow-lg transform transition-transform active:scale-95 touch-manipulation select-none"
-                    style={{
-                      WebkitTapHighlightColor: 'transparent',
-                      WebkitTouchCallout: 'none',
-                      WebkitUserSelect: 'none',
-                      touchAction: 'manipulation'
-                    }}
-                  >
-                    <div className="w-16 h-16 bg-agri-primary rounded-full flex items-center justify-center">
-                      <Camera className="w-8 h-8 text-white" />
-                    </div>
-                  </button>
-                </div>
               )}
-            </div>
+            </>
+          )}
 
-            {/* Hidden file input */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileUpload}
-              className="hidden"
+          {flash && (
+            <span
+              aria-hidden="true"
+              onAnimationEnd={() => setFlash(false)}
+              className="pointer-events-none absolute inset-0 bg-white [animation:fade-in_300ms_var(--ease-out)_reverse_both]"
             />
-          </>
-        ) : (
-          <>
-            {/* Captured Image Preview */}
-            <div className="space-y-4">
-              <div className="relative rounded-2xl overflow-hidden">
-                <img
-                  src={capturedImage}
-                  alt="Captured plant"
-                  className="w-full aspect-[4/3] object-cover"
-                />
-                <div className="absolute top-4 right-4 bg-agri-success rounded-full p-2">
-                  <Check className="w-5 h-5 text-white" />
-                </div>
-              </div>
-
-              {/* Image Quality Check */}
-              <div className="bg-agri-light rounded-xl p-4">
-                <div className="flex items-center space-x-3 mb-3">
-                  <Sparkles className="w-5 h-5 text-agri-primary" />
-                  <span className="font-semibold text-agri-accent">Image Quality Check</span>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-agri-gray">Clarity</span>
-                    <span className="text-sm font-medium text-agri-success">Good ✓</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-agri-gray">Lighting</span>
-                    <span className="text-sm font-medium text-agri-success">Good ✓</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-agri-gray">Plant Focus</span>
-                    <span className="text-sm font-medium text-agri-success">Good ✓</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex space-x-4">
-                <Button
-                  onClick={retakePhoto}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Retake
-                </Button>
-                <Button
-                  onClick={proceedWithAnalysis}
-                  className="flex-1 bg-agri-primary hover:bg-agri-secondary touch-manipulation select-none"
-                  style={{
-                    WebkitTapHighlightColor: 'transparent',
-                    WebkitTouchCallout: 'none',
-                    WebkitUserSelect: 'none',
-                    touchAction: 'manipulation'
-                  }}
-                >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Analyze
-                </Button>
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* Tips */}
-        <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
-          <h3 className="font-semibold text-yellow-800 mb-2">📸 Best Photo Tips:</h3>
-          <ul className="space-y-1 text-sm text-yellow-700">
-            <li>• Focus on affected leaves or areas</li>
-            <li>• Ensure good natural lighting</li>
-            <li>• Keep image clear and close-up</li>
-            <li>• Avoid shadows and reflections</li>
-          </ul>
+          )}
         </div>
-      </div>
+      </main>
 
-      <canvas ref={canvasRef} className="hidden" />
+      <footer className="shrink-0 px-6 pb-[max(24px,env(safe-area-inset-bottom))] pt-6">
+        {capturedImage ? (
+          <div className="mx-auto flex max-w-md items-center gap-3">
+            <button type="button" onClick={retake} className="glass-dark button-md flex h-14 flex-1 items-center justify-center gap-2 rounded-full">
+              <ArrowCounterClockwiseIcon size={20} weight="bold" aria-hidden="true" />
+              {t('ui.retake')}
+            </button>
+            <button
+              type="button"
+              onClick={usePhoto}
+              className="button-md flex h-14 flex-[1.4] items-center justify-center gap-2 rounded-full bg-white text-leaf-800 transition-transform duration-500 ease-spring active:scale-[0.98]"
+            >
+              <CheckIcon size={20} weight="bold" aria-hidden="true" />
+              {t('ui.use_photo')}
+            </button>
+          </div>
+        ) : (
+          <div className="mx-auto flex max-w-md items-center justify-between">
+            <button type="button" onClick={() => fileInputRef.current?.click()} aria-label={t('ui.upload_gallery')} className={sideButton}>
+              <ImageSquareIcon size={24} aria-hidden="true" />
+            </button>
+
+            <button
+              type="button"
+              onClick={capturePhoto}
+              disabled={cameraState !== 'live'}
+              aria-label={t('ui.take_photo')}
+              className="grid h-20 w-20 place-items-center rounded-full border-4 border-white/90 transition-transform duration-500 ease-spring active:scale-90 disabled:opacity-40"
+            >
+              <span className="h-16 w-16 rounded-full bg-white" />
+            </button>
+
+            {canFlip ? (
+              <button
+                type="button"
+                onClick={() => setFacing((mode) => (mode === 'environment' ? 'user' : 'environment'))}
+                aria-label={t('ui.flip_camera')}
+                className={sideButton}
+              >
+                <CameraRotateIcon size={24} aria-hidden="true" />
+              </button>
+            ) : (
+              <span className="h-14 w-14" aria-hidden="true" />
+            )}
+          </div>
+        )}
+      </footer>
+
+      <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
     </div>
   );
 };

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Sparkles, Star } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import onboarding1 from '@/assets/onboarding-1.png';
 import onboarding2 from '@/assets/onboarding-2.png';
 import onboarding3 from '@/assets/onboarding-3.png';
@@ -10,178 +11,77 @@ const onboardingData = [
   {
     id: 1,
     image: onboarding1,
-    title: "Welcome to Smart Farming Revolution",
-    subtitle: "Diagnose Plant Diseases with AI Magic",
-    description: "Simply capture a photo and get instant expert plant health analysis",
-    color: "from-green-400 to-emerald-600",
+    title: 'Find out what is wrong with a sick plant',
+    description: 'Take a photo of one leaf. KisanMitra names the likely disease and how to treat it.',
   },
   {
     id: 2,
     image: onboarding2,
-    title: "Your Digital Agricultural Marketplace",
-    subtitle: "Buy Smart, Sell Smarter",
-    description: "Access premium fertilizers, quality seeds, and connect with buyers",
-    color: "from-blue-400 to-indigo-600",
+    title: 'Buy inputs and sell your harvest',
+    description: 'Order seeds and fertilizer, check mandi prices and list your crop for buyers.',
   },
   {
     id: 3,
     image: onboarding3,
-    title: "Personalized Farming Intelligence",
-    subtitle: "Weather Wisdom & Expert Guidance",
-    description: "Get hyper-local weather updates and AI-powered farming recommendations",
-    color: "from-purple-400 to-pink-600",
+    title: 'Plan field work around the weather',
+    description: 'See the 7 day forecast for your area and know when it is safe to spray.',
   },
 ];
 
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
-
-  const handleNext = () => {
-    if (currentStep < onboardingData.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      handleGetStarted();
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleSkip = () => {
-    handleGetStarted();
-  };
+  const isLast = currentStep === onboardingData.length - 1;
+  const currentData = onboardingData[currentStep];
 
   const handleGetStarted = () => {
     localStorage.setItem('kisanmitra_onboarding_seen', 'true');
-    navigate('/signup');
+    navigate('/');
   };
 
-  const currentData = onboardingData[currentStep];
+  const handleNext = () => {
+    if (isLast) handleGetStarted();
+    else setCurrentStep(currentStep + 1);
+  };
 
   return (
-    <div className="mobile-container">
-      {/* Background with animated gradient */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${currentData.color} transition-all duration-700`} />
-      
-      {/* Floating decorative elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(15)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute"
-            style={{
-              left: Math.random() * 100 + '%',
-              top: Math.random() * 100 + '%',
-              animationDelay: Math.random() * 4 + 's',
-            }}
-          >
-            {i % 3 === 0 ? (
-              <Sparkles className="w-4 h-4 text-white/30 animate-pulse" />
-            ) : (
-              <Star className="w-3 h-3 text-white/20 animate-bounce" />
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Header */}
-      <div className="relative z-10 flex justify-between items-center p-6">
+    <div className="flex min-h-screen flex-col px-4 pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(16px,env(safe-area-inset-top))]">
+      <div className="flex items-center justify-between">
         <button
-          onClick={handlePrevious}
-          className={`p-2 rounded-full bg-white/20 backdrop-blur-sm transition-all ${
-            currentStep === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'
-          }`}
+          type="button"
+          onClick={() => setCurrentStep(currentStep - 1)}
+          aria-label="Previous"
+          className={cn('glass-icon-button', currentStep === 0 && 'pointer-events-none opacity-0')}
         >
-          <ChevronLeft className="w-6 h-6 text-white" />
+          <ArrowLeftIcon size={20} weight="bold" aria-hidden="true" />
         </button>
-        
-        <button
-          onClick={handleSkip}
-          className="text-white/80 font-medium hover:text-white transition-colors"
-        >
+        <button type="button" onClick={handleGetStarted} className="button-sm h-11 rounded-full px-4 text-field-600 hover:text-field-900">
           Skip
         </button>
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-6">
-        {/* Image */}
-        <div className="mb-8 relative">
-          <div className="w-80 h-60 relative animate-fade-in">
-            <img
-              src={currentData.image}
-              alt={currentData.title}
-              className="w-full h-full object-contain drop-shadow-xl"
-            />
-            
-            {/* Floating UI elements animation */}
-            <div className="absolute -top-4 -right-4 float-animation">
-              <div className="w-8 h-8 bg-white/20 rounded-lg backdrop-blur-sm flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
-            </div>
-            
-            <div className="absolute -bottom-2 -left-4 float-animation" style={{ animationDelay: '1s' }}>
-              <div className="w-6 h-6 bg-white/20 rounded-full backdrop-blur-sm" />
-            </div>
-          </div>
-        </div>
+      <main key={currentData.id} className="mx-auto flex w-full max-w-md flex-1 animate-rise-in flex-col items-center justify-center text-center">
+        <img src={currentData.image} alt="" className="h-60 w-full max-w-xs object-contain" />
+        <h1 className="heading-4 mt-8 text-field-900">{currentData.title}</h1>
+        <p className="body-3 mt-4 text-field-600">{currentData.description}</p>
+      </main>
 
-        {/* Text Content */}
-        <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-3xl font-bold text-white mb-4 leading-tight">
-            {currentData.title}
-          </h1>
-          
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold text-white/90 mb-2 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
-              {currentData.subtitle}
-            </h2>
-          </div>
-          
-          <p className="text-lg text-white/80 leading-relaxed max-w-xs">
-            {currentData.description}
-          </p>
-        </div>
-
-        {/* Progress Indicators */}
-        <div className="flex space-x-3 mb-8">
-          {onboardingData.map((_, index) => (
-            <div
-              key={index}
-              className={`h-2 rounded-full transition-all duration-500 ${
-                index === currentStep 
-                  ? 'w-8 bg-white shadow-glow' 
-                  : 'w-2 bg-white/40'
-              }`}
+      <div className="mx-auto w-full max-w-md space-y-6">
+        <div className="flex justify-center gap-2" aria-hidden="true">
+          {onboardingData.map((step, index) => (
+            <span
+              key={step.id}
+              className={cn(
+                'h-2 rounded-full transition-[width,background-color] duration-500',
+                index === currentStep ? 'w-8 bg-leaf-600' : 'w-2 bg-field-900/15',
+              )}
             />
           ))}
         </div>
-      </div>
-
-      {/* Navigation */}
-      <div className="relative z-10 p-6">
-        {currentStep === onboardingData.length - 1 ? (
-          <Button
-            onClick={handleGetStarted}
-            className="w-full btn-glass text-lg font-semibold py-4 bg-white/20 hover:bg-white/30 text-white border-0"
-          >
-            <Sparkles className="w-5 h-5 mr-2" />
-            Begin Your Journey
-          </Button>
-        ) : (
-          <Button
-            onClick={handleNext}
-            className="w-full btn-glass text-lg font-semibold py-4 bg-white/20 hover:bg-white/30 text-white border-0"
-          >
-            Next
-            <ChevronRight className="w-5 h-5 ml-2" />
-          </Button>
-        )}
+        <Button size="lg" className="w-full" onClick={handleNext}>
+          {isLast ? 'Get started' : 'Next'}
+          <ArrowRightIcon weight="bold" aria-hidden="true" />
+        </Button>
       </div>
     </div>
   );

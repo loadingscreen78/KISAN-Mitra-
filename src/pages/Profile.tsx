@@ -36,17 +36,21 @@ import {
 import { dataService } from '../lib/dataService';
 import { marketData } from '../lib/marketData';
 import { authService } from '../lib/authService';
+import { signOutFirebase } from '../lib/firebase';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const Profile = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
 
   const handleLogout = async () => {
+    await signOutFirebase();
     await authService.logout();
-    navigate('/login', { replace: true });
+    navigate('/', { replace: true });
   };
 
   const handleBack = () => {
-    navigate('/home');
+    goBack();
   };
   const [userData, setUserData] = useState(null);
   const [stats, setStats] = useState(null);
@@ -114,13 +118,13 @@ const Profile = () => {
           ];
           setAchievements(generatedAchievements);
         } else {
-          // No user found, redirect to login
-          navigate('/login');
+          // No user found, redirect to landing
+          navigate('/');
         }
       } catch (error) {
         console.error('Error loading user data:', error);
-        // On error, redirect to login
-        navigate('/login');
+        // On error, redirect to landing
+        navigate('/');
       } finally {
         setIsLoading(false);
       }

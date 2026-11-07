@@ -1,0 +1,22 @@
+# Auto-generated for local dev on Python 3.14+
+# The original requirements.txt pins versions that predate Python 3.14.
+# This file uses the latest compatible versions for local development.
+
+Flask==3.1.2
+flask-cors==6.0.1
+Flask-Limiter==3.12
+google-generativeai==0.8.5
+gunicorn==23.0.0
+openai==1.107.1
+pillow==11.3.0
+python-dotenv==1.1.1
+requests==2.32.5
+SQLAlchemy==2.0.43
+psycopg2-binary==2.9.10
+supabase==2.8.1
+pyjwt==2.9.0
+replicate
+transformers>=4.40.0
+torch>=2.2.0
+torchvision>=0.17.0
+numpy>=1.26.0

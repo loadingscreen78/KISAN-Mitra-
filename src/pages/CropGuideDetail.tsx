@@ -19,9 +19,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const CropGuideDetail = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { cropId } = useParams();
   const [savedGuides, setSavedGuides] = useState<string[]>([]);
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
@@ -245,10 +247,10 @@ const CropGuideDetail = () => {
 
   if (!currentCrop) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center">
+      <div className="min-h-screen bg-green-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-700 mb-4">Guide Not Found</h2>
-          <Button onClick={() => navigate('/guides')} className="bg-green-600 hover:bg-green-700">
+          <Button onClick={() => goBack('/guides')} className="bg-green-600 hover:bg-green-700">
             Back to Guides
           </Button>
         </div>
@@ -259,12 +261,12 @@ const CropGuideDetail = () => {
   const isSaved = savedGuides.includes(cropId!);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+    <div className="min-h-screen bg-green-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-4 shadow-lg sticky top-0 z-10">
+      <div className="bg-green-600 px-4 py-4 shadow-lg sticky top-0 z-10">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <button onClick={() => navigate('/guides')} className="text-white hover:bg-white/20 rounded-full p-2">
+            <button onClick={() => goBack()} className="text-white hover:bg-white/20 rounded-full p-2">
               <ArrowLeft className="w-6 h-6" />
             </button>
             <div className="flex items-center space-x-3">

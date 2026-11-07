@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { ArrowLeft, TestTube2, Calculator } from 'lucide-react';
+import AmbientBackground from '@/components/AmbientBackground';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const SoilHealth = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   
   // State for soil parameters
   const [pH, setPH] = useState([6.5]); // Default 6.5
@@ -115,30 +118,36 @@ const SoilHealth = () => {
   const scorePercentage = (soilScore / 6) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 pb-24">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-4 shadow-lg">
-        <div className="flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/home')}
-            className="text-white hover:bg-white/20 rounded-full p-3"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          
-          <h1 className="text-xl font-bold text-white flex items-center">
-            <TestTube2 className="w-6 h-6 mr-2" />
-            Soil Health Assessment
-          </h1>
-          
-          <div className="w-12" />
+    <div className="min-h-screen relative overflow-hidden bg-emerald-50/40 pb-28">
+      {/* Ambient background glow */}
+      <AmbientBackground />
+
+      {/* Floating Expo-Glass Top Header */}
+      <header className="sticky top-0 z-40 backdrop-blur-2xl bg-white/75 border-b border-white/60 shadow-[0_4px_20px_0_rgba(0,0,0,0.03)] transition-all">
+        <div className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <button
+              onClick={() => goBack()}
+              aria-label="Back"
+              className="p-2.5 glass-panel rounded-full hover:bg-white text-slate-700 transition-all active:scale-90 shadow-sm"
+            >
+              <ArrowLeft className="w-4 h-4 text-emerald-900" />
+            </button>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md border border-white/60">
+                <TestTube2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">Soil Health Assessment</h1>
+                <p className="text-xs text-slate-500">Calculate pH balance, organic matter & moisture score</p>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* Scrollable Content */}
-      <div className="px-4 py-6 space-y-6 overflow-y-auto">
+      <main className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 pt-5 space-y-6">
         
         {/* Instructions Card */}
         <Card className="border-blue-200 bg-white/90 backdrop-blur-sm shadow-lg">
@@ -372,7 +381,7 @@ const SoilHealth = () => {
           </CardContent>
         </Card>
 
-      </div>
+      </main>
     </div>
   );
 };

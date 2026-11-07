@@ -16,9 +16,11 @@ import { Switch } from '@/components/ui/switch';
 import { marketData } from '@/lib/marketData';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useGeolocation, calculateDistance, formatDistance } from '@/hooks/useGeolocation';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const MarketDetails = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { marketId } = useParams();
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const { isNotificationEnabled, toggleNotification } = useNotifications();
@@ -71,17 +73,17 @@ const MarketDetails = () => {
 
   if (!market) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-green-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-gray-600">Market not found</h2>
-          <Button onClick={() => navigate(-1)} className="mt-4">Go Back</Button>
+          <Button onClick={() => goBack('/market-prices')} className="mt-4">Go Back</Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+    <div className="min-h-screen bg-green-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-green-100 sticky top-0 z-20">
         <div className="px-6 py-4">
@@ -90,7 +92,7 @@ const MarketDetails = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate(-1)}
+                onClick={() => goBack('/market-prices')}
                 className="p-2 hover:bg-gray-100 rounded-full"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
@@ -161,7 +163,7 @@ const MarketDetails = () => {
       {/* Content */}
       <div className="px-6 py-6">
         <Card className="bg-white rounded-3xl shadow-lg border border-gray-100">
-          <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50 border-b border-gray-200 p-6">
+          <CardHeader className="bg-green-50 border-b border-gray-200 p-6">
             <CardTitle className="text-lg font-bold text-gray-900">
               All Vegetables & Prices ({market.crops.length} items)
             </CardTitle>

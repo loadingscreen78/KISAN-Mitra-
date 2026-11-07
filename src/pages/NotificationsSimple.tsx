@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bell, Package, TrendingUp, AlertCircle, CheckCircle, MessageCircle, Trash2, CheckCheck, MoreVertical, Settings, Search } from 'lucide-react';
+import { useGoBack } from '@/hooks/useGoBack';
 
 interface Notification {
   id: number;
@@ -23,6 +24,7 @@ interface Notification {
 
 const NotificationsSimple = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
   
@@ -139,7 +141,7 @@ const NotificationsSimple = () => {
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center space-x-3">
             <button
-              onClick={() => navigate('/home')}
+              onClick={() => goBack()}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />

@@ -15,9 +15,11 @@ import {
   Phone
 } from 'lucide-react';
 import { cartManager } from '@/lib/cart';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const location = useLocation();
   const [selectedAddress, setSelectedAddress] = useState('home');
   const [selectedPayment, setSelectedPayment] = useState('upi');
@@ -128,7 +130,7 @@ const Checkout = () => {
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center space-x-3">
             <button 
-              onClick={() => navigate('/cart')}
+              onClick={() => goBack('/cart')}
               className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors"
             >
               <ArrowLeft className="w-6 h-6 text-gray-700" />
@@ -243,7 +245,7 @@ const Checkout = () => {
         </div>
 
         {/* Delivery Time */}
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6 border border-green-100">
+        <div className="bg-green-50 rounded-2xl p-6 border border-green-100">
           <div className="flex items-center space-x-3 mb-4">
             <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
               <Truck className="w-5 h-5 text-green-600" />
@@ -323,7 +325,7 @@ const Checkout = () => {
         </div>
 
         {/* Security Info */}
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-5 border border-green-100">
+        <div className="bg-green-50 rounded-2xl p-5 border border-green-100">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
               <Shield className="w-5 h-5 text-green-600" />

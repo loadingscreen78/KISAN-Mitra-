@@ -52,6 +52,7 @@ out/
 # ============================================
 .vscode/
 .idea/
+.claude/
 *.swp
 *.swo
 *~
@@ -139,3 +140,9 @@ _site/
 # ============================================
 # Uncomment if using yarn:
 # yarn.lock
+
+# SimReady asset pipeline (scripts/simready)
+.venv-usd/
+.gltf-tools/
+.simready/
+*-raw.glb

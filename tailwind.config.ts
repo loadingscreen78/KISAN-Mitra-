@@ -1,5 +1,43 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * Brand palette.
+ *
+ * leaf  : the single brand green, a natural crop green instead of neon emerald.
+ * field : warm neutrals with a faint green cast, used for text, lines and surfaces.
+ *
+ * `emerald`/`green` and `slate`/`gray` are mapped onto these scales on purpose, so
+ * every screen, including ones that still use the stock Tailwind names, shares
+ * one calm palette. Prefer `leaf-*` and `field-*` in new code.
+ */
+const leaf = {
+	50: "#F2F8F3",
+	100: "#DEEDE0",
+	200: "#BEDAC3",
+	300: "#92BF9C",
+	400: "#5CA36F",
+	500: "#3C8051",
+	600: "#28673D",
+	700: "#205633",
+	800: "#19432A",
+	900: "#143322",
+	950: "#0B1E14",
+};
+
+const field = {
+	50: "#F8F8F6",
+	100: "#F1F1EE",
+	200: "#E0E1DB",
+	300: "#C4C5BE",
+	400: "#8D9084",
+	500: "#6B6E63",
+	600: "#56594F",
+	700: "#41443B",
+	800: "#2B2F28",
+	900: "#1B1F19",
+	950: "#0E110D",
+};
+
 export default {
 	darkMode: ["class"],
 	content: [
@@ -23,10 +61,16 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'inter': ['Inter', 'sans-serif'],
-				'sans': ['Inter', 'system-ui', 'sans-serif'],
+				// Poppins ships Latin and Devanagari, so English and Hindi share one typeface.
+				sans: ['Poppins', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Noto Sans Devanagari', 'sans-serif'],
 			},
 			colors: {
+				leaf,
+				field,
+				emerald: leaf,
+				green: leaf,
+				slate: field,
+				gray: field,
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -60,7 +104,7 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				// Agricultural color system
+				// Agricultural color system (kept for older screens)
 				'agri-primary': 'hsl(var(--primary-green))',
 				'agri-secondary': 'hsl(var(--secondary-green))',
 				'agri-accent': 'hsl(var(--accent-green))',
@@ -84,6 +128,15 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+			// Every transition decelerates into place on one curve.
+			transitionTimingFunction: {
+				DEFAULT: 'cubic-bezier(0.22, 1, 0.36, 1)',
+				out: 'cubic-bezier(0.22, 1, 0.36, 1)',
+				spring: 'var(--ease-spring)',
+			},
+			transitionDuration: {
+				DEFAULT: '300ms',
+			},
 			keyframes: {
 				'accordion-down': {
 					from: {
@@ -100,11 +153,27 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'rise-in': {
+					from: { opacity: '0', transform: 'translateY(12px)' },
+					to: { opacity: '1', transform: 'translateY(0)' }
+				},
+				'fade-in': {
+					from: { opacity: '0' },
+					to: { opacity: '1' }
+				},
+				// Moves `translate`, not `transform`, so it stacks with rotate utilities.
+				float: {
+					'0%, 100%': { translate: '0 0' },
+					'50%': { translate: '0 -8px' }
 				}
 			},
 			animation: {
-				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-down': 'accordion-down 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+				'accordion-up': 'accordion-up 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+				'rise-in': 'rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both',
+				'fade-in': 'fade-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both',
+				float: 'float 6s cubic-bezier(0.45, 0, 0.55, 1) infinite'
 			}
 		}
 	},

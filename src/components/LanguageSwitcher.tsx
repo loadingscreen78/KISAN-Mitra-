@@ -1,33 +1,40 @@
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇬🇧', short: 'EN' },
-  { code: 'hi', name: 'हिंदी', flag: '🇮🇳', short: 'हिं' },
+  { code: 'en', label: 'EN', name: 'English' },
+  { code: 'hi', label: 'हिं', name: 'हिंदी' },
 ];
 
-const LanguageSwitcher = () => {
+/** Glass segmented control. The white thumb slides to the chosen language. */
+const LanguageSwitcher = ({ className }: { className?: string }) => {
   const { i18n } = useTranslation();
-  const selectedLanguage = i18n.resolvedLanguage || i18n.language;
+  const current = (i18n.resolvedLanguage || i18n.language || 'en').startsWith('hi') ? 'hi' : 'en';
+  const index = languages.findIndex((language) => language.code === current);
 
   return (
-    <div className="flex items-center bg-white/90 backdrop-blur-sm rounded-full p-1 shadow-sm border border-green-100">
-      {languages.map((lang) => {
-        const isSelected = selectedLanguage === lang.code;
+    <div role="radiogroup" aria-label="Language" className={cn('glass-pill grid grid-cols-2 p-1', className)}>
+      <span
+        aria-hidden="true"
+        className="absolute bottom-1 left-1 top-1 w-[calc(50%-4px)] rounded-full bg-white shadow-[0_1px_3px_rgb(27_31_25/0.18),inset_0_0_0_0.5px_rgb(27_31_25/0.06)] transition-transform duration-500 ease-spring motion-reduce:transition-none"
+        style={{ transform: `translateX(${index * 100}%)` }}
+      />
+      {languages.map((language) => {
+        const selected = language.code === current;
         return (
           <button
-            key={lang.code}
-            onClick={() => i18n.changeLanguage(lang.code)}
-            className={`
-              px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ease-in-out flex items-center space-x-1
-              ${
-                isSelected
-                  ? 'bg-green-500 text-white shadow-sm transform scale-105'
-                  : 'text-green-600 hover:bg-green-50'
-              }
-            `}
+            key={language.code}
+            type="button"
+            role="radio"
+            aria-checked={selected}
+            aria-label={language.name}
+            onClick={() => i18n.changeLanguage(language.code)}
+            className={cn(
+              'button-xsm relative z-10 h-9 min-w-11 rounded-full px-3 transition-colors duration-300',
+              selected ? 'text-leaf-800' : 'text-field-500 hover:text-field-800',
+            )}
           >
-            <span className="text-xs">{lang.flag}</span>
-            <span className="text-xs font-semibold">{lang.short}</span>
+            {language.label}
           </button>
         );
       })}

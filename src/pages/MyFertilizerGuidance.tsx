@@ -13,9 +13,11 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const MyFertilizerGuidance = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [savedGuidance, setSavedGuidance] = useState<string[]>([]);
   const [appliedGuidance, setAppliedGuidance] = useState<string[]>(() => {
     const applied = localStorage.getItem('kisanmitra_applied_guidance');
@@ -144,13 +146,13 @@ const MyFertilizerGuidance = () => {
   })).filter(crop => crop.name);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+    <div className="min-h-screen bg-green-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-green-100 sticky top-0 z-10">
         <div className="px-6 py-4">
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => navigate('/advisory')}
+              onClick={() => goBack()}
               className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
             >
               <ArrowLeft className="w-6 h-6 text-gray-600" />
@@ -179,8 +181,8 @@ const MyFertilizerGuidance = () => {
                   {/* Crop Header */}
                   <CardHeader className={`${
                     isApplied 
-                      ? 'bg-gradient-to-r from-green-50 to-green-100 border-b border-green-200' 
-                      : 'bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200'
+                      ? 'bg-green-50 border-b border-green-200' 
+                      : 'bg-gray-50 border-b border-gray-200'
                   }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
@@ -247,7 +249,7 @@ const MyFertilizerGuidance = () => {
                     <div className="mt-6">
                       <button
                         onClick={() => toggleExpandCard(crop.id)}
-                        className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl hover:from-blue-100 hover:to-purple-100 transition-colors"
+                        className="w-full flex items-center justify-between p-4 bg-blue-50 rounded-2xl hover:bg-blue-100 transition-colors"
                       >
                         <div className="flex items-center space-x-3">
                           <Leaf className="w-5 h-5 text-green-600" />
@@ -281,7 +283,7 @@ const MyFertilizerGuidance = () => {
                         className={`w-full py-4 rounded-2xl font-bold text-lg transition-all duration-300 ${
                           isApplied
                             ? 'bg-gray-100 text-gray-700 border-2 border-gray-300 hover:bg-gray-200'
-                            : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl'
+                            : 'bg-green-500 hover:bg-green-600 text-white shadow-lg hover:shadow-xl'
                         }`}
                       >
                         <div className="flex items-center justify-center space-x-3">
@@ -316,7 +318,7 @@ const MyFertilizerGuidance = () => {
               </p>
               <Button 
                 onClick={() => navigate('/fertilizer-guide')}
-                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-6 rounded-2xl font-semibold"
+                className="bg-green-500 hover:bg-green-600 text-white py-3 px-6 rounded-2xl font-semibold"
               >
                 Browse Fertilizer Guide
               </Button>

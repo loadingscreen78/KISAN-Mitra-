@@ -11,9 +11,11 @@ import {
   Scan
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const AnalyzePlant = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [currentStage, setCurrentStage] = useState(0);
   const [plantImage, setPlantImage] = useState<string | null>(null);
@@ -234,7 +236,7 @@ const AnalyzePlant = () => {
       <div className="mobile-header bg-agri-cream">
         <div className="flex items-center space-x-3">
           <button 
-            onClick={() => navigate('/diagnose')}
+            onClick={() => goBack('/diagnose')}
             className="p-2 hover:bg-agri-light rounded-full transition-colors"
           >
             <ArrowLeft className="w-6 h-6 text-agri-accent" />
@@ -254,7 +256,7 @@ const AnalyzePlant = () => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+              <div className="w-full h-full bg-green-100 flex items-center justify-center">
                 <Sparkles className="w-12 h-12 text-agri-primary" />
               </div>
             )}
@@ -264,7 +266,7 @@ const AnalyzePlant = () => {
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute inset-2 border-2 border-agri-primary/30 rounded-xl" />
             <div 
-              className="absolute left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-agri-primary to-transparent animate-pulse"
+              className="absolute left-2 right-2 h-0.5 bg-transparent animate-pulse"
               style={{ 
                 top: `${20 + (analysisProgress * 0.6)}%`,
                 transition: 'top 0.3s ease-out'
@@ -305,7 +307,7 @@ const AnalyzePlant = () => {
             <div className="space-y-4">
               <div className="relative">
                 <Progress value={analysisProgress} className="w-full h-4" />
-                <div className="absolute inset-0 bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 opacity-20 rounded-full animate-pulse" />
+                <div className="absolute inset-0 bg-green-400 opacity-20 rounded-full animate-pulse" />
               </div>
               <div className="text-3xl font-bold text-green-600 animate-bounce">
                 {Math.round(analysisProgress)}%

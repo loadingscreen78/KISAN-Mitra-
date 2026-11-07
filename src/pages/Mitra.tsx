@@ -1,99 +1,96 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Mic, ArrowUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { MicrophoneIcon, PaperPlaneRightIcon, XIcon } from '@phosphor-icons/react';
 import VoiceAssistant from '@/components/VoiceAssistant';
-import { authService } from '@/lib/authService';
+import PageHeader from '@/components/PageHeader';
+import { pageColumn } from '@/lib/layout';
 import { getApiBaseUrl } from '@/lib/apiConfig';
+import { cn } from '@/lib/utils';
 
 interface Message {
   id: number;
   text: string;
   isUser: boolean;
+  time?: string;
 }
 
+const quickPrompts = [
+  'How do I treat early blight on tomato?',
+  'Best fertilizer for wheat at tillering',
+  'Tomato mandi price trend this week',
+  'गेहूं में पीला रतुआ का इलाज क्या है?',
+];
+
+const getCurrentTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+const stopVoice = () => {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  const cleanup = (window as { voiceAssistantCleanup?: () => void }).voiceAssistantCleanup;
+  cleanup?.();
+};
+
 const Mitra = () => {
-  const navigate = useNavigate();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { t } = useTranslation();
+  const [messages, setMessages] = useState<Message[]>(() => [
+    { id: 0, text: t('ui.mitra_welcome'), isUser: false, time: getCurrentTime() },
+  ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showVoiceMode, setShowVoiceMode] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const [messageIdCounter, setMessageIdCounter] = useState(1);
   const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
-  const [showScrollToTop, setShowScrollToTop] = useState(false);
-
-  // Scroll to bottom when messages change
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  // Scroll to top function
-  const scrollToTop = () => {
-    messagesContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Check scroll position to show/hide scroll to top button
-  const handleScroll = () => {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    setShowScrollToTop(scrollTop > 200);
-  };
+  const nextId = useRef(1);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    // The page opens at the top; only new messages scroll the thread.
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [messages, isLoading]);
 
-  // Add scroll listener to window
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // Stop speech when leaving the page.
+  useEffect(() => stopVoice, []);
 
-  // Add keyboard shortcuts
+  const closeVoiceMode = () => {
+    setIsVoiceProcessing(false);
+    stopVoice();
+    setShowVoiceMode(false);
+  };
+
+  const toggleVoiceMode = () => {
+    if (showVoiceMode) closeVoiceMode();
+    else setShowVoiceMode(true);
+  };
+
+  // Escape closes the voice panel.
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Escape key to go back or close voice mode
-      if (e.key === 'Escape') {
-        if (showVoiceMode) {
-          handleVoiceModeToggle();
-        } else {
-          handleBack();
-        }
-      }
+    if (!showVoiceMode) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeVoiceMode();
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showVoiceMode]);
 
-  // Initial welcome message
-  useEffect(() => {
-    const welcomeMessage: Message = {
-      id: 0,
-      text: "Hello! I'm Kisan Mitra AI, your AI farming assistant. I can help you with crop cultivation, pest management, soil health, and farming advice. You can type your questions or use voice mode for hands-free interaction!",
-      isUser: false
-    };
-    setMessages([welcomeMessage]);
-  }, []);
+  const append = (...items: Omit<Message, 'id'>[]) => {
+    setMessages((previous) => [
+      ...previous,
+      ...items.map((item) => ({ ...item, id: nextId.current++ })),
+    ]);
+  };
 
   const sendMessage = async (messageText?: string) => {
-    const currentMessage = messageText || inputMessage;
-    if (!currentMessage.trim()) return;
+    const currentMessage = (messageText ?? inputMessage).trim();
+    if (!currentMessage || isLoading) return;
 
-    // Add user message
-    const userMessage: Message = {
-      id: messageIdCounter,
-      text: currentMessage,
-      isUser: true
-    };
-    
-    setMessages(prev => [...prev, userMessage]);
-    setMessageIdCounter(prev => prev + 1);
+    append({ text: currentMessage, isUser: true, time: getCurrentTime() });
     setInputMessage('');
     setIsLoading(true);
 
     try {
-      // Use backend API instead of direct Gemini calls
       const response = await fetch(`${getApiBaseUrl()}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -105,217 +102,169 @@ const Mitra = () => {
       }
 
       const result = await response.json();
-      const botResponse = result.response;
-      
-      // Add bot response
-      const botMessage: Message = {
-        id: messageIdCounter + 1,
-        text: botResponse,
-        isUser: false
-      };
-      
-      setMessages(prev => [...prev, botMessage]);
-      setMessageIdCounter(prev => prev + 2);
-      
+      append({ text: result.response, isUser: false, time: getCurrentTime() });
     } catch (error) {
       console.error('Error sending message:', error);
-      
-      // Add error message
-      const errorMessage: Message = {
-        id: messageIdCounter + 1,
-        text: "I am having trouble connecting to the network. Please check your internet connection and try again.",
-        isUser: false
-      };
-      
-      setMessages(prev => [...prev, errorMessage]);
-      setMessageIdCounter(prev => prev + 2);
+      append({ text: t('ui.mitra_offline'), isUser: false, time: getCurrentTime() });
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle voice responses
   const handleVoiceResponse = (userMessage: string, botResponse: string) => {
-    const userMsg: Message = {
-      id: messageIdCounter,
-      text: userMessage,
-      isUser: true
-    };
-    
-    const botMsg: Message = {
-      id: messageIdCounter + 1,
-      text: botResponse,
-      isUser: false
-    };
-    
-    setMessages(prev => [...prev, userMsg, botMsg]);
-    setMessageIdCounter(prev => prev + 2);
-    setIsVoiceProcessing(false); // Reset voice processing state
-  };
-
-  // Handle navigation with cleanup
-  const handleBack = () => {
-    // Stop any ongoing voice processing
+    append(
+      { text: userMessage, isUser: true, time: getCurrentTime() },
+      { text: botResponse, isUser: false, time: getCurrentTime() },
+    );
     setIsVoiceProcessing(false);
-    setShowVoiceMode(false);
-    
-    // Clean up any ongoing speech recognition or audio
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-    
-    // Call voice assistant cleanup if available
-    if ((window as any).voiceAssistantCleanup) {
-      (window as any).voiceAssistantCleanup();
-    }
-    
-    // Navigate to home page
-    navigate('/home');
-  };
-
-  // Handle voice mode toggle with proper cleanup
-  const handleVoiceModeToggle = () => {
-    if (showVoiceMode) {
-      // Cleanup when turning off voice mode
-      setIsVoiceProcessing(false);
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-      // Call voice assistant cleanup if available
-      if ((window as any).voiceAssistantCleanup) {
-        (window as any).voiceAssistantCleanup();
-      }
-    }
-    setShowVoiceMode(!showVoiceMode);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen overflow-y-auto p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-auto flex flex-col" style={{ minHeight: 'calc(100vh - 2rem)', maxHeight: 'none' }}>
-        
-        {/* Chat Header */}
-        <div className="bg-green-600 text-white p-4 flex items-center justify-between rounded-t-2xl shadow-md">
+    <div className="min-h-screen pb-tabbar-cta">
+      <PageHeader
+        title={t('ui.mitra_title')}
+        subtitle={isVoiceProcessing ? t('ui.mitra_listening') : t('ui.mitra_status')}
+        width="narrow"
+        actions={
           <button
-            onClick={handleBack}
-            className="text-white hover:bg-white/20 rounded-full p-2 transition-colors hover:scale-110 active:scale-95"
-            title="Go Back"
+            type="button"
+            onClick={toggleVoiceMode}
+            aria-pressed={showVoiceMode}
+            aria-label={t('ui.voice_mode')}
+            className={cn('glass-icon-button', showVoiceMode && 'glass-tinted text-white')}
           >
-            <ArrowLeft className="w-6 h-6" />
+            <MicrophoneIcon size={20} weight={showVoiceMode ? 'fill' : 'regular'} aria-hidden="true" />
           </button>
-          <div className="flex-1 text-center">
-            <h1 className="text-xl font-bold">Kisan Mitra AI</h1>
-            {isVoiceProcessing && (
-              <p className="text-xs text-green-200 animate-pulse">Voice processing...</p>
-            )}
-          </div>
-          <button
-            onClick={handleVoiceModeToggle}
-            className={`text-white hover:bg-white/20 rounded-full p-2 transition-colors ${
-              showVoiceMode ? 'bg-white/20' : ''
-            }`}
-            title={showVoiceMode ? 'Close Voice Mode' : 'Open Voice Mode'}
-          >
-            <Mic className="w-5 h-5" />
-          </button>
-        </div>
+        }
+      />
 
-        {/* Voice Assistant Mode */}
+      <main className={cn(pageColumn('narrow'), 'space-y-6 pt-2')}>
         {showVoiceMode && (
-          <div className="p-4 border-b border-gray-200 bg-green-50">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-green-800">🎤 Voice Mode Active</span>
+          <section aria-label={t('ui.voice_assistant')} className="glass-panel-elevated animate-rise-in p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h2 className="title-4 text-field-900">{t('ui.voice_assistant')}</h2>
               <button
-                onClick={handleVoiceModeToggle}
-                className="text-green-600 hover:text-green-800 text-sm font-medium px-2 py-1 rounded hover:bg-green-100"
-                title="Close Voice Mode"
+                type="button"
+                onClick={closeVoiceMode}
+                aria-label={t('ui.close')}
+                className="grid h-11 w-11 place-items-center rounded-full text-field-500 hover:text-field-900"
               >
-                Close
+                <XIcon size={18} weight="bold" aria-hidden="true" />
               </button>
             </div>
-            <VoiceAssistant 
-              onVoiceResponse={handleVoiceResponse} 
-              className="border-0 shadow-none"
+            <VoiceAssistant
+              onVoiceResponse={handleVoiceResponse}
+              className="border-0 bg-transparent shadow-none"
               onCleanup={() => {
                 setIsVoiceProcessing(false);
                 setShowVoiceMode(false);
               }}
             />
-          </div>
+          </section>
         )}
 
-        {/* Chat Messages Container */}
-        <div 
-          ref={messagesContainerRef}
-          className="flex-1 p-4 space-y-4 relative" 
-          style={{ maxHeight: 'none', overflowY: 'visible', touchAction: 'pan-y' }}
-        >
+        <ol className="space-y-4" aria-live="polite">
           {messages.map((message) => (
-            <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-              <div className={`${
-                message.isUser 
-                  ? 'bg-green-500 text-white' 
-                  : 'bg-gray-200 text-gray-800'
-              } p-3 rounded-xl max-w-[80%] shadow-sm`}>
-                {message.text}
-              </div>
-            </div>
-          ))}
-          
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-gray-200 text-gray-800 p-3 rounded-xl shadow-sm animate-pulse">
-                Thinking...
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-          
-          {/* Scroll to Top Button */}
-          {showScrollToTop && (
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="fixed bottom-20 right-6 bg-green-600 hover:bg-green-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 z-50 animate-bounce"
-              title="Scroll to top of page"
-              style={{ 
-                position: 'fixed',
-                bottom: '80px',
-                right: '16px',
-                zIndex: 1000
-              }}
+            <li
+              key={message.id}
+              className={cn('flex animate-rise-in', message.isUser ? 'justify-end' : 'justify-start')}
             >
-              <ArrowUp className="w-5 h-5" />
-            </button>
-          )}
-        </div>
+              <div
+                className={cn(
+                  'max-w-[85%] rounded-3xl px-4 py-3',
+                  message.isUser ? 'glass-tinted rounded-br-lg' : 'glass rounded-bl-lg text-field-900',
+                )}
+              >
+                <p className="body-6 whitespace-pre-line">{message.text}</p>
+                {message.time && (
+                  <p className={cn('caption-5 figures mt-1 text-right', message.isUser ? 'text-white/70' : 'text-field-500')}>
+                    {message.time}
+                  </p>
+                )}
+              </div>
+            </li>
+          ))}
 
-        {/* Chat Input and Send Button */}
-        <div className="p-4 border-t border-gray-200 flex items-center space-x-2">
-          <input 
-            type="text" 
-            placeholder="Type your message here..." 
+          {isLoading && (
+            <li className="flex animate-rise-in justify-start">
+              <div className="glass flex items-center gap-2 rounded-3xl rounded-bl-lg px-4 py-4" role="status">
+                <span className="sr-only">{t('ui.mitra_thinking')}</span>
+                {[0, 1, 2].map((dot) => (
+                  <span
+                    key={dot}
+                    aria-hidden="true"
+                    className="h-2 w-2 animate-bounce rounded-full bg-field-400 motion-reduce:animate-none"
+                    style={{ animationDelay: `${dot * 120}ms` }}
+                  />
+                ))}
+              </div>
+            </li>
+          )}
+        </ol>
+
+        {messages.length <= 2 && !isLoading && (
+          <section aria-labelledby="mitra-suggested" className="animate-rise-in">
+            <h2 id="mitra-suggested" className="caption-4 mb-2 text-field-500">
+              {t('ui.mitra_suggested')}
+            </h2>
+            <ul className="flex flex-wrap gap-2">
+              {quickPrompts.map((prompt) => (
+                <li key={prompt}>
+                  <button
+                    type="button"
+                    onClick={() => sendMessage(prompt)}
+                    className="glass-pill caption-1 min-h-11 px-4 py-2 text-left text-field-800 transition-transform duration-500 ease-spring hover:text-field-900 active:scale-95"
+                  >
+                    {prompt}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <div ref={messagesEndRef} />
+      </main>
+
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          sendMessage();
+        }}
+        className="pointer-events-none fixed inset-x-0 bottom-tabbar z-40 px-4"
+      >
+        <div className="glass pointer-events-auto mx-auto flex max-w-2xl items-center gap-2 rounded-full p-1 pl-4 shadow-[0_10px_30px_-12px_rgb(27_31_25/0.4)]">
+          <label htmlFor="mitra-input" className="sr-only">
+            {t('ui.mitra_placeholder')}
+          </label>
+          <input
+            id="mitra-input"
+            type="text"
+            autoComplete="off"
+            placeholder={t('ui.mitra_placeholder')}
             value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyUp={handleKeyPress}
+            onChange={(event) => setInputMessage(event.target.value)}
             disabled={isLoading}
-            className="flex-1 p-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200"
+            className="h-12 min-w-0 flex-1 bg-transparent text-field-900 placeholder:text-field-500 focus:outline-none"
           />
-          <button 
-            onClick={() => sendMessage()}
-            disabled={isLoading || !inputMessage.trim()}
-            className="bg-green-600 text-white p-3 rounded-full shadow-lg hover:bg-green-700 transition-colors duration-200 disabled:opacity-50"
+          <button
+            type="button"
+            onClick={toggleVoiceMode}
+            aria-label={t('ui.voice_mode')}
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-field-600 transition-colors duration-300 hover:text-leaf-700"
           >
-            <Send className="w-6 h-6 rotate-90" />
+            <MicrophoneIcon size={20} aria-hidden="true" />
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading || !inputMessage.trim()}
+            aria-label={t('ui.send')}
+            className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-leaf-600 text-white transition-[transform,opacity] duration-500 ease-spring active:scale-90 disabled:opacity-40"
+          >
+            <PaperPlaneRightIcon size={20} weight="fill" aria-hidden="true" />
           </button>
         </div>
-
-      </div>
+      </form>
     </div>
   );
 };

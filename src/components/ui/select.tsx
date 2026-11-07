@@ -109,14 +109,25 @@ const SelectLabel = React.forwardRef<
 ))
 SelectLabel.displayName = SelectPrimitive.Label.displayName
 
+interface SelectItemProps extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item> {
+  /** Shown before the label in the list only, for example a crop image. */
+  leading?: React.ReactNode
+  /** Second line under the label in the list only. */
+  description?: React.ReactNode
+  /** Right aligned detail in the list only, such as a price. */
+  trailing?: React.ReactNode
+}
+
+// Only `children` goes into ItemText, so the closed trigger shows the plain
+// label while the open list can carry extra detail.
 const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
->(({ className, children, ...props }, ref) => (
+  SelectItemProps
+>(({ className, children, leading, description, trailing, ...props }, ref) => (
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex w-full cursor-default select-none items-center gap-3 rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}
@@ -127,7 +138,14 @@ const SelectItem = React.forwardRef<
       </SelectPrimitive.ItemIndicator>
     </span>
 
-    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+    {leading}
+    <span className="min-w-0 flex-1">
+      <span className="block truncate">
+        <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+      </span>
+      {description && <span className="caption-5 block truncate text-field-500">{description}</span>}
+    </span>
+    {trailing && <span className="shrink-0 text-right">{trailing}</span>}
   </SelectPrimitive.Item>
 ))
 SelectItem.displayName = SelectPrimitive.Item.displayName

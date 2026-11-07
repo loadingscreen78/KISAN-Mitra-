@@ -1,35 +1,22 @@
-/* Mobile-specific fixes for touch interactions and network URL issues */
+/* Touch behaviour shared by every screen. Sizing lives in the components:
+   each control is designed with a 44px or larger touch target instead of
+   having one forced onto every button here. */
 
-/* Prevent tap highlight and improve touch responsiveness */
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
 
-/* Improve button touch targets for mobile */
-button, .button, [role="button"] {
+button,
+.button,
+[role='button'] {
   touch-action: manipulation;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
-  min-height: 44px; /* iOS recommended minimum touch target */
-  min-width: 44px;
 }
 
-/* Specific fixes for diagnosis button */
 [data-diagnosis-button] {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-[data-diagnosis-button]:active {
-  transform: scale(0.98);
 }
 
 [data-diagnosis-button]:disabled {
@@ -37,24 +24,22 @@ button, .button, [role="button"] {
   opacity: 0.6;
 }
 
-/* Fix for mobile viewport and scrolling */
 .mobile-container {
-  -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
 
-/* Prevent zoom on input focus for mobile */
-input, select, textarea {
+/* 16px inputs stop iOS from zooming the page on focus. */
+input,
+select,
+textarea {
   font-size: 16px;
 }
 
-/* Fix for mobile camera and gallery buttons */
-.camera-button, .gallery-button {
+.camera-button,
+.gallery-button {
   touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
 }
 
-/* Loading state improvements */
 .loading-button {
   pointer-events: none;
   opacity: 0.7;
@@ -65,37 +50,13 @@ input, select, textarea {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* Mobile-specific media queries */
 @media (max-width: 768px) {
-  /* Increase touch targets on mobile */
-  button, .button {
-    min-height: 48px;
-    padding: 12px 16px;
-  }
-  
-  /* Fix for fixed bottom buttons */
   .fixed-bottom-button {
     padding-bottom: env(safe-area-inset-bottom, 20px);
-  }
-}
-
-/* iOS specific fixes */
-@supports (-webkit-touch-callout: none) {
-  .ios-fix {
-    -webkit-appearance: none;
-    appearance: none;
-    border-radius: 0;
-  }
-}
-
-/* Android specific fixes */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  .android-fix {
-    -webkit-appearance: none;
-    appearance: none;
   }
 }

@@ -58,7 +58,7 @@ const PlantHealthCard: React.FC<PlantHealthCardProps> = ({ onStartDiagnosis, cla
   };
 
   return (
-    <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-green-400 via-green-500 to-emerald-600 shadow-xl ${className}`}>
+    <div className={`relative overflow-hidden rounded-3xl bg-green-400 shadow-xl ${className}`}>
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-16 translate-x-16"></div>

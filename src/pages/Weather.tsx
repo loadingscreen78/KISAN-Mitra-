@@ -1,422 +1,269 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MapPin, Thermometer, Droplets, Wind, Eye, Sunrise, Sunset, AlertTriangle, RefreshCw } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { weatherService, WeatherData, DailyForecast } from '@/lib/weather';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  ArrowClockwiseIcon,
+  DropIcon,
+  EyeIcon,
+  GaugeIcon,
+  LightbulbIcon,
+  MapPinIcon,
+  SunHorizonIcon,
+  WindIcon,
+  type Icon,
+} from '@phosphor-icons/react';
+import { weatherService, type WeatherData, type DailyForecast } from '@/lib/weather';
+import PageHeader from '@/components/PageHeader';
+import { pageColumn } from '@/lib/layout';
+import { authService } from '@/lib/authService';
+import { cn } from '@/lib/utils';
+
+const INDIAN_REGIONS = [
+  'Punjab',
+  'Tamil Nadu',
+  'Maharashtra',
+  'Uttar Pradesh',
+  'Gujarat',
+  'Karnataka',
+  'Haryana',
+  'Madhya Pradesh'
+];
+
+const formatTime = (timestamp: number) =>
+  new Date(timestamp * 1000).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+
+const Metric = ({ icon: MetricIcon, label, value }: { icon: Icon; label: string; value: string }) => (
+  <div className="rounded-2xl bg-white/50 p-3 shadow-[inset_0_0_0_0.5px_rgb(27_31_25/0.08)]">
+    <dt className="caption-5 flex items-center gap-1 text-field-500">
+      <MetricIcon size={14} aria-hidden="true" />
+      {label}
+    </dt>
+    <dd className="body-4 figures mt-1 text-field-900">{value}</dd>
+  </div>
+);
 
 const Weather = () => {
-  const navigate = useNavigate();
+  const { t } = useTranslation();
   const [currentWeather, setCurrentWeather] = useState<WeatherData | null>(null);
   const [forecast, setForecast] = useState<DailyForecast[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [location, setLocation] = useState({ lat: 0, lon: 0 });
+  const [selectedRegion, setSelectedRegion] = useState<string>('Punjab');
 
-  const loadWeatherData = async () => {
+  const loadWeatherData = async (regionOverride?: string) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      setError(null);
+      const targetRegion = regionOverride || selectedRegion;
 
-      // Try to get current GPS location first with better error handling
+      // Try quick GPS or user profile
       try {
-        console.log('Weather page: Attempting to get live GPS location...');
-        const currentLocation = await weatherService.getCurrentLocation();
-        console.log('Weather page: Got GPS location, fetching weather data...');
-        setLocation(currentLocation);
-        
-        // Fetch current weather and forecast
+        const coords = await weatherService.getCurrentLocation();
         const [weather, forecastData] = await Promise.all([
-          weatherService.getCurrentWeather(currentLocation.lat, currentLocation.lon),
-          weatherService.getForecast(currentLocation.lat, currentLocation.lon)
+          weatherService.getCurrentWeather(coords.lat, coords.lon, targetRegion),
+          weatherService.getForecast(coords.lat, coords.lon)
         ]);
-        
-        console.log('Weather page: Weather data fetched successfully for GPS location');
         setCurrentWeather(weather);
         setForecast(forecastData);
-        return; // Exit early if GPS location works
-      } catch (locationError) {
-        console.warn('Weather page: GPS location failed, trying user profile location:', locationError.message);
-        
-        // Try to use user's stored location from profile
-        try {
-          let userWeather = null;
-          let userForecast = null;
-          
-          // First try to get user from auth service
-          const { authService } = await import('@/lib/authService');
-          const { dataService } = await import('@/lib/dataService');
-          
-          let user = authService.getCurrentUser();
-          if (!user) {
-            user = dataService.getCurrentUser();
-          }
-          
-          if (user && (user.location || user.state)) {
-            // Use user's stored location
-            const locationQuery = user.location && user.location !== 'India' 
-              ? `${user.location}, ${user.state || 'IN'}`
-              : user.state && user.state !== 'India'
-              ? `${user.state}, IN`
-              : null;
-            
-            if (locationQuery) {
-              console.log(`Using user's stored location for weather: ${locationQuery}`);
-              userWeather = await weatherService.getWeatherByCity(locationQuery);
-              
-              // For forecast, we need coordinates - try to get them from the weather response
-              // or use approximate coordinates for the state/city
-              const coordinates = await getCoordinatesForLocation(locationQuery);
-              if (coordinates) {
-                userForecast = await weatherService.getForecast(coordinates.lat, coordinates.lon);
-                setLocation(coordinates);
-              }
-            }
-          }
-          
-          // If user location works, use it; otherwise fall back to Chennai
-          if (userWeather) {
-            setCurrentWeather(userWeather);
-            if (userForecast) {
-              setForecast(userForecast);
-            }
-          } else {
-            console.warn('No user location available, using Chennai as fallback');
-            const defaultWeather = await weatherService.getWeatherByCity('Chennai, IN');
-            const defaultForecast = await weatherService.getForecast(13.0827, 80.2707); // Chennai coordinates
-            setCurrentWeather(defaultWeather);
-            setForecast(defaultForecast);
-          }
-        } catch (userLocationError) {
-          console.warn('User location fetch failed, using Chennai as fallback');
-          const defaultWeather = await weatherService.getWeatherByCity('Chennai, IN');
-          const defaultForecast = await weatherService.getForecast(13.0827, 80.2707); // Chennai coordinates
-          setCurrentWeather(defaultWeather);
-          setForecast(defaultForecast);
-        }
+      } catch {
+        // Fallback or specified region
+        const [weather, forecastData] = await Promise.all([
+          weatherService.getWeatherByCity(targetRegion),
+          weatherService.getForecast(28.6139, 77.2090)
+        ]);
+        setCurrentWeather(weather);
+        setForecast(forecastData);
       }
     } catch (err) {
-      setError('Unable to fetch weather data. Please try again.');
-      console.error('Weather fetch error:', err);
+      console.error('Weather load notice:', err);
+      setCurrentWeather(weatherService.generateFallbackWeather(selectedRegion));
+      setForecast(weatherService.generateFallbackForecast());
     } finally {
       setLoading(false);
     }
   };
 
-  // Helper function to get approximate coordinates for a location
-  const getCoordinatesForLocation = async (locationQuery: string): Promise<{ lat: number; lon: number } | null> => {
-    try {
-      // Use a geocoding service to get coordinates
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationQuery)}&limit=1`,
-        {
-          headers: {
-            'User-Agent': 'KisanMitra/1.0'
-          }
-        }
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.length > 0) {
-          return {
-            lat: parseFloat(data[0].lat),
-            lon: parseFloat(data[0].lon)
-          };
-        }
-      }
-    } catch (error) {
-      console.error('Geocoding error:', error);
-    }
-    
-    // Fallback coordinates for major Indian cities/states
-    const fallbackCoordinates: Record<string, { lat: number; lon: number }> = {
-      'Maharashtra': { lat: 19.7515, lon: 75.7139 },
-      'Karnataka': { lat: 15.3173, lon: 75.7139 },
-      'Tamil Nadu': { lat: 13.0827, lon: 80.2707 }, // Chennai coordinates
-      'Chennai': { lat: 13.0827, lon: 80.2707 },
-      'Gujarat': { lat: 22.2587, lon: 71.1924 },
-      'Punjab': { lat: 31.1471, lon: 75.3412 },
-      'Uttar Pradesh': { lat: 26.8467, lon: 80.9462 },
-      'West Bengal': { lat: 22.9868, lon: 87.8550 },
-      'Rajasthan': { lat: 27.0238, lon: 74.2179 },
-      'Madhya Pradesh': { lat: 22.9734, lon: 78.6569 },
-      'Haryana': { lat: 29.0588, lon: 76.0856 },
-      'Delhi': { lat: 13.0827, lon: 80.2707 } // Changed to Chennai as default
-    };
-    
-    // Try to match with fallback coordinates
-    for (const [state, coords] of Object.entries(fallbackCoordinates)) {
-      if (locationQuery.toLowerCase().includes(state.toLowerCase())) {
-        return coords;
-      }
-    }
-    
-    return null;
-  };
-
   useEffect(() => {
+    // Check if user has state in profile
+    try {
+      const user = authService.getCurrentUser();
+      if (user && user.state && user.state !== 'India') {
+        setSelectedRegion(user.state);
+        loadWeatherData(user.state);
+        return;
+      }
+    } catch {
+      // Ignore
+    }
     loadWeatherData();
   }, []);
 
-  const formatTime = (timestamp: number) => {
-    return new Date(timestamp * 1000).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  const handleSelectRegion = (region: string) => {
+    setSelectedRegion(region);
+    loadWeatherData(region);
   };
 
-  const getWeatherAdvice = (weather: WeatherData) => {
-    return weatherService.generateFarmingAdvice(weather);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 p-4">
-        <div className="max-w-md mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate(-1)}
-              className="text-green-700"
-            >
-              <ArrowLeft className="h-5 w-5 mr-1" />
-              Back
-            </Button>
-            <h1 className="text-xl font-bold text-green-800">Weather Forecast</h1>
-            <div className="w-16" />
-          </div>
-          
-          <div className="flex items-center justify-center py-20">
-            <RefreshCw className="h-8 w-8 animate-spin text-green-600" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 p-4">
-        <div className="max-w-md mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate(-1)}
-              className="text-green-700"
-            >
-              <ArrowLeft className="h-5 w-5 mr-1" />
-              Back
-            </Button>
-            <h1 className="text-xl font-bold text-green-800">Weather Forecast</h1>
-            <div className="w-16" />
-          </div>
-          
-          <Card className="mb-6">
-            <CardContent className="p-6 text-center">
-              <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-              <p className="text-red-600 mb-4">{error}</p>
-              <Button onClick={loadWeatherData} variant="outline">
-                Try Again
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  // One shared scale so every day's bar can be compared at a glance.
+  const weekLow = Math.min(...forecast.map((day) => day.temperature.min));
+  const weekHigh = Math.max(...forecast.map((day) => day.temperature.max));
+  const weekSpan = Math.max(weekHigh - weekLow, 1);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 p-4">
-      <div className="max-w-md mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(-1)}
-            className="text-green-700"
+    <div className="min-h-screen pb-tabbar">
+      <PageHeader
+        title={t('ui.weather_title')}
+        subtitle={t('ui.weather_subtitle')}
+        back="/home"
+        actions={
+          <button
+            type="button"
+            onClick={() => loadWeatherData()}
+            aria-label={t('ui.refresh')}
+            className="glass-icon-button"
           >
-            <ArrowLeft className="h-5 w-5 mr-1" />
-            Back
-          </Button>
-          <h1 className="text-xl font-bold text-green-800">Weather Forecast</h1>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={loadWeatherData}
-            className="text-green-700"
-          >
-            <RefreshCw className="h-5 w-5" />
-          </Button>
+            <ArrowClockwiseIcon size={20} className={cn(loading && 'animate-spin')} aria-hidden="true" />
+          </button>
+        }
+      />
+
+      <main className={cn(pageColumn('wide'), 'stagger space-y-6 pt-2')}>
+        <div
+          role="radiogroup"
+          aria-label={t('ui.region')}
+          className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6 [scrollbar-width:none]"
+        >
+          {INDIAN_REGIONS.map((region) => {
+            const selected = selectedRegion === region;
+            return (
+              <button
+                key={region}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => handleSelectRegion(region)}
+                className={cn(
+                  'button-sm h-10 shrink-0 rounded-full px-4 transition-transform duration-500 ease-spring active:scale-95',
+                  selected ? 'glass-tinted' : 'glass-pill text-field-700 hover:text-field-900',
+                )}
+              >
+                {region}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Current Weather */}
-        {currentWeather && (
-          <Card className="mb-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <div className="flex items-center mb-2">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    <span className="text-sm">{currentWeather.location}</span>
+        <div className="grid items-start gap-6 md:grid-cols-2">
+          <div className="space-y-4">
+            <section aria-label={currentWeather?.location} className="glass-panel-elevated p-6">
+              {currentWeather ? (
+                <>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="caption-1 flex items-center gap-1 text-field-600">
+                        <MapPinIcon size={16} weight="fill" className="shrink-0 text-leaf-600" aria-hidden="true" />
+                        <span className="truncate">{currentWeather.location}</span>
+                      </p>
+                      <p className="heading-1 figures mt-2 text-field-900">{currentWeather.temperature}°</p>
+                      <p className="body-5 mt-2 capitalize text-field-800">{currentWeather.description}</p>
+                      <p className="caption-5 figures text-field-500">
+                        {t('ui.feels_like', { value: currentWeather.feelsLike })}
+                      </p>
+                    </div>
+                    <img
+                      src={weatherService.getWeatherIconUrl(currentWeather.icon)}
+                      alt=""
+                      className="-m-2 h-24 w-24 shrink-0 object-contain"
+                    />
                   </div>
-                  <div className="text-3xl font-bold mb-1">
-                    {currentWeather.temperature}°C
-                  </div>
-                  <div className="text-sm opacity-90 capitalize">
-                    {currentWeather.description}
-                  </div>
-                  <div className="text-sm opacity-90">
-                    Feels like {currentWeather.feelsLike}°C
-                  </div>
-                </div>
-                <img
-                  src={weatherService.getWeatherIconUrl(currentWeather.icon)}
-                  alt={currentWeather.description}
-                  className="h-20 w-20"
-                />
-              </div>
 
-              {/* Weather Details */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="flex items-center">
-                  <Droplets className="h-4 w-4 mr-2" />
-                  <span>Humidity: {currentWeather.humidity}%</span>
-                </div>
-                <div className="flex items-center">
-                  <Wind className="h-4 w-4 mr-2" />
-                  <span>Wind: {currentWeather.windSpeed} m/s</span>
-                </div>
-                <div className="flex items-center">
-                  <Thermometer className="h-4 w-4 mr-2" />
-                  <span>Pressure: {currentWeather.pressure} hPa</span>
-                </div>
-                <div className="flex items-center">
-                  <Eye className="h-4 w-4 mr-2" />
-                  <span>Visibility: {currentWeather.visibility} km</span>
-                </div>
-              </div>
+                  <dl className="mt-6 grid grid-cols-2 gap-3">
+                    <Metric icon={DropIcon} label={t('ui.humidity')} value={`${currentWeather.humidity}%`} />
+                    <Metric icon={WindIcon} label={t('ui.wind')} value={`${currentWeather.windSpeed} km/h`} />
+                    <Metric icon={GaugeIcon} label={t('ui.pressure')} value={`${currentWeather.pressure} hPa`} />
+                    <Metric icon={EyeIcon} label={t('ui.visibility')} value={`${currentWeather.visibility} km`} />
+                  </dl>
 
-              {/* Sun Times */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/20">
-                <div className="flex items-center">
-                  <Sunrise className="h-4 w-4 mr-2" />
-                  <span className="text-sm">
-                    Sunrise: {formatTime(currentWeather.sunrise)}
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  <Sunset className="h-4 w-4 mr-2" />
-                  <span className="text-sm">
-                    Sunset: {formatTime(currentWeather.sunset)}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Farming Advice */}
-        {currentWeather && (
-          <Card className="mb-6 bg-green-50 border-green-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-green-800">🌾 Farming Advice</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <p className="text-sm text-green-700">
-                {getWeatherAdvice(currentWeather)}
-              </p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* 7-Day Forecast */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-green-800 mb-4 px-2">7-Day Forecast</h2>
-          <div className="space-y-3 px-2">
-            {forecast.map((day, index) => {
-              // Determine gradient based on weather condition
-              const getWeatherGradient = (icon: string, description: string) => {
-                const desc = description.toLowerCase();
-                const iconCode = icon;
-                
-                if (desc.includes('sun') || desc.includes('clear') || iconCode.includes('01')) {
-                  return 'from-yellow-400 via-orange-400 to-red-400';
-                } else if (desc.includes('rain') || desc.includes('drizzle') || iconCode.includes('09') || iconCode.includes('10')) {
-                  return 'from-blue-400 via-blue-500 to-indigo-600';
-                } else if (desc.includes('cloud') || iconCode.includes('02') || iconCode.includes('03') || iconCode.includes('04')) {
-                  return 'from-gray-400 via-gray-500 to-gray-600';
-                } else if (desc.includes('storm') || desc.includes('thunder') || iconCode.includes('11')) {
-                  return 'from-purple-500 via-indigo-600 to-gray-700';
-                } else if (desc.includes('snow') || iconCode.includes('13')) {
-                  return 'from-blue-100 via-blue-200 to-blue-300';
-                } else {
-                  return 'from-green-400 via-blue-500 to-purple-600';
-                }
-              };
-              
-              const getTextColor = (icon: string, description: string) => {
-                const desc = description.toLowerCase();
-                if (desc.includes('snow') || icon.includes('13')) {
-                  return 'text-gray-800';
-                }
-                return 'text-white';
-              };
-              
-              return (
-                <div
-                  key={day.date}
-                  className={`w-full bg-gradient-to-br ${getWeatherGradient(day.icon, day.description)} rounded-3xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]`}
-                >
-                  <div className={`flex items-center justify-between ${getTextColor(day.icon, day.description)}`}>
-                    {/* Day */}
-                    <div className="font-bold text-lg opacity-90">
-                      {index === 0 ? 'Today' : day.dayName.slice(0, 3)}
-                    </div>
-                    
-                    {/* Weather Icon */}
-                    <div className="flex justify-center">
-                      <img
-                        src={weatherService.getWeatherIconUrl(day.icon)}
-                        alt={day.description}
-                        className="w-12 h-12 drop-shadow-lg"
-                      />
-                    </div>
-                    
-                    {/* Temperature */}
-                    <div className="text-center">
-                      <div className="text-lg font-bold">
-                        {day.temperature.max}°
-                      </div>
-                      <div className="text-sm opacity-80">
-                        {day.temperature.min}°
-                      </div>
-                    </div>
-                    
-                    {/* Humidity */}
-                    <div className="text-sm opacity-75 font-medium">
-                      💧 {day.humidity}%
-                    </div>
-                    
-                    {/* Weather Description */}
-                    <div className="text-sm opacity-70 capitalize leading-tight">
-                      {day.description.split(' ').slice(0, 2).join(' ')}
-                    </div>
+                  <div className="caption-5 figures mt-4 flex items-center justify-between gap-3 border-t border-field-900/10 pt-4 text-field-600">
+                    <span className="flex items-center gap-1">
+                      <SunHorizonIcon size={16} className="text-amber-600" aria-hidden="true" />
+                      {t('ui.sunrise')} {formatTime(currentWeather.sunrise)}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <SunHorizonIcon size={16} className="rotate-180 text-field-500" aria-hidden="true" />
+                      {t('ui.sunset')} {formatTime(currentWeather.sunset)}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-4" aria-busy="true">
+                  <span className="skeleton block h-4 w-40" />
+                  <span className="skeleton block h-14 w-32" />
+                  <span className="skeleton block h-4 w-52" />
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    {[0, 1, 2, 3].map((cell) => (
+                      <span key={cell} className="skeleton block h-16 rounded-2xl" />
+                    ))}
                   </div>
                 </div>
-              );
-            })}
+              )}
+            </section>
+
+            {currentWeather && (
+              <section className="tip-card">
+                <h2 className="title-4 flex items-center gap-2 text-amber-900">
+                  <LightbulbIcon size={18} weight="fill" className="text-amber-600" aria-hidden="true" />
+                  {t('ui.farm_advice')}
+                </h2>
+                <p className="body-6 mt-2 text-field-800">{weatherService.generateFarmingAdvice(currentWeather)}</p>
+              </section>
+            )}
           </div>
-        </div>
 
-        {/* Additional Info */}
-        <div className="mt-6 text-center text-xs text-gray-500">
-          Data provided by OpenWeatherMap
+          <section aria-labelledby="forecast-heading">
+            <h2 id="forecast-heading" className="title-3 mb-3 text-field-800">
+              {t('ui.next_7_days')}
+            </h2>
+            <ol className="glass-panel divide-y divide-field-900/10 rounded-3xl px-4">
+              {forecast.length === 0
+                ? [0, 1, 2, 3, 4, 5, 6].map((row) => (
+                    <li key={row} className="flex items-center gap-4 py-4">
+                      <span className="skeleton h-4 w-12" />
+                      <span className="skeleton h-8 w-8 rounded-full" />
+                      <span className="skeleton h-2 flex-1 rounded-full" />
+                    </li>
+                  ))
+                : forecast.map((day, index) => {
+                    const start = ((day.temperature.min - weekLow) / weekSpan) * 100;
+                    const width = Math.max(((day.temperature.max - day.temperature.min) / weekSpan) * 100, 6);
+                    return (
+                      <li key={day.date} className="flex items-center gap-3 py-3">
+                        <span className="title-4 w-12 shrink-0 text-field-900">
+                          {index === 0 ? t('ui.today') : day.dayName}
+                        </span>
+                        <img
+                          src={weatherService.getWeatherIconUrl(day.icon)}
+                          alt={day.description}
+                          title={day.description}
+                          className="h-10 w-10 shrink-0 object-contain"
+                        />
+                        <span className="caption-5 figures w-10 shrink-0 text-right text-field-500">
+                          {day.temperature.min}°
+                        </span>
+                        <span className="relative h-2 flex-1 rounded-full bg-field-900/10" aria-hidden="true">
+                          <span
+                            className="absolute inset-y-0 rounded-full bg-amber-400"
+                            style={{ left: `${start}%`, width: `${width}%` }}
+                          />
+                        </span>
+                        <span className="body-4 figures w-10 shrink-0 text-field-900">{day.temperature.max}°</span>
+                        <span className="caption-5 figures hidden w-14 shrink-0 items-center justify-end gap-1 text-field-500 sm:flex">
+                          <DropIcon size={12} aria-hidden="true" />
+                          {day.humidity}%
+                        </span>
+                      </li>
+                    );
+                  })}
+            </ol>
+          </section>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
