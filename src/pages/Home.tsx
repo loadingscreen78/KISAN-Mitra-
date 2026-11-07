@@ -21,6 +21,7 @@ import {
 import { Button } from '@/components/ui/button';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import PageHeader from '@/components/PageHeader';
+import ProduceImage from '@/components/ProduceImage';
 import { pageColumn } from '@/lib/layout';
 import { weatherService, type WeatherData } from '@/lib/weather';
 import { marketData, type Crop, type Market } from '@/lib/marketData';
@@ -349,8 +350,9 @@ const Home = () => {
             <div className="glass-panel flex flex-1 flex-col rounded-3xl px-4 pb-4">
               <ul className="divide-y divide-field-900/10">
                 {marketPrices.map((item) => (
-                  <li key={item.crop} className="flex items-center justify-between gap-3 py-3">
-                    <span className="body-5 min-w-0 truncate text-field-900">{item.crop}</span>
+                  <li key={item.crop} className="flex items-center gap-3 py-3">
+                    <ProduceImage crop={item.crop} className="h-10 w-10" />
+                    <span className="body-5 min-w-0 flex-1 truncate text-field-900">{item.crop}</span>
                     <span className="shrink-0 text-right">
                       <span className="body-4 figures block text-field-900">{item.price}</span>
                       <span className="caption-3 figures flex items-center justify-end gap-1 text-leaf-700">

@@ -161,13 +161,19 @@ export default {
 				'fade-in': {
 					from: { opacity: '0' },
 					to: { opacity: '1' }
+				},
+				// Moves `translate`, not `transform`, so it stacks with rotate utilities.
+				float: {
+					'0%, 100%': { translate: '0 0' },
+					'50%': { translate: '0 -8px' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
 				'accordion-up': 'accordion-up 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
 				'rise-in': 'rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both',
-				'fade-in': 'fade-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both'
+				'fade-in': 'fade-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both',
+				float: 'float 6s cubic-bezier(0.45, 0, 0.55, 1) infinite'
 			}
 		}
 	},

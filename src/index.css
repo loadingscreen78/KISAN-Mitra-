@@ -356,6 +356,16 @@
     transition-duration: var(--dur-quick);
   }
 
+  /* Smoked glass for controls over photos and the camera feed. */
+  .glass-dark {
+    @apply glass text-white;
+    --glass-tint: 14 17 13;
+    --glass-alpha: 0.48;
+    --glass-blur: 20px;
+    --glass-rim: inset 0 1px 0 0 rgb(255 255 255 / 0.2), inset 0 0 0 1px rgb(255 255 255 / 0.08);
+    box-shadow: none;
+  }
+
   /* Neutral tile behind a feature icon. Color is kept for meaning, not decoration. */
   .icon-tile {
     @apply inline-flex shrink-0 items-center justify-center rounded-xl text-field-800;

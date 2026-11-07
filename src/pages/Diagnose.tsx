@@ -17,29 +17,7 @@ import { toast } from '@/components/ui/use-toast';
 import PageHeader from '@/components/PageHeader';
 import { pageColumn } from '@/lib/layout';
 import { cn } from '@/lib/utils';
-
-const MAX_IMAGE_DIMENSION = 1600;
-
-// Phone photos can exceed browser memory, shrink before diagnosis
-const shrinkImage = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      const scale = Math.min(1, MAX_IMAGE_DIMENSION / Math.max(img.width, img.height));
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      canvas.getContext('2d')?.drawImage(img, 0, 0, canvas.width, canvas.height);
-      URL.revokeObjectURL(url);
-      resolve(canvas.toDataURL('image/jpeg', 0.85));
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error('Could not read image'));
-    };
-    img.src = url;
-  });
+import { shrinkImage } from '@/lib/image';
 
 const TIPS: { icon: Icon; title: string; body: string }[] = [
   { icon: SunIcon, title: 'ui.tip_light_title', body: 'ui.tip_light_body' },

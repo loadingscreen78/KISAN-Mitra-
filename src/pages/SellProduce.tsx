@@ -24,6 +24,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { marketData as realMarketData, Crop } from '@/lib/marketData';
 import { useGoBack } from '@/hooks/useGoBack';
+import ProduceImage from '@/components/ProduceImage';
+
+// Older listings were saved as "<emoji> Tomato"; keep only the name.
+const plainCrop = (value: string) => value.replace(/^[^\p{L}\p{N}]+/u, '').trim();
 
 const SellProduce = () => {
   const navigate = useNavigate();
@@ -116,7 +120,7 @@ const SellProduce = () => {
     } else if (hoursSinceCreated < 24) {
       // 80% chance of acceptance based on good price and demand
       const pricePerKg = typeof listing.pricePerKg === 'string' ? parseFloat(listing.pricePerKg) : listing.pricePerKg;
-      const avgMarketPrice = getAverageMarketPrice(listing.crop);
+      const avgMarketPrice = getAverageMarketPrice(plainCrop(listing.crop));
       const priceRatio = pricePerKg / avgMarketPrice;
       
       // Better prices (competitive with market) have higher acceptance rate
@@ -269,7 +273,7 @@ const SellProduce = () => {
       .sort((a, b) => b.price - a.price)
       .slice(0, 20) // Show top 20 highest priced vegetables
       .map(crop => ({
-        crop: `${crop.emoji} ${crop.name}`,
+        crop: crop.name,
         avgPrice: crop.price,
         emoji: crop.emoji,
         name: crop.name
@@ -294,13 +298,12 @@ const SellProduce = () => {
     try {
       const marketPrice = getMarketPrice();
       const totalPrice = calculateTotalPrice();
-      const cropEmoji = getCropEmoji(selectedCrop);
       
       // Create new listing with real database structure
       const newListing: Listing = {
         id: `listing_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         userId: currentUser.id,
-        crop: `${cropEmoji} ${selectedCrop}`,
+        crop: selectedCrop,
         quantity: `${quantity} kg`,
         pricePerKg: marketPrice,
         market: selectedMarket,
@@ -421,7 +424,7 @@ const SellProduce = () => {
           {selectedTab === 'create' && (
             <>
               <div className="mb-6">
-                <h2 className="text-lg font-bold text-gray-900 mb-3">🌾 Select Crop to Sell</h2>
+                <h2 className="text-lg font-bold text-gray-900 mb-3">Select a crop to sell</h2>
                 <p className="text-sm text-gray-600 mb-4">Choose from current Chennai market prices. Tap a crop to create your listing.</p>
                 <div className="grid grid-cols-2 gap-3">
                   {marketPrices.map((crop, index) => (
@@ -431,7 +434,7 @@ const SellProduce = () => {
                       onClick={() => prefillFromMarketPrice(crop)}
                     >
                       <CardContent className="p-4 text-center">
-                        <div className="text-3xl mb-2">{crop.emoji}</div>
+                        <ProduceImage crop={crop.name} className="mx-auto mb-2 h-16 w-16 rounded-2xl" iconSize={28} />
                         <h3 className="font-bold text-sm text-gray-900 truncate mb-1">{crop.name}</h3>
                         <p className="text-green-600 font-bold text-sm">₹{crop.avgPrice}/kg</p>
                         <p className="text-xs text-gray-500 mt-1">Market Price</p>
@@ -465,9 +468,9 @@ const SellProduce = () => {
                     {/* Mobile Layout: Vertical Stack */}
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-3 flex-1">
-                        <div className="text-3xl">{listing.crop.split(' ')[0]}</div>
+                        <ProduceImage crop={plainCrop(listing.crop)} className="h-12 w-12 rounded-xl" />
                         <div className="flex-1">
-                          <h3 className="font-bold text-lg text-gray-900 leading-tight">{listing.crop}</h3>
+                          <h3 className="font-bold text-lg text-gray-900 leading-tight">{plainCrop(listing.crop)}</h3>
                           <p className="text-sm text-gray-500">{listing.quantity} – ₹{listing.pricePerKg}/kg – Transport: {listing.transport}</p>
                         </div>
                       </div>
@@ -520,9 +523,9 @@ const SellProduce = () => {
                     {/* Mobile Layout: Vertical Stack */}
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-3 flex-1">
-                        <div className="text-3xl">{listing.crop.split(' ')[0]}</div>
+                        <ProduceImage crop={plainCrop(listing.crop)} className="h-12 w-12 rounded-xl" />
                         <div className="flex-1">
-                          <h3 className="font-bold text-lg text-gray-900 leading-tight">{listing.crop}</h3>
+                          <h3 className="font-bold text-lg text-gray-900 leading-tight">{plainCrop(listing.crop)}</h3>
                           <p className="text-sm text-gray-500">{listing.quantity} – ₹{listing.pricePerKg}/kg – Transport: {listing.transport}</p>
                           <p className="text-lg font-bold text-green-600 mt-1">Earned: ₹{listing.soldPrice.toLocaleString()}</p>
                         </div>
@@ -574,11 +577,13 @@ const SellProduce = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {Array.from(new Set(marketData.flatMap(market => market.crops.map(crop => crop.name)))).sort().map((cropName) => (
-                    <SelectItem key={cropName} value={cropName} className="text-base py-3">
-                      <div className="flex items-center space-x-2">
-                        <span>{getCropEmoji(cropName)}</span>
-                        <span>{cropName}</span>
-                      </div>
+                    <SelectItem
+                      key={cropName}
+                      value={cropName}
+                      className="py-2 text-base"
+                      leading={<ProduceImage crop={cropName} className="h-9 w-9 rounded-lg" iconSize={16} />}
+                    >
+                      {cropName}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -598,14 +603,14 @@ const SellProduce = () => {
                     .map((market) => {
                       const crop = market.crops.find(c => c.name === selectedCrop);
                       return (
-                        <SelectItem key={market.id} value={market.name} className="text-base py-3">
-                          <div className="flex justify-between items-center w-full">
-                            <div className="flex flex-col">
-                              <span className="font-medium">{market.name}</span>
-                              <span className="text-xs text-gray-500">{market.location}</span>
-                            </div>
-                            <span className="text-green-600 font-bold">{crop?.price}/kg</span>
-                          </div>
+                        <SelectItem
+                          key={market.id}
+                          value={market.name}
+                          className="py-3 text-base"
+                          description={market.location}
+                          trailing={<span className="body-4 figures text-leaf-700">{crop?.price}</span>}
+                        >
+                          {market.name}
                         </SelectItem>
                       )
                     })}

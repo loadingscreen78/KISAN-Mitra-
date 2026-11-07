@@ -317,6 +317,8 @@ Originally built by the Kisan Mitra team. Maintainer: [Dasarigalla-Raviteja](htt
 
 [PlantVillage](https://github.com/spMohanty/PlantVillage-Dataset) for the dataset · [linkanjarad](https://huggingface.co/linkanjarad) for the trained MobileNetV2 · Google Gemini · Hugging Face · shadcn/ui · OpenWeatherMap · and the farmers who inspired this project.
 
+The 3D produce models and crop renders in `public/models/produce/` are derived from [NVIDIA SimReady Assets](https://huggingface.co/datasets/nvidia/simready-assets) under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); see that folder's `ATTRIBUTION.md` for the asset list and changes made.
+
 ## 📜 License
 
 [MIT](LICENSE) © 2025 Kisan Mitra Team
