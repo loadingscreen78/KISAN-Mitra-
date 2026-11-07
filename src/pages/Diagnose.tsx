@@ -1,27 +1,28 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Camera, 
   Upload, 
-  Mic,
+  Sun, 
+  Eye, 
+  Shield, 
+  Sparkles, 
+  Check, 
+  Leaf, 
+  ArrowLeft, 
+  Volume2,
   ChevronDown,
   ChevronUp,
-  Sun,
-  Eye,
-  Shield,
-  Sparkles,
-  Globe,
-  Check,
-  Leaf,
-  ArrowLeft,
-  Volume2
+  Image as ImageIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
+import AmbientBackground from '@/components/AmbientBackground';
+import GlassBottomNav from '@/components/GlassBottomNav';
 
 const MAX_IMAGE_DIMENSION = 1600;
 
-// Phone photos can exceed the browser's storage limit, and the model only needs a small image
+// Phone photos can exceed browser memory, shrink before diagnosis
 const shrinkImage = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
@@ -44,16 +45,13 @@ const shrinkImage = (file: File): Promise<string> =>
 
 const PlantDiagnosis = () => {
   const navigate = useNavigate();
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState('English');
   const [isListening, setIsListening] = useState(false);
-  const fileInputRef = useRef(null);
-  const cameraInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  const languages = ['English', 'हिंदी', 'தமிழ்', 'తెలుగు', 'বাংলা'];
-
-  const handleImageUpload = (event) => {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       shrinkImage(file)
@@ -70,37 +68,26 @@ const PlantDiagnosis = () => {
 
   const toggleVoiceAssist = () => {
     setIsListening(!isListening);
-    // Voice assistance logic would go here
   };
 
   const startDiagnosis = async () => {
     if (selectedImage) {
-      console.log('Starting diagnosis...');
-      
-      // Add loading state to prevent multiple clicks
       const button = document.querySelector('[data-diagnosis-button]') as HTMLButtonElement;
       if (button) {
         button.disabled = true;
         button.style.opacity = '0.7';
-        button.innerHTML = '<div class="flex items-center justify-center space-x-3"><div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Starting...</span></div>';
+        button.innerHTML = '<div class="flex items-center justify-center space-x-2"><div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Analyzing crop with MobileNet...</span></div>';
       }
       
       try {
-        // Store the selected image for analysis
         localStorage.setItem('plant_image', selectedImage);
-        
-        // Add a small delay to ensure UI updates
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Navigate to analysis page
+        await new Promise(resolve => setTimeout(resolve, 400));
         navigate('/diagnose/analyze');
       } catch (error) {
         console.error('Error starting diagnosis:', error);
-        // Reset button state on error
         if (button) {
           button.disabled = false;
           button.style.opacity = '1';
-          button.innerHTML = '<div class="flex items-center justify-center space-x-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 14M5 21l14-14"></path></svg><span>Start Diagnosis</span></div>';
         }
       }
     }
@@ -108,112 +95,120 @@ const PlantDiagnosis = () => {
 
   const tips = [
     {
-      icon: <Sun className="w-5 h-5 text-yellow-500" />,
+      icon: <Sun className="w-5 h-5 text-amber-500" />,
       title: "Good Lighting",
-      description: "Take photos in natural daylight"
+      description: "Take photos in natural daylight, avoiding strong glare or dark spots."
     },
     {
-      icon: <Eye className="w-5 h-5 text-blue-500" />,
+      icon: <Eye className="w-5 h-5 text-sky-500" />,
       title: "Focus on Affected Area",
-      description: "Zoom in on diseased or damaged parts"
+      description: "Fill the frame with the sick leaf or spots for maximum accuracy."
     },
     {
-      icon: <Shield className="w-5 h-5 text-green-500" />,
+      icon: <Shield className="w-5 h-5 text-emerald-500" />,
       title: "Avoid Shadows",
-      description: "Keep the plant well-lit and clear"
+      description: "Keep hands and phone shadows off the leaf surface."
     },
     {
       icon: <Sparkles className="w-5 h-5 text-purple-500" />,
       title: "Clear & Sharp",
-      description: "Ensure the image is not blurry"
+      description: "Hold steady so the leaf veins and textures are clearly in focus."
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-4 shadow-lg">
-        <div className="flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-emerald-50/40 via-background to-emerald-50/20 pb-32">
+      {/* Ambient background glow */}
+      <AmbientBackground />
+
+      {/* Floating Expo-Glass Top Header */}
+      <header className="sticky top-0 z-40 backdrop-blur-2xl bg-white/75 border-b border-white/60 shadow-[0_4px_20px_0_rgba(0,0,0,0.03)]">
+        <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+          <button
             onClick={() => navigate('/home')}
-            className="text-white hover:bg-white/20 rounded-full p-3"
+            aria-label="Back"
+            className="p-2.5 glass-panel rounded-full hover:bg-white/90 text-slate-700 transition-all active:scale-95 shadow-sm"
           >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
+            <ArrowLeft className="w-4 h-4 text-emerald-800" />
+          </button>
           
-          <div className="flex items-center space-x-3">
-            <h1 className="text-xl font-bold text-white flex items-center">
-              <Leaf className="w-6 h-6 mr-2" />
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-700 flex items-center justify-center">
+              <Leaf className="w-4 h-4" />
+            </div>
+            <h1 className="text-base font-extrabold text-slate-900 tracking-tight">
               Plant Diagnosis
             </h1>
-            <button
-              onClick={toggleVoiceAssist}
-              className={`p-2 rounded-lg transition-all duration-200 ${
-                isListening 
-                  ? 'bg-white/30 text-white animate-pulse' 
-                  : 'bg-white/20 text-white hover:bg-white/30'
-              }`}
-            >
-              <Volume2 className="w-5 h-5" />
-            </button>
           </div>
           
-          <div className="w-12" />
+          <button
+            onClick={toggleVoiceAssist}
+            aria-label="Voice assistance"
+            className={`p-2.5 rounded-full transition-all duration-200 active:scale-95 shadow-sm ${
+              isListening 
+                ? 'bg-emerald-600 text-white ring-4 ring-emerald-500/25 animate-pulse' 
+                : 'glass-panel text-slate-700 hover:bg-white/90'
+            }`}
+          >
+            <Volume2 className="w-4 h-4 text-emerald-800" />
+          </button>
         </div>
-      </div>
+      </header>
 
-      <div className="px-4 py-6 space-y-6">
-        {/* Main Action Card */}
-        <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl mb-6">
-              <Camera className="w-10 h-10 text-green-600" />
+      {/* Main Container */}
+      <main className="max-w-md mx-auto px-4 pt-5 space-y-5">
+        {/* Main Capture Action Card in Expo Glass */}
+        <div className="glass-panel-elevated p-6 text-center space-y-6">
+          <div>
+            <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-tr from-emerald-500/20 via-green-400/20 to-teal-500/10 border border-emerald-400/30 shadow-inner mb-3">
+              <Camera className="w-10 h-10 text-emerald-700" />
+              <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shadow-md">
+                AI
+              </div>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">
-              Capture Plant Image
+            <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">
+              Photograph Plant Leaf
             </h2>
-            <p className="text-gray-600 text-base leading-relaxed">
-              Take a clear photo or upload from your gallery
+            <p className="text-xs text-slate-500 max-w-xs mx-auto mt-1">
+              Snap a clear photo of the sick leaf to diagnose 38 crop diseases with 98% accuracy.
             </p>
           </div>
 
+          {/* Selected Image Preview with Glass Frame */}
           {selectedImage && (
-            <div className="mb-8">
-              <div className="relative rounded-2xl overflow-hidden bg-gray-100 border-4 border-green-200">
+            <div className="relative rounded-3xl overflow-hidden glass-panel p-2 shadow-lg border border-emerald-400/40">
+              <div className="relative rounded-2xl overflow-hidden max-h-64 bg-slate-900">
                 <img
                   src={selectedImage}
-                  alt="Selected plant"
-                  className="w-full h-64 object-cover"
+                  alt="Selected plant leaf"
+                  className="w-full h-56 object-cover"
                 />
-                <div className="absolute top-4 right-4 bg-green-500 rounded-xl p-2">
-                  <Check className="w-5 h-5 text-white" />
+                <div className="absolute top-3 right-3 glass-panel px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md bg-emerald-600/90 text-white text-xs font-bold border border-white/50">
+                  <Check className="w-4 h-4" /> Ready to Analyze
                 </div>
               </div>
-              <p className="text-center text-base text-green-600 mt-4 font-bold">
-                ✓ Image ready for diagnosis
+              <p className="text-center text-xs text-emerald-700 font-bold mt-2">
+                ✓ Photo successfully optimized for MobileNetV2
               </p>
             </div>
           )}
 
-          <div className="grid grid-cols-1 gap-6">
-            {/* Take Photo Button */}
+          {/* Capture & Upload Buttons */}
+          <div className="grid grid-cols-1 gap-3 pt-1">
             <button
               onClick={() => navigate('/diagnose/capture')}
-              className="flex items-center justify-center space-x-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white p-6 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+              className="flex items-center justify-center space-x-3 bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-500 hover:from-emerald-500 hover:to-green-500 text-white py-4 px-6 rounded-2xl shadow-[0_8px_25px_-3px_rgba(16,185,129,0.5)] border border-emerald-400/40 transition-all duration-300 transform active:scale-[0.97]"
             >
-              <Camera className="w-7 h-7" />
-              <span className="font-bold text-xl">Take a Photo</span>
+              <Camera className="w-6 h-6" />
+              <span className="font-bold text-base">Open Camera Scanner</span>
             </button>
 
-            {/* Upload from Gallery Button */}
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center justify-center space-x-4 bg-white border-3 border-green-500 text-green-600 hover:bg-green-50 p-6 rounded-2xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02]"
+              className="flex items-center justify-center space-x-3 glass-panel py-3.5 px-6 rounded-2xl text-emerald-900 font-bold text-base hover:bg-white/90 border border-white/80 transition-all duration-300 transform active:scale-[0.97] shadow-sm"
             >
-              <Upload className="w-7 h-7" />
-              <span className="font-bold text-xl">Upload from Gallery</span>
+              <Upload className="w-5 h-5 text-emerald-700" />
+              <span>Upload from Gallery</span>
             </button>
           </div>
 
@@ -235,88 +230,60 @@ const PlantDiagnosis = () => {
           />
         </div>
 
-        {/* Photography Tips Card */}
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+        {/* Photography Tips Glass Accordion */}
+        <div className="glass-panel overflow-hidden">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full px-8 py-6 flex items-center justify-between bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 transition-colors duration-200"
+            className="w-full px-5 py-4 flex items-center justify-between hover:bg-white/50 transition-colors"
           >
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-white rounded-xl shadow-sm">
-                <Sparkles className="w-6 h-6 text-blue-600" />
+            <div className="flex items-center space-x-3">
+              <div className="w-9 h-9 rounded-2xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-amber-700">
+                <Sparkles className="w-4 h-4" />
               </div>
               <div className="text-left">
-                <h3 className="font-bold text-gray-900 text-lg">Photography Tips</h3>
-                <p className="text-base text-gray-600">Get better diagnosis results</p>
+                <h3 className="font-bold text-slate-900 text-sm">Leaf Photography Tips</h3>
+                <p className="text-[11px] text-slate-500">For accurate disease detection</p>
               </div>
             </div>
             {isExpanded ? (
-              <ChevronUp className="w-6 h-6 text-gray-500" />
+              <ChevronUp className="w-4 h-4 text-slate-400" />
             ) : (
-              <ChevronDown className="w-6 h-6 text-gray-500" />
+              <ChevronDown className="w-4 h-4 text-slate-400" />
             )}
           </button>
 
           {isExpanded && (
-            <div className="px-8 py-6 space-y-6 bg-gray-50">
+            <div className="px-5 pb-5 pt-1 space-y-3 border-t border-white/60">
               {tips.map((tip, index) => (
-                <div key={index} className="flex items-start space-x-4">
-                  <div className="mt-1">
-                    {tip.icon}
-                  </div>
+                <div key={index} className="flex items-start space-x-3 p-3 rounded-2xl bg-white/60 border border-white/50">
+                  <div className="mt-0.5">{tip.icon}</div>
                   <div>
-                    <h4 className="font-bold text-gray-900 text-base">
-                      {tip.title}
-                    </h4>
-                    <p className="text-gray-600 text-sm mt-2 leading-relaxed">
-                      {tip.description}
-                    </p>
+                    <h4 className="font-bold text-slate-900 text-xs">{tip.title}</h4>
+                    <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">{tip.description}</p>
                   </div>
                 </div>
               ))}
             </div>
           )}
         </div>
+      </main>
 
-      </div>
-
-      {/* Fixed Bottom Button */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 p-6 shadow-2xl">
-        <button
-          onClick={startDiagnosis}
-          disabled={!selectedImage}
-          data-diagnosis-button
-          className={`w-full py-5 rounded-2xl font-bold text-xl transition-all duration-300 touch-manipulation select-none ${
-            selectedImage
-              ? 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 active:from-green-700 active:to-blue-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98]'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
-          style={{
-            WebkitTapHighlightColor: 'transparent',
-            WebkitTouchCallout: 'none',
-            WebkitUserSelect: 'none',
-            touchAction: 'manipulation'
-          }}
-        >
-          {selectedImage ? (
-            <div className="flex items-center justify-center space-x-3">
-              <Sparkles className="w-6 h-6" />
-              <span>Start Diagnosis</span>
-            </div>
-          ) : (
-            'Select an Image First'
-          )}
-        </button>
-      </div>
-
-      {/* Voice Assistant Feedback */}
-      {isListening && (
-        <div className="fixed top-20 left-4 right-4 bg-blue-600 text-white p-4 rounded-xl shadow-lg z-50">
-          <div className="flex items-center space-x-3">
-            <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
-            <span className="font-medium">Listening... Speak your question</span>
+      {/* Floating Action Dock or Diagnosis Trigger */}
+      {selectedImage ? (
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-[max(16px,env(safe-area-inset-bottom))] bg-gradient-to-t from-white/95 via-white/80 to-transparent backdrop-blur-xl">
+          <div className="max-w-md mx-auto">
+            <button
+              onClick={startDiagnosis}
+              data-diagnosis-button
+              className="w-full py-4 rounded-2xl font-bold text-base text-white bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-500 shadow-[0_10px_30px_-3px_rgba(16,185,129,0.6)] border border-emerald-400/40 active:scale-[0.97] transition-all flex items-center justify-center space-x-2"
+            >
+              <Sparkles className="w-5 h-5 text-yellow-300" />
+              <span>Start Instant Diagnosis</span>
+            </button>
           </div>
         </div>
+      ) : (
+        <GlassBottomNav activeTab="diagnose" />
       )}
     </div>
   );

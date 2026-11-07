@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NotificationProvider } from "@/hooks/useNotifications";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { SplashScreen } from '@capacitor/splash-screen';
@@ -91,8 +91,8 @@ const App = () => {
           <Route path="/" element={<Landing />} />
           <Route path="/splash" element={<Splash />} />
           <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Navigate to="/" replace />} />
+          <Route path="/login" element={<Navigate to="/" replace />} />
           <Route path="/home" element={<Home />} />
           <Route path="/diagnose" element={<Diagnose />} />
           <Route path="/diagnose/capture" element={<CameraCapture />} />

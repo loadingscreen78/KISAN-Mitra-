@@ -24,7 +24,7 @@ const Splash = () => {
     setTimeout(() => {
       const hasSeenOnboarding = localStorage.getItem('kisanmitra_onboarding_seen');
       if (hasSeenOnboarding) {
-        navigate('/login');
+        navigate('/');
       } else {
         navigate('/onboarding');
       }

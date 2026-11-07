@@ -57,7 +57,7 @@ const Onboarding = () => {
 
   const handleGetStarted = () => {
     localStorage.setItem('kisanmitra_onboarding_seen', 'true');
-    navigate('/signup');
+    navigate('/');
   };
 
   const currentData = onboardingData[currentStep];

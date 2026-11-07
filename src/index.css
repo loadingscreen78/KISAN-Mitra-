@@ -180,9 +180,55 @@ body {
 }
 
 @layer components {
-  /* Agricultural App Components */
+  /* Modern Expo-Glassmorphism System */
   .glass-card {
-    @apply backdrop-blur-lg bg-white/80 border border-white/20 shadow-lg;
+    @apply backdrop-blur-2xl bg-white/75 border border-white/50 shadow-[0_8px_32px_0_rgba(16,185,129,0.08)];
+  }
+
+  .glass-panel {
+    @apply backdrop-blur-2xl bg-white/75 border border-white/50 shadow-[0_8px_32px_0_rgba(16,185,129,0.08)] rounded-2xl;
+  }
+
+  .glass-panel-elevated {
+    @apply backdrop-blur-3xl bg-white/85 border border-white/60 shadow-[0_16px_40px_0_rgba(0,0,0,0.08)] rounded-3xl relative overflow-hidden;
+  }
+
+  .glass-panel-elevated::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+  }
+
+  .glass-card-interactive {
+    @apply backdrop-blur-2xl bg-white/75 border border-white/60 shadow-[0_8px_24px_0_rgba(0,0,0,0.06)] rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_36px_0_rgba(16,185,129,0.16)] hover:border-emerald-400/50 active:scale-[0.98];
+  }
+
+  .glass-dock {
+    @apply backdrop-blur-3xl bg-white/80 border border-white/60 shadow-[0_16px_48px_0_rgba(0,0,0,0.12)] rounded-3xl;
+  }
+
+  .glass-dock::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+    pointer-events: none;
+  }
+
+  .glass-pill {
+    @apply backdrop-blur-xl bg-white/60 border border-white/50 shadow-sm rounded-full;
+  }
+
+  .glass-input {
+    @apply backdrop-blur-xl bg-white/70 border border-white/60 focus:bg-white/90 focus:border-emerald-500/80 focus:ring-4 focus:ring-emerald-500/15 transition-all duration-200 rounded-xl shadow-inner outline-none;
   }
   
   .gradient-primary {
@@ -231,32 +277,36 @@ body {
   
   /* Button Variants */
   .btn-primary {
-    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg;
+    @apply bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.97] shadow-[0_8px_25px_-4px_rgba(16,185,129,0.45)] hover:shadow-[0_12px_30px_-2px_rgba(16,185,129,0.6)] border border-emerald-400/30;
   }
   
   .btn-secondary {
-    @apply bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95;
+    @apply backdrop-blur-xl bg-white/80 border-2 border-emerald-600/30 text-emerald-800 hover:bg-emerald-50/80 font-semibold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.97] shadow-sm;
   }
   
   .btn-glass {
-    @apply glass-card text-primary hover:bg-white/90 font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95;
+    @apply backdrop-blur-2xl bg-white/70 hover:bg-white/90 text-emerald-900 border border-white/60 font-semibold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.97] shadow-[0_8px_24px_0_rgba(0,0,0,0.06)];
+  }
+
+  .btn-glass-primary {
+    @apply relative overflow-hidden bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-semibold py-3.5 px-6 rounded-2xl transition-all duration-300 shadow-[0_8px_25px_-4px_rgba(16,185,129,0.45)] hover:shadow-[0_12px_32px_-2px_rgba(16,185,129,0.6)] border border-emerald-400/40 active:scale-[0.97];
   }
   
   /* Agricultural Theme Components */
   .plant-card {
-    @apply bg-white rounded-2xl p-6 shadow-medium hover:shadow-large transition-all duration-300 border border-gray-100 hover:border-primary/20;
+    @apply glass-card-interactive p-6;
   }
   
   .weather-card {
-    @apply bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 shadow-medium border border-blue-200;
+    @apply backdrop-blur-2xl bg-gradient-to-br from-blue-500/10 via-white/80 to-sky-500/10 rounded-3xl p-6 shadow-[0_10px_30px_0_rgba(59,130,246,0.12)] border border-white/70 relative overflow-hidden;
   }
   
   .tip-card {
-    @apply bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-6 shadow-medium border-l-4 border-yellow-400;
+    @apply backdrop-blur-2xl bg-gradient-to-r from-amber-500/10 via-white/80 to-yellow-500/10 rounded-2xl p-6 shadow-sm border border-amber-300/40 border-l-4 border-l-amber-500;
   }
   
   .diagnosis-card {
-    @apply bg-white rounded-2xl p-6 shadow-large border border-gray-100;
+    @apply glass-panel-elevated p-6;
   }
   
   /* Floating Animation */
@@ -352,6 +402,27 @@ body {
 
 @layer utilities {
   /* Keyframe Animations */
+  @keyframes scan {
+    0% {
+      top: 0%;
+      opacity: 0;
+    }
+    15% {
+      opacity: 1;
+    }
+    85% {
+      opacity: 1;
+    }
+    100% {
+      top: 96%;
+      opacity: 0;
+    }
+  }
+
+  .animate-scan {
+    animation: scan 2.6s ease-in-out infinite;
+  }
+  
   @keyframes float {
     0%, 100% {
       transform: translateY(0px);
