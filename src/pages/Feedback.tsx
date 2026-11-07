@@ -9,9 +9,11 @@ import {
   MessageCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const Feedback = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [isHelpful, setIsHelpful] = useState<boolean | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedOutcome, setSelectedOutcome] = useState<string>('');
@@ -46,12 +48,12 @@ const Feedback = () => {
   };
 
   const handleBack = () => {
-    navigate('/profile');
+    goBack('/profile');
   };
 
   if (showConfirmation) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-yellow-50 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-green-50 flex items-center justify-center p-6">
         <div className="bg-white rounded-3xl p-8 shadow-xl border-2 border-green-200 text-center max-w-sm w-full">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-12 h-12 text-green-600" />
@@ -68,7 +70,7 @@ const Feedback = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-yellow-50">
+    <div className="min-h-screen bg-green-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-green-100 sticky top-0 z-10">
         <div className="px-6 py-4">
@@ -168,7 +170,7 @@ const Feedback = () => {
         {/* Submit Button */}
         <Button
           onClick={handleSubmit}
-          className="w-full py-6 text-xl font-bold rounded-3xl transition-all duration-200 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl"
+          className="w-full py-6 text-xl font-bold rounded-3xl transition-all duration-200 bg-green-500 hover:bg-green-600 text-white shadow-lg hover:shadow-xl"
         >
           Submit Feedback
         </Button>

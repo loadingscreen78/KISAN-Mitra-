@@ -1,125 +1,124 @@
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLayoutEffect, useRef, type CSSProperties, type MouseEvent } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { 
-  Home as HomeIcon, 
-  BookOpen, 
-  Camera, 
-  Store, 
-  MessageCircle,
-  Sparkles
-} from 'lucide-react';
+import {
+  BookOpenTextIcon,
+  CameraIcon,
+  ChatCircleDotsIcon,
+  HouseIcon,
+  StorefrontIcon,
+  type Icon,
+} from '@phosphor-icons/react';
+import { useGoBack } from '@/hooks/useGoBack';
 
-interface GlassBottomNavProps {
-  activeTab?: 'home' | 'advisory' | 'diagnose' | 'shop' | 'mitra';
+interface Tab {
+  id: 'home' | 'advisory' | 'shop' | 'mitra';
+  to: string;
+  label: string;
+  icon: Icon;
+  /** Routes that belong to this tab's section. */
+  section: string[];
 }
 
-export const GlassBottomNav: React.FC<GlassBottomNavProps> = ({ activeTab }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { t } = useTranslation();
+const TABS: Tab[] = [
+  { id: 'home', to: '/home', label: 'navigation.home', icon: HouseIcon, section: ['/home', '/weather'] },
+  { id: 'advisory', to: '/advisory', label: 'navigation.advisory', icon: BookOpenTextIcon, section: ['/advisory'] },
+  { id: 'shop', to: '/shop', label: 'navigation.shop', icon: StorefrontIcon, section: ['/shop'] },
+  { id: 'mitra', to: '/mitra', label: 'navigation.mitra', icon: ChatCircleDotsIcon, section: ['/mitra'] },
+];
 
-  const getActiveTab = () => {
-    if (activeTab) return activeTab;
-    const path = location.pathname;
-    if (path.startsWith('/advisory') || path.startsWith('/guides')) return 'advisory';
-    if (path.startsWith('/diagnose')) return 'diagnose';
-    if (path.startsWith('/shop') || path.startsWith('/cart') || path.startsWith('/checkout')) return 'shop';
-    if (path.startsWith('/mitra')) return 'mitra';
-    return 'home';
+const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/**
+ * Floating liquid glass tab bar, rendered once by the app shell so it stays put
+ * while pages transition underneath it. A glass lens slides to the current tab
+ * and stretches like a drop on the way. Diagnose, the app's main action, is a
+ * separate drop of tinted glass beside the bar.
+ */
+export function GlassBottomNav() {
+  const { pathname } = useLocation();
+  const { t } = useTranslation();
+  const goBack = useGoBack();
+  const lensRef = useRef<HTMLSpanElement>(null);
+
+  const activeIndex = TABS.findIndex((tab) => tab.section.includes(pathname));
+  const lastIndex = useRef(Math.max(activeIndex, 0));
+  if (activeIndex >= 0) lastIndex.current = activeIndex;
+  const previousIndex = useRef(activeIndex);
+
+  useLayoutEffect(() => {
+    const from = previousIndex.current;
+    previousIndex.current = activeIndex;
+    const lens = lensRef.current;
+    if (!lens || from < 0 || activeIndex < 0 || from === activeIndex || prefersReducedMotion()) return;
+
+    const stretch = 1 + Math.min(Math.abs(activeIndex - from), 3) * 0.12;
+    lens.animate(
+      [
+        { transform: 'scale(1, 1)' },
+        { transform: `scale(${stretch}, 0.86)`, offset: 0.35 },
+        { transform: 'scale(0.97, 1.03)', offset: 0.7 },
+        { transform: 'scale(1, 1)' },
+      ],
+      { duration: 560, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+    );
+  }, [activeIndex]);
+
+  // Tapping the current tab scrolls to the top. Tapping it from a screen inside
+  // its section returns to the section root with the back animation.
+  const handleTabClick = (event: MouseEvent, to: string, inSection: boolean) => {
+    if (!inSection) return;
+    event.preventDefault();
+    if (pathname === to) window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+    else goBack(to);
   };
 
-  const currentTab = getActiveTab();
+  const onDiagnose = pathname === '/diagnose';
 
   return (
-    <nav 
-      aria-label="Main Navigation"
-      className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none pb-[max(14px,env(safe-area-inset-bottom))]"
-    >
-      <div className="max-w-md sm:max-w-lg mx-auto px-4">
-        {/* Floating Expo-Glass Island */}
-        <div className="pointer-events-auto relative backdrop-blur-3xl bg-white/70 border border-white/70 shadow-[0_16px_50px_0_rgba(16,185,129,0.18)] rounded-[28px] px-3 py-2 flex items-center justify-between ring-1 ring-white/60">
-          
-          {/* Specular top rim highlight */}
-          <div 
+    <nav aria-label="Main" className="tabbar">
+      <div className="tabbar__row">
+        <div className="tabbar__bar glass">
+          <span
             aria-hidden="true"
-            className="absolute -top-[1px] left-10 right-10 h-[1.5px] bg-gradient-to-r from-transparent via-white/95 to-transparent pointer-events-none"
-          />
-
-          {/* Tab 1: Home */}
-          <button
-            onClick={() => navigate('/home')}
-            className={`flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 ${
-              currentTab === 'home'
-                ? 'text-emerald-800 bg-emerald-500/15 font-black scale-105 shadow-inner'
-                : 'text-slate-500 hover:text-emerald-700 hover:bg-white/40 font-medium'
-            }`}
+            className="tabbar__lens"
+            style={{ '--tab-index': lastIndex.current, opacity: activeIndex < 0 ? 0 : 1 } as CSSProperties}
           >
-            <HomeIcon className={`w-5 h-5 transition-transform duration-200 ${currentTab === 'home' ? 'scale-110 text-emerald-700' : ''}`} />
-            <span className="text-[11px] mt-1 tracking-tight">{t('navigation.home')}</span>
-          </button>
+            <span ref={lensRef} className="tabbar__lens-body" />
+          </span>
 
-          {/* Tab 2: Advisory */}
-          <button
-            onClick={() => navigate('/advisory')}
-            className={`flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 ${
-              currentTab === 'advisory'
-                ? 'text-emerald-800 bg-emerald-500/15 font-black scale-105 shadow-inner'
-                : 'text-slate-500 hover:text-emerald-700 hover:bg-white/40 font-medium'
-            }`}
-          >
-            <BookOpen className={`w-5 h-5 transition-transform duration-200 ${currentTab === 'advisory' ? 'scale-110 text-emerald-700' : ''}`} />
-            <span className="text-[11px] mt-1 tracking-tight">{t('navigation.advisory')}</span>
-          </button>
-
-          {/* Center Elevated Action: Diagnose */}
-          <div className="flex-1 flex flex-col items-center justify-center -mt-7">
-            <button
-              onClick={() => navigate('/diagnose')}
-              aria-label={t('navigation.diagnose')}
-              className="relative group w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-600 via-green-600 to-emerald-500 text-white flex items-center justify-center shadow-[0_12px_32px_rgba(16,185,129,0.55)] border-4 border-white active:scale-85 hover:scale-105 transition-all duration-300 ring-4 ring-emerald-500/20 animate-pulse-glow"
-            >
-              {/* Outer glowing breathing halo */}
-              <div 
-                aria-hidden="true"
-                className="absolute -inset-1 rounded-full bg-emerald-400 opacity-40 blur-md group-hover:opacity-80 transition-opacity"
-              />
-              <Camera className="w-6 h-6 relative z-10 transition-transform duration-300 group-hover:rotate-12" />
-            </button>
-            <span className={`text-[11px] mt-1 tracking-tight ${currentTab === 'diagnose' ? 'text-emerald-800 font-extrabold' : 'text-slate-600 font-medium'}`}>
-              {t('navigation.diagnose')}
-            </span>
-          </div>
-
-          {/* Tab 4: Shop */}
-          <button
-            onClick={() => navigate('/shop')}
-            className={`flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 ${
-              currentTab === 'shop'
-                ? 'text-emerald-800 bg-emerald-500/15 font-black scale-105 shadow-inner'
-                : 'text-slate-500 hover:text-emerald-700 hover:bg-white/40 font-medium'
-            }`}
-          >
-            <Store className={`w-5 h-5 transition-transform duration-200 ${currentTab === 'shop' ? 'scale-110 text-emerald-700' : ''}`} />
-            <span className="text-[11px] mt-1 tracking-tight">{t('navigation.shop')}</span>
-          </button>
-
-          {/* Tab 5: Mitra AI */}
-          <button
-            onClick={() => navigate('/mitra')}
-            className={`flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-2xl transition-all duration-200 active:scale-90 ${
-              currentTab === 'mitra'
-                ? 'text-emerald-800 bg-emerald-500/15 font-black scale-105 shadow-inner'
-                : 'text-slate-500 hover:text-emerald-700 hover:bg-white/40 font-medium'
-            }`}
-          >
-            <MessageCircle className={`w-5 h-5 transition-transform duration-200 ${currentTab === 'mitra' ? 'scale-110 text-emerald-700' : ''}`} />
-            <span className="text-[11px] mt-1 tracking-tight">{t('navigation.mitra')}</span>
-          </button>
+          {TABS.map((tab, index) => {
+            const inSection = index === activeIndex;
+            const TabIcon = tab.icon;
+            return (
+              <Link
+                key={tab.id}
+                to={tab.to}
+                className="tabbar__tab"
+                data-active={inSection}
+                aria-current={pathname === tab.to ? 'page' : undefined}
+                onClick={(event) => handleTabClick(event, tab.to, inSection)}
+              >
+                <TabIcon className="tabbar__icon" weight={inSection ? 'fill' : 'regular'} aria-hidden="true" />
+                <span className="tabbar__label">{t(tab.label)}</span>
+              </Link>
+            );
+          })}
         </div>
+
+        <Link
+          to="/diagnose"
+          className="tabbar__action"
+          data-active={onDiagnose}
+          aria-label={t('navigation.diagnose')}
+          aria-current={onDiagnose ? 'page' : undefined}
+          onClick={(event) => handleTabClick(event, '/diagnose', onDiagnose)}
+        >
+          <CameraIcon size={26} weight="fill" aria-hidden="true" />
+        </Link>
       </div>
     </nav>
   );
-};
+}
 
 export default GlassBottomNav;

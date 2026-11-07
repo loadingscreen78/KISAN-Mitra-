@@ -22,9 +22,11 @@ import { Badge } from '@/components/ui/badge';
 import useLocation from '@/hooks/useLocation';
 import placesService, { type FertilizerShop } from '@/lib/places';
 import AmbientBackground from '@/components/AmbientBackground';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const NearbyShops = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [searchQuery, setSearchQuery] = useState('');
   const [shops, setShops] = useState<FertilizerShop[]>([]);
   const [loading, setLoading] = useState(false);
@@ -106,7 +108,7 @@ const NearbyShops = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-emerald-50/40 via-background to-emerald-50/20 pb-24">
+    <div className="min-h-screen relative overflow-hidden bg-emerald-50/40 pb-24">
       {/* Ambient background glow */}
       <AmbientBackground />
 
@@ -115,14 +117,14 @@ const NearbyShops = () => {
         <div className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center space-x-3 sm:space-x-4">
             <button 
-              onClick={() => navigate('/home')}
+              onClick={() => goBack()}
               aria-label="Back"
               className="p-2.5 glass-panel rounded-full hover:bg-white text-slate-700 transition-all active:scale-90 shadow-sm"
             >
               <ArrowLeft className="w-4 h-4 text-emerald-900" />
             </button>
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-green-500 text-white flex items-center justify-center shadow-md border border-white/60">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md border border-white/60">
                 <Store className="w-5 h-5" />
               </div>
               <div>
@@ -161,7 +163,7 @@ const NearbyShops = () => {
         <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-green-100 rounded-2xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
                 <MapPin className="w-6 h-6 text-blue-600" />
               </div>
               <div>
@@ -202,7 +204,7 @@ const NearbyShops = () => {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-gradient-to-br from-blue-100 to-blue-50 rounded-2xl p-5 text-center shadow-lg border border-blue-200">
+          <div className="bg-blue-100 rounded-2xl p-5 text-center shadow-lg border border-blue-200">
             <div className="w-12 h-12 bg-white/80 rounded-xl flex items-center justify-center mx-auto mb-3">
               <Store className="w-6 h-6 text-blue-700" />
             </div>
@@ -210,7 +212,7 @@ const NearbyShops = () => {
             <p className="text-sm font-semibold text-blue-700">Fertilizer Shops</p>
           </div>
           
-          <div className="bg-gradient-to-br from-green-100 to-green-50 rounded-2xl p-5 text-center shadow-lg border border-green-200">
+          <div className="bg-green-100 rounded-2xl p-5 text-center shadow-lg border border-green-200">
             <div className="w-12 h-12 bg-white/80 rounded-xl flex items-center justify-center mx-auto mb-3">
               <MapPin className="w-6 h-6 text-green-700" />
             </div>
@@ -241,7 +243,7 @@ const NearbyShops = () => {
                 {/* Shop Header */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start space-x-3">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-green-100 rounded-2xl flex items-center justify-center shadow-sm">
+                    <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center shadow-sm">
                       <Store className="w-7 h-7 text-blue-600" />
                     </div>
                     <div className="flex-1">
@@ -278,7 +280,7 @@ const NearbyShops = () => {
                 </div>
 
                 {/* Address & Business Hours */}
-                <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-4 mb-4 border border-gray-100">
+                <div className="bg-gray-50 rounded-2xl p-4 mb-4 border border-gray-100">
                   <div className="flex items-start space-x-3">
                     <MapPin className="w-5 h-5 text-blue-600 mt-0.5" />
                     <div className="flex-1">
@@ -325,7 +327,7 @@ const NearbyShops = () => {
                   <Button 
                     onClick={() => handleCall(shop.phone)}
                     size="sm" 
-                    className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold rounded-xl shadow-md"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-md"
                   >
                     <Phone className="w-4 h-4 mr-2" />
                     Call Now

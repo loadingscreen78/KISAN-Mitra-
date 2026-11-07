@@ -20,9 +20,11 @@ import AmbientBackground from '@/components/AmbientBackground';
 import { marketData, getTopHighestPricedCrops } from '@/lib/marketData';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useGeolocation, calculateDistance, formatDistance } from '@/hooks/useGeolocation';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const MarketPrices = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [searchQuery, setSearchQuery] = useState('');
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -76,7 +78,7 @@ const MarketPrices = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-emerald-50/40 via-background to-emerald-50/20 pb-28">
+    <div className="min-h-screen relative overflow-hidden bg-emerald-50/40 pb-28">
       {/* Ambient background glow */}
       <AmbientBackground />
 
@@ -86,7 +88,7 @@ const MarketPrices = () => {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-3">
               <button
-                onClick={() => navigate(-1)}
+                onClick={() => goBack()}
                 aria-label="Go back"
                 className="p-2.5 glass-panel rounded-full hover:bg-white text-slate-700 transition-all active:scale-90 shadow-sm"
               >
@@ -132,19 +134,19 @@ const MarketPrices = () => {
         {/* Quick Highlights Summary */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="glass-panel p-3.5 rounded-2xl border border-white/80">
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Markets Listed</div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Markets Listed</div>
             <div className="text-xl font-black text-slate-900 mt-0.5">{marketData.length} Mandis</div>
           </div>
           <div className="glass-panel p-3.5 rounded-2xl border border-white/80">
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Top Gainer</div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Top Gainer</div>
             <div className="text-xl font-black text-emerald-600 mt-0.5">+14% Garlic</div>
           </div>
           <div className="glass-panel p-3.5 rounded-2xl border border-white/80">
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Data Source</div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Data Source</div>
             <div className="text-xl font-black text-slate-900 mt-0.5">Agmarknet Live</div>
           </div>
           <div className="glass-panel p-3.5 rounded-2xl border border-white/80">
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Your Region</div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Your Region</div>
             <div className="text-xl font-black text-emerald-800 mt-0.5 truncate">
               {locationLoading ? 'Locating...' : 'Tamil Nadu'}
             </div>
@@ -159,7 +161,7 @@ const MarketPrices = () => {
               className="glass-panel-elevated rounded-3xl overflow-hidden border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_36px_rgba(16,185,129,0.08)] transition-all"
             >
               {/* Market Header */}
-              <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-transparent border-b border-emerald-100/60 p-4 sm:p-5 flex items-center justify-between">
+              <div className="bg-emerald-500/10 border-b border-emerald-100/60 p-4 sm:p-5 flex items-center justify-between">
                 <div className="flex items-center space-x-3.5">
                   <div className="p-2.5 rounded-2xl glass-panel bg-white/90 text-emerald-700 shadow-sm border border-emerald-100 flex-shrink-0">
                     <MapPin className="w-5 h-5" />
@@ -171,7 +173,7 @@ const MarketPrices = () => {
                     <div className="flex items-center space-x-2 text-xs text-slate-500 mt-0.5">
                       <span>{market.location}</span>
                       <span>•</span>
-                      <span className="glass-pill px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+                      <span className="glass-pill px-2 py-0.5 text-xs font-bold text-emerald-800">
                         {market.distance}
                       </span>
                     </div>

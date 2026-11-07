@@ -5,9 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Slider } from "@/components/ui/slider";
 import { ArrowLeft, TestTube2, Calculator } from 'lucide-react';
 import AmbientBackground from '@/components/AmbientBackground';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const SoilHealth = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   
   // State for soil parameters
   const [pH, setPH] = useState([6.5]); // Default 6.5
@@ -116,7 +118,7 @@ const SoilHealth = () => {
   const scorePercentage = (soilScore / 6) * 100;
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-emerald-50/40 via-background to-emerald-50/20 pb-28">
+    <div className="min-h-screen relative overflow-hidden bg-emerald-50/40 pb-28">
       {/* Ambient background glow */}
       <AmbientBackground />
 
@@ -125,14 +127,14 @@ const SoilHealth = () => {
         <div className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center space-x-3 sm:space-x-4">
             <button
-              onClick={() => navigate('/home')}
+              onClick={() => goBack()}
               aria-label="Back"
               className="p-2.5 glass-panel rounded-full hover:bg-white text-slate-700 transition-all active:scale-90 shadow-sm"
             >
               <ArrowLeft className="w-4 h-4 text-emerald-900" />
             </button>
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-green-500 text-white flex items-center justify-center shadow-md border border-white/60">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md border border-white/60">
                 <TestTube2 className="w-5 h-5" />
               </div>
               <div>

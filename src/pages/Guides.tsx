@@ -16,9 +16,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import AmbientBackground from '@/components/AmbientBackground';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const Guides = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [savedGuides, setSavedGuides] = useState<string[]>([]);
@@ -113,7 +115,7 @@ const Guides = () => {
   });
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-emerald-50/40 via-background to-emerald-50/20 pb-24">
+    <div className="min-h-screen relative overflow-hidden bg-emerald-50/40 pb-24">
       {/* Ambient background glow */}
       <AmbientBackground />
 
@@ -122,7 +124,7 @@ const Guides = () => {
         <div className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <button 
-              onClick={() => navigate(-1)} 
+              onClick={() => goBack()} 
               aria-label="Back"
               className="p-2.5 glass-panel rounded-full hover:bg-white text-slate-700 transition-all active:scale-90 shadow-sm"
             >
@@ -132,7 +134,7 @@ const Guides = () => {
               <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">
                 Cultivation Guides
               </h1>
-              <p className="text-[11px] text-slate-500">Field-tested cultivation manuals</p>
+              <p className="text-xs text-slate-500">Field-tested cultivation manuals</p>
             </div>
           </div>
           
@@ -168,7 +170,7 @@ const Guides = () => {
               onClick={() => setSelectedCategory(category.id)}
               className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-2xl whitespace-nowrap text-xs font-bold transition-all duration-200 active:scale-95 ${
                 selectedCategory === category.id
-                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-md border border-emerald-400/40'
+                  ? 'bg-emerald-600 text-white shadow-md border border-emerald-400/40'
                   : 'glass-panel text-slate-600 hover:text-emerald-700 hover:bg-white/80'
               }`}
             >
@@ -221,7 +223,7 @@ const Guides = () => {
                       <div className="p-2 bg-white rounded-xl shadow-xs text-emerald-700 mb-1">
                         <stage.icon className="w-3.5 h-3.5" />
                       </div>
-                      <span className="text-[10px] font-bold text-slate-800 leading-tight truncate w-full">{stage.name}</span>
+                      <span className="text-xs font-bold text-slate-800 leading-tight truncate w-full">{stage.name}</span>
                     </div>
                   ))}
                 </div>
@@ -241,7 +243,7 @@ const Guides = () => {
               <div className="p-4 bg-slate-50/60 border-t border-slate-100/80">
                 <Button 
                   onClick={() => navigate(`/guides/${crop.id}`)}
-                  className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white rounded-xl py-2.5 text-xs font-bold shadow-md active:scale-95 transition-all"
+                  className="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl py-2.5 text-xs font-bold shadow-md active:scale-95 transition-all"
                 >
                   <span>Open Full Cultivation Blueprint</span>
                   <ChevronRight className="w-4 h-4 ml-1.5" />

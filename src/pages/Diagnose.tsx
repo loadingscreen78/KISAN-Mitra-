@@ -1,24 +1,22 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Camera, 
-  Upload, 
-  Sun, 
-  Eye, 
-  Shield, 
-  Sparkles, 
-  Check, 
-  Leaf, 
-  ArrowLeft, 
-  Volume2,
-  ChevronDown,
-  ChevronUp,
-  Image as ImageIcon
-} from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import {
+  CameraIcon,
+  CaretDownIcon,
+  CheckCircleIcon,
+  EyeIcon,
+  HandPalmIcon,
+  ImageSquareIcon,
+  LeafIcon,
+  SunIcon,
+  type Icon,
+} from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
-import AmbientBackground from '@/components/AmbientBackground';
-import GlassBottomNav from '@/components/GlassBottomNav';
+import PageHeader from '@/components/PageHeader';
+import { pageColumn } from '@/lib/layout';
+import { cn } from '@/lib/utils';
 
 const MAX_IMAGE_DIMENSION = 1600;
 
@@ -43,176 +41,93 @@ const shrinkImage = (file: File): Promise<string> =>
     img.src = url;
   });
 
+const TIPS: { icon: Icon; title: string; body: string }[] = [
+  { icon: SunIcon, title: 'ui.tip_light_title', body: 'ui.tip_light_body' },
+  { icon: EyeIcon, title: 'ui.tip_focus_title', body: 'ui.tip_focus_body' },
+  { icon: HandPalmIcon, title: 'ui.tip_shadow_title', body: 'ui.tip_shadow_body' },
+  { icon: LeafIcon, title: 'ui.tip_sharp_title', body: 'ui.tip_sharp_body' },
+];
+
 const PlantDiagnosis = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isListening, setIsListening] = useState(false);
+  const [tipsOpen, setTipsOpen] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    event.target.value = '';
     if (file) {
       shrinkImage(file)
         .then(setSelectedImage)
         .catch(() => {
           toast({
             title: 'Could not read this image',
-            description: 'Please choose a JPEG, PNG or WebP photo.',
+            description: 'Choose a JPEG, PNG or WebP photo.',
             variant: 'destructive'
           });
         });
     }
   };
 
-  const toggleVoiceAssist = () => {
-    setIsListening(!isListening);
-  };
-
-  const startDiagnosis = async () => {
-    if (selectedImage) {
-      const button = document.querySelector('[data-diagnosis-button]') as HTMLButtonElement;
-      if (button) {
-        button.disabled = true;
-        button.style.opacity = '0.7';
-        button.innerHTML = '<div class="flex items-center justify-center space-x-2"><div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Analyzing crop with MobileNet...</span></div>';
-      }
-      
-      try {
-        localStorage.setItem('plant_image', selectedImage);
-        await new Promise(resolve => setTimeout(resolve, 400));
-        navigate('/diagnose/analyze');
-      } catch (error) {
-        console.error('Error starting diagnosis:', error);
-        if (button) {
-          button.disabled = false;
-          button.style.opacity = '1';
-        }
-      }
+  const startDiagnosis = () => {
+    if (!selectedImage || isStarting) return;
+    setIsStarting(true);
+    try {
+      localStorage.setItem('plant_image', selectedImage);
+      navigate('/diagnose/analyze');
+    } catch (error) {
+      console.error('Error starting diagnosis:', error);
+      setIsStarting(false);
+      toast({
+        title: 'Could not start the diagnosis',
+        description: 'The photo is too large to store on this device. Try a smaller photo.',
+        variant: 'destructive'
+      });
     }
   };
-
-  const tips = [
-    {
-      icon: <Sun className="w-5 h-5 text-amber-500" />,
-      title: "Good Lighting",
-      description: "Take photos in natural daylight, avoiding strong glare or dark spots."
-    },
-    {
-      icon: <Eye className="w-5 h-5 text-sky-500" />,
-      title: "Focus on Affected Area",
-      description: "Fill the frame with the sick leaf or spots for maximum accuracy."
-    },
-    {
-      icon: <Shield className="w-5 h-5 text-emerald-500" />,
-      title: "Avoid Shadows",
-      description: "Keep hands and phone shadows off the leaf surface."
-    },
-    {
-      icon: <Sparkles className="w-5 h-5 text-purple-500" />,
-      title: "Clear & Sharp",
-      description: "Hold steady so the leaf veins and textures are clearly in focus."
-    }
-  ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-emerald-50/40 via-background to-emerald-50/20 pb-32">
-      {/* Ambient background glow */}
-      <AmbientBackground />
+    <div className={cn('min-h-screen', selectedImage ? 'pb-tabbar-cta' : 'pb-tabbar')}>
+      <PageHeader title={t('ui.diagnose_title')} width="default" />
 
-      {/* Floating Expo-Glass Top Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-2xl bg-white/75 border-b border-white/60 shadow-[0_4px_20px_0_rgba(0,0,0,0.03)]">
-        <div className="max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <button
-            onClick={() => navigate('/home')}
-            aria-label="Back"
-            className="p-2.5 glass-panel rounded-full hover:bg-white/90 text-slate-700 transition-all active:scale-95 shadow-sm"
-          >
-            <ArrowLeft className="w-4 h-4 text-emerald-800" />
-          </button>
-          
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-700 flex items-center justify-center">
-              <Leaf className="w-4 h-4" />
-            </div>
-            <h1 className="text-base font-extrabold text-slate-900 tracking-tight">
-              Plant Diagnosis
-            </h1>
-          </div>
-          
-          <button
-            onClick={toggleVoiceAssist}
-            aria-label="Voice assistance"
-            className={`p-2.5 rounded-full transition-all duration-200 active:scale-95 shadow-sm ${
-              isListening 
-                ? 'bg-emerald-600 text-white ring-4 ring-emerald-500/25 animate-pulse' 
-                : 'glass-panel text-slate-700 hover:bg-white/90'
-            }`}
-          >
-            <Volume2 className="w-4 h-4 text-emerald-800" />
-          </button>
-        </div>
-      </header>
-
-      {/* Main Container */}
-      <main className="max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 pt-5 space-y-5">
-        {/* Main Capture Action Card in Expo Glass */}
-        <div className="glass-panel-elevated p-6 text-center space-y-6">
-          <div>
-            <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-tr from-emerald-500/20 via-green-400/20 to-teal-500/10 border border-emerald-400/30 shadow-inner mb-3">
-              <Camera className="w-10 h-10 text-emerald-700" />
-              <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shadow-md">
-                AI
-              </div>
-            </div>
-            <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">
-              Photograph Plant Leaf
-            </h2>
-            <p className="text-xs text-slate-500 max-w-xs mx-auto mt-1">
-              Snap a clear photo of the sick leaf to diagnose 38 crop diseases with 98% accuracy.
-            </p>
-          </div>
-
-          {/* Selected Image Preview with Glass Frame */}
-          {selectedImage && (
-            <div className="relative rounded-3xl overflow-hidden glass-panel p-2 shadow-lg border border-emerald-400/40">
-              <div className="relative rounded-2xl overflow-hidden max-h-64 bg-slate-900">
-                <img
-                  src={selectedImage}
-                  alt="Selected plant leaf"
-                  className="w-full h-56 object-cover"
-                />
-                <div className="absolute top-3 right-3 glass-panel px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md bg-emerald-600/90 text-white text-xs font-bold border border-white/50">
-                  <Check className="w-4 h-4" /> Ready to Analyze
+      <main className={cn(pageColumn('default'), 'stagger space-y-6 pt-2')}>
+        <section className="glass-panel-elevated p-4 sm:p-6">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-field-900/5 shadow-[inset_0_0_0_1px_rgb(27_31_25/0.08)]">
+            {selectedImage ? (
+              <>
+                <img src={selectedImage} alt="Selected leaf" className="h-full w-full animate-fade-in object-cover" />
+                <span className="glass-pill caption-3 absolute left-3 top-3 flex items-center gap-1 px-3 py-1 text-leaf-800">
+                  <CheckCircleIcon size={16} weight="fill" aria-hidden="true" />
+                  {t('ui.photo_ready')}
+                </span>
+              </>
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center">
+                <span className="icon-tile h-16 w-16 rounded-2xl text-leaf-700">
+                  <LeafIcon size={32} weight="duotone" aria-hidden="true" />
+                </span>
+                <div className="max-w-sm">
+                  <h2 className="heading-6 text-field-900">{t('ui.diagnose_photo_title')}</h2>
+                  <p className="body-6 mt-2 text-field-500">{t('ui.diagnose_photo_body')}</p>
                 </div>
               </div>
-              <p className="text-center text-xs text-emerald-700 font-bold mt-2">
-                ✓ Photo successfully optimized for MobileNetV2
-              </p>
-            </div>
-          )}
-
-          {/* Capture & Upload Buttons */}
-          <div className="grid grid-cols-1 gap-3 pt-1">
-            <button
-              onClick={() => navigate('/diagnose/capture')}
-              className="flex items-center justify-center space-x-3 bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-500 hover:from-emerald-500 hover:to-green-500 text-white py-4 px-6 rounded-2xl shadow-[0_8px_25px_-3px_rgba(16,185,129,0.5)] border border-emerald-400/40 transition-all duration-300 transform active:scale-[0.97]"
-            >
-              <Camera className="w-6 h-6" />
-              <span className="font-bold text-base">Open Camera Scanner</span>
-            </button>
-
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center justify-center space-x-3 glass-panel py-3.5 px-6 rounded-2xl text-emerald-900 font-bold text-base hover:bg-white/90 border border-white/80 transition-all duration-300 transform active:scale-[0.97] shadow-sm"
-            >
-              <Upload className="w-5 h-5 text-emerald-700" />
-              <span>Upload from Gallery</span>
-            </button>
+            )}
           </div>
 
-          {/* Hidden file inputs */}
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <Button size="lg" onClick={() => navigate('/diagnose/capture')}>
+              <CameraIcon weight="fill" aria-hidden="true" />
+              {t('ui.open_camera')}
+            </Button>
+            <Button size="lg" variant="glass" onClick={() => fileInputRef.current?.click()}>
+              <ImageSquareIcon aria-hidden="true" />
+              {selectedImage ? t('ui.change_photo') : t('ui.upload_gallery')}
+            </Button>
+          </div>
+
           <input
             ref={fileInputRef}
             type="file"
@@ -220,70 +135,66 @@ const PlantDiagnosis = () => {
             onChange={handleImageUpload}
             className="hidden"
           />
-          <input
-            ref={cameraInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            onChange={handleImageUpload}
-            className="hidden"
-          />
-        </div>
+        </section>
 
-        {/* Photography Tips Glass Accordion */}
-        <div className="glass-panel overflow-hidden">
+        <section className="glass-panel overflow-hidden rounded-3xl">
           <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full px-5 py-4 flex items-center justify-between hover:bg-white/50 transition-colors"
+            type="button"
+            onClick={() => setTipsOpen((open) => !open)}
+            aria-expanded={tipsOpen}
+            aria-controls="photo-tips"
+            className="flex w-full items-center gap-4 px-4 py-4 text-left transition-colors duration-300 hover:bg-white/50"
           >
-            <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 rounded-2xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-amber-700">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-slate-900 text-sm">Leaf Photography Tips</h3>
-                <p className="text-[11px] text-slate-500">For accurate disease detection</p>
-              </div>
-            </div>
-            {isExpanded ? (
-              <ChevronUp className="w-4 h-4 text-slate-400" />
-            ) : (
-              <ChevronDown className="w-4 h-4 text-slate-400" />
-            )}
+            <span className="icon-tile h-11 w-11 text-leaf-700">
+              <SunIcon size={22} weight="duotone" aria-hidden="true" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="title-4 block text-field-900">{t('ui.photo_tips')}</span>
+              <span className="caption-5 block text-field-500">{t('ui.photo_tips_caption')}</span>
+            </span>
+            <CaretDownIcon
+              size={16}
+              aria-hidden="true"
+              className={cn('shrink-0 text-field-500 transition-transform duration-500 ease-spring', tipsOpen && 'rotate-180')}
+            />
           </button>
 
-          {isExpanded && (
-            <div className="px-5 pb-5 pt-1 space-y-3 border-t border-white/60">
-              {tips.map((tip, index) => (
-                <div key={index} className="flex items-start space-x-3 p-3 rounded-2xl bg-white/60 border border-white/50">
-                  <div className="mt-0.5">{tip.icon}</div>
-                  <div>
-                    <h4 className="font-bold text-slate-900 text-xs">{tip.title}</h4>
-                    <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">{tip.description}</p>
-                  </div>
-                </div>
-              ))}
+          <div id="photo-tips" className="disclosure" data-open={tipsOpen}>
+            <div>
+              <ul className="grid gap-3 px-4 pb-4 sm:grid-cols-2">
+                {TIPS.map((tip) => {
+                  const TipIcon = tip.icon;
+                  return (
+                    <li key={tip.title} className="flex gap-3 rounded-2xl bg-white/50 p-3 shadow-[inset_0_0_0_0.5px_rgb(27_31_25/0.08)]">
+                      <TipIcon size={20} className="mt-0.5 shrink-0 text-leaf-700" aria-hidden="true" />
+                      <span>
+                        <span className="title-4 block text-field-900">{t(tip.title)}</span>
+                        <span className="caption-5 mt-0.5 block text-field-600">{t(tip.body)}</span>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
-          )}
-        </div>
+          </div>
+        </section>
       </main>
 
-      {/* Floating Action Dock or Diagnosis Trigger */}
-      {selectedImage ? (
-        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-[max(16px,env(safe-area-inset-bottom))] bg-gradient-to-t from-white/95 via-white/80 to-transparent backdrop-blur-xl">
-          <div className="max-w-md mx-auto w-full">
+      {selectedImage && (
+        <div className="pointer-events-none fixed inset-x-0 bottom-tabbar z-40 animate-slide-up px-4">
+          <div className="pointer-events-auto mx-auto max-w-md">
             <button
+              type="button"
               onClick={startDiagnosis}
+              disabled={isStarting}
               data-diagnosis-button
-              className="w-full py-4 rounded-2xl font-bold text-base text-white bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-500 shadow-[0_10px_30px_-3px_rgba(16,185,129,0.6)] border border-emerald-400/40 active:scale-[0.97] transition-all flex items-center justify-center space-x-2"
+              className="glass-tinted button-md flex h-14 w-full items-center justify-center gap-2 rounded-full transition-transform duration-500 ease-spring active:scale-[0.98] active:duration-200"
             >
-              <Sparkles className="w-5 h-5 text-yellow-300" />
-              <span>Start Instant Diagnosis</span>
+              <LeafIcon size={20} weight="fill" aria-hidden="true" />
+              {isStarting ? t('ui.analyzing') : t('ui.start_diagnosis')}
             </button>
           </div>
         </div>
-      ) : (
-        <GlassBottomNav activeTab="diagnose" />
       )}
     </div>
   );

@@ -1,381 +1,812 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
+/* Fonts load from index.html (Poppins 400/500/600, Latin and Devanagari). */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* KisanMitra Agricultural App - Android Mobile Optimized Design System */
-
-/* Android Safe Areas & Mobile Viewport */
-@supports (padding: max(0px)) {
-  .safe-area-top { padding-top: max(20px, env(safe-area-inset-top)); }
-  .safe-area-bottom { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
-  .safe-area-left { padding-left: max(0px, env(safe-area-inset-left)); }
-  .safe-area-right { padding-right: max(0px, env(safe-area-inset-right)); }
-}
-
-/* Prevent overscroll bounce for better native feel */
-html {
-  overscroll-behavior: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-body {
-  overscroll-behavior: auto;
-  -webkit-user-select: auto;
-  user-select: auto;
-}
-
-/* Custom Floating Animation for FAB */
-@keyframes floating {
-  0% { 
-    transform: translate(0, 0px) scale(1); 
-    box-shadow: 0 8px 30px rgba(34, 197, 94, 0.4);
-  }
-  50% { 
-    transform: translate(0, -12px) scale(1.05); 
-    box-shadow: 0 15px 35px rgba(34, 197, 94, 0.6);
-  }
-  100% { 
-    transform: translate(0, 0px) scale(1); 
-    box-shadow: 0 8px 30px rgba(34, 197, 94, 0.4);
-  }
-}
-
-.floating-fab {
-  animation: floating 2.5s ease-in-out infinite;
-}
+/* ==========================================================================
+   Tokens
+   ========================================================================== */
 
 @layer base {
   :root {
-    /* Agricultural Color Palette */
-    --primary-green: 158 64% 52%; /* #10B981 */
-    --secondary-green: 160 84% 39%; /* #059669 */
-    --accent-green: 157 69% 38%; /* #047857 */
-    --light-green: 155 100% 97%; /* #ECFDF5 */
-    --success-green: 142 71% 45%; /* #22C55E */
-    
-    /* Functional Colors */
-    --warning-orange: 38 92% 50%; /* #F59E0B */
-    --danger-red: 0 84% 60%; /* #EF4444 */
-    --info-blue: 217 91% 60%; /* #3B82F6 */
-    --light-blue: 214 100% 97%; /* #DBEAFE */
-    --purple: 262 83% 58%; /* #8B5CF6 */
-    --light-purple: 250 100% 97%; /* #EDE9FE */
-    
-    /* Neutral Colors */
-    --text-primary: 220 14% 96%; /* #F8FAFC */
-    --text-secondary: 215 25% 27%; /* #374151 */
-    --gray: 215 20% 65%; /* #9CA3AF */
-    --light-gray: 210 40% 96%; /* #F1F5F9 */
-    --cream: 43 74% 91%; /* #FAF7F0 */
-    --light-cream: 45 100% 97%; /* #FEF7ED */
-    
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary-green)), hsl(var(--secondary-green)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary-green)), hsl(var(--accent-green)));
-    --gradient-splash: linear-gradient(180deg, hsl(var(--primary-green)), hsl(var(--accent-green)));
-    --gradient-mesh: linear-gradient(135deg, hsl(var(--primary-green)), hsl(var(--secondary-green)), hsl(var(--success-green)));
-    --gradient-glass: linear-gradient(135deg, hsla(var(--primary-green), 0.1), hsla(var(--secondary-green), 0.1));
-    
-    /* Shadows */
-    --shadow-soft: 0 1px 3px 0 hsla(var(--text-secondary), 0.1), 0 1px 2px 0 hsla(var(--text-secondary), 0.06);
-    --shadow-medium: 0 4px 6px -1px hsla(var(--text-secondary), 0.1), 0 2px 4px -1px hsla(var(--text-secondary), 0.06);
-    --shadow-large: 0 10px 15px -3px hsla(var(--text-secondary), 0.1), 0 4px 6px -2px hsla(var(--text-secondary), 0.05);
-    --shadow-glow: 0 0 20px hsla(var(--primary-green), 0.3);
-    --shadow-inner: inset 0 2px 4px 0 hsla(var(--text-secondary), 0.06);
-    
-    /* Animations - Android Material Motion */
-    --transition-fast: all 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    
-    /* Spacing System */
-    --space-xs: 0.25rem; /* 4px */
-    --space-sm: 0.5rem;  /* 8px */
-    --space-md: 1rem;    /* 16px */
-    --space-lg: 1.5rem;  /* 24px */
-    --space-xl: 2rem;    /* 32px */
-    --space-2xl: 3rem;   /* 48px */
-    
-    /* Border Radius */
-    --radius-sm: 0.375rem; /* 6px */
-    --radius-md: 0.75rem;  /* 12px */
-    --radius-lg: 1rem;     /* 16px */
-    --radius-xl: 1.25rem;  /* 20px */
-    --radius-full: 9999px;
-    
-    /* Standard design tokens */
-    --background: var(--text-primary);
-    --foreground: var(--text-secondary);
-    --card: var(--text-primary);
-    --card-foreground: var(--text-secondary);
-    --popover: var(--text-primary);
-    --popover-foreground: var(--text-secondary);
-    --primary: var(--primary-green);
-    --primary-foreground: var(--text-primary);
-    --secondary: var(--light-gray);
-    --secondary-foreground: var(--text-secondary);
-    --muted: var(--light-gray);
-    --muted-foreground: var(--gray);
-    --accent: var(--light-green);
-    --accent-foreground: var(--text-secondary);
-    --destructive: var(--danger-red);
-    --destructive-foreground: var(--text-primary);
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: var(--primary-green);
-    --radius: var(--radius-md);
+    /* Palette as HSL triplets (see tailwind.config.ts for the full scales). */
+    --paper: 60 14% 95%; /* #F4F4F0, the one flat page color */
+    --ink: 100 10% 11%; /* field-900 */
+    --ink-muted: 75 5% 41%; /* field-500, 4.7:1 on paper */
+    --line: 64 8% 87%; /* field-200 */
+    --leaf: 140 44% 28%; /* leaf-600, 6.8:1 under white text */
+
+    /* Older screens read these names. */
+    --primary-green: var(--leaf);
+    --secondary-green: 142 46% 23%;
+    --accent-green: 144 46% 18%;
+    --light-green: 128 28% 96%;
+    --success-green: 138 36% 37%;
+    --warning-orange: 36 80% 44%;
+    --danger-red: 4 68% 48%;
+    --info-blue: 212 62% 44%;
+    --light-blue: 210 60% 96%;
+    --purple: 262 40% 48%;
+    --light-purple: 262 40% 96%;
+    --text-primary: var(--paper);
+    --text-secondary: var(--ink);
+    --gray: 72 5% 54%;
+    --light-gray: 60 10% 94%;
+    --cream: 45 40% 93%;
+    --light-cream: 45 50% 97%;
+
+    /* shadcn/ui */
+    --background: var(--paper);
+    --foreground: var(--ink);
+    --card: 0 0% 100%;
+    --card-foreground: var(--ink);
+    --popover: 0 0% 100%;
+    --popover-foreground: var(--ink);
+    --primary: var(--leaf);
+    --primary-foreground: 0 0% 100%;
+    --secondary: 60 10% 94%;
+    --secondary-foreground: var(--ink);
+    --muted: 60 10% 94%;
+    --muted-foreground: var(--ink-muted);
+    --accent: 128 28% 96%;
+    --accent-foreground: 142 46% 23%;
+    --destructive: 4 68% 48%;
+    --destructive-foreground: 0 0% 100%;
+    --border: var(--line);
+    --input: var(--line);
+    --ring: 138 36% 37%;
+    --radius: 0.75rem;
+
+    /* Glass. One recipe, tuned per surface through these variables. */
+    --glass-tint: 255 255 255;
+    --glass-alpha: 0.58;
+    --glass-blur: 18px;
+    --glass-saturate: 180%;
+    --glass-rim: inset 0 1px 0 0 rgb(255 255 255 / 0.9), inset 0 0 0 1px rgb(255 255 255 / 0.32),
+      inset 0 -1px 0 0 rgb(255 255 255 / 0.18), 0 0 0 0.5px rgb(27 31 25 / 0.1);
+    --glass-depth: 0 1px 2px -1px rgb(27 31 25 / 0.1), 0 12px 32px -16px rgb(27 31 25 / 0.3);
+    --glass-depth-raised: 0 2px 6px -2px rgb(27 31 25 / 0.1), 0 22px 44px -18px rgb(27 31 25 / 0.36);
+
+    /* Motion. Everything decelerates into place on one curve. */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: var(--ease-out);
+    --dur-quick: 200ms;
+    --dur-base: 300ms;
+    --dur-layout: 500ms;
+    --vt-in: 480ms;
+    --vt-out: 380ms;
+    --vt-origin-x: 50vw;
+    --vt-origin-y: 40vh;
+
+    /* Floating tab bar. Pages pad their content by --tabbar-offset. */
+    --tabbar-height: 64px;
+    --tabbar-offset: calc(var(--tabbar-height) + max(12px, env(safe-area-inset-bottom)));
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+  /* A damped spring (about 2% overshoot) where the browser can express one. */
+  @supports (transition-timing-function: linear(0, 1)) {
+    :root {
+      --ease-spring: linear(0, 0.016 2.5%, 0.056 5%, 0.115 7.5%, 0.185 10%, 0.42 17.5%, 0.496 20%, 0.569 22.5%,
+          0.636 25%, 0.696 27.5%, 0.751 30%, 0.799 32.5%, 0.842 35%, 0.878 37.5%, 0.909 40%, 0.934 42.5%,
+          0.956 45%, 0.987 50%, 1.005 55%, 1.018 62.5%, 1.018 75%, 1.005 97.5%, 1);
+    }
   }
 }
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
 
 @layer base {
   * {
     @apply border-border;
   }
 
+  html {
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior: auto;
+  }
+
   body {
-    @apply bg-background text-foreground font-inter;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    @apply bg-background font-sans text-foreground antialiased;
+    font-synthesis-weight: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-wrap: balance;
+  }
+
+  p,
+  li,
+  figcaption,
+  blockquote {
+    text-wrap: pretty;
+  }
+
+  b,
+  strong {
+    font-weight: 600;
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: rgb(146 191 156 / 0.45);
+  }
+
+  /* Devanagari needs taller lines than Latin at the same size. */
+  html:lang(hi) :is(.text-xs, .text-sm, .text-base, .caption-1, .caption-2, .caption-3, .caption-4, .caption-5,
+      .body-1, .body-2, .body-3, .body-4, .body-5, .body-6, .title-3, .title-4, .title-5) {
+    line-height: 1.6;
   }
 }
 
+/* ==========================================================================
+   Text styles. Every piece of text uses one of these names.
+   ========================================================================== */
+
 @layer components {
-  /* Modern Expo-Glassmorphism System */
-  .glass-card {
-    @apply backdrop-blur-2xl bg-white/75 border border-white/50 shadow-[0_8px_32px_0_rgba(16,185,129,0.08)];
+  .heading-1 { @apply text-6xl font-semibold tracking-tight; }
+  .heading-2 { @apply text-5xl font-semibold tracking-tight; }
+  .heading-3 { @apply text-4xl font-semibold tracking-tight; }
+  .heading-4 { @apply text-3xl font-semibold tracking-tight; }
+  .heading-5 { @apply text-2xl font-semibold tracking-tight; }
+  .heading-6 { @apply text-xl font-semibold tracking-tight; }
+
+  .title-1 { @apply text-xl font-medium; }
+  .title-2 { @apply text-lg font-medium; }
+  .title-3 { @apply text-base font-medium; }
+  .title-4 { @apply text-sm font-medium; }
+  .title-5 { @apply text-xs font-medium; }
+
+  .body-1 { @apply text-base font-semibold; }
+  .body-2 { @apply text-base font-medium; }
+  .body-3 { @apply text-base font-normal; }
+  .body-4 { @apply text-sm font-semibold; }
+  .body-5 { @apply text-sm font-medium; }
+  .body-6 { @apply text-sm font-normal; }
+
+  .button-lg { @apply text-lg font-semibold; }
+  .button-md { @apply text-base font-semibold; }
+  .button-sm { @apply text-sm font-semibold; }
+  .button-xsm { @apply text-xs font-semibold; }
+
+  .caption-1 { @apply text-sm font-medium; }
+  .caption-2 { @apply text-sm font-normal; }
+  .caption-3 { @apply text-xs font-semibold; }
+  .caption-4 { @apply text-xs font-medium; }
+  .caption-5 { @apply text-xs font-normal; }
+
+  /* Figures that change (prices, temperatures) keep their width. */
+  .figures { font-variant-numeric: tabular-nums; }
+}
+
+/* ==========================================================================
+   Liquid glass
+
+   A translucent surface that blurs and saturates what sits behind it, lit by
+   a bright rim along the top edge. The rim is drawn by ::after so shadow
+   utilities on the element never erase it; ::before carries the light that
+   follows a finger or cursor on interactive glass (see GlassLight.tsx).
+   ========================================================================== */
+
+@layer components {
+  .glass,
+  .glass-card,
+  .glass-panel,
+  .glass-panel-elevated,
+  .glass-card-interactive,
+  .glass-pill,
+  .glass-dock,
+  .glass-tinted {
+    position: relative;
+    isolation: isolate;
+    background-color: rgb(var(--glass-tint) / var(--glass-alpha));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    box-shadow: var(--glass-depth);
+  }
+
+  .glass::after,
+  .glass-card::after,
+  .glass-panel::after,
+  .glass-panel-elevated::after,
+  .glass-card-interactive::after,
+  .glass-pill::after,
+  .glass-dock::after,
+  .glass-tinted::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: var(--glass-rim);
+    pointer-events: none;
   }
 
   .glass-panel {
-    @apply backdrop-blur-2xl bg-white/75 border border-white/50 shadow-[0_8px_32px_0_rgba(16,185,129,0.08)] rounded-2xl;
+    @apply rounded-2xl;
   }
 
   .glass-panel-elevated {
-    @apply backdrop-blur-3xl bg-white/85 border border-white/60 shadow-[0_16px_40px_0_rgba(0,0,0,0.08)] rounded-3xl relative overflow-hidden;
-  }
-
-  .glass-panel-elevated::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 100%);
-    pointer-events: none;
-  }
-
-  .glass-card-interactive {
-    @apply backdrop-blur-2xl bg-white/75 border border-white/60 shadow-[0_8px_24px_0_rgba(0,0,0,0.06)] rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_36px_0_rgba(16,185,129,0.16)] hover:border-emerald-400/50 active:scale-[0.98];
-  }
-
-  .glass-dock {
-    @apply backdrop-blur-3xl bg-white/80 border border-white/60 shadow-[0_16px_48px_0_rgba(0,0,0,0.12)] rounded-3xl;
-  }
-
-  .glass-dock::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 10%;
-    right: 10%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
-    pointer-events: none;
+    --glass-alpha: 0.7;
+    @apply rounded-3xl;
+    box-shadow: var(--glass-depth-raised);
   }
 
   .glass-pill {
-    @apply backdrop-blur-xl bg-white/60 border border-white/50 shadow-sm rounded-full;
+    --glass-alpha: 0.5;
+    --glass-blur: 12px;
+    @apply rounded-full;
+    box-shadow: none;
+  }
+
+  .glass-dock {
+    --glass-alpha: 0.6;
+    @apply rounded-3xl;
+    box-shadow: var(--glass-depth-raised);
+  }
+
+  /* Leaf tinted glass: the one strong color surface on a screen. */
+  .glass-tinted {
+    --glass-tint: 40 103 61;
+    --glass-alpha: 0.94;
+    --glass-rim: inset 0 1px 0 0 rgb(255 255 255 / 0.28), inset 0 0 0 1px rgb(255 255 255 / 0.1),
+      inset 0 -1px 0 0 rgb(0 0 0 / 0.12);
+    color: #fff;
+    box-shadow: 0 1px 2px -1px rgb(20 51 34 / 0.3), 0 16px 36px -18px rgb(20 51 34 / 0.6);
+  }
+
+  /* Pressable glass: lifts under a cursor, presses in under a finger. */
+  .glass-card-interactive,
+  .glass-interactive {
+    cursor: pointer;
+    transition:
+      transform var(--dur-layout) var(--ease-spring),
+      box-shadow var(--dur-base) var(--ease-out),
+      background-color var(--dur-base) var(--ease-out);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .glass-card-interactive {
+    @apply rounded-2xl;
+  }
+
+  .glass-card-interactive::before,
+  .glass-interactive::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(180px circle at var(--light-x, 50%) var(--light-y, 0%), rgb(255 255 255 / 0.7), transparent 70%);
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-out);
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .glass-card-interactive:hover,
+    .glass-interactive:hover {
+      --glass-alpha: 0.72;
+      transform: translateY(-2px);
+      box-shadow: var(--glass-depth-raised);
+    }
+
+    .glass-card-interactive:hover::before,
+    .glass-interactive:hover::before {
+      opacity: 1;
+    }
+  }
+
+  .glass-card-interactive:active,
+  .glass-interactive:active {
+    transform: scale(0.98);
+    transition-duration: var(--dur-quick);
+  }
+
+  .glass-card-interactive:active::before,
+  .glass-interactive:active::before {
+    opacity: 1;
+    transition-duration: 0ms;
+  }
+
+  /* Tinted glass stays fully saturated and catches a softer light. */
+  .glass-tinted.glass-interactive:hover {
+    --glass-alpha: 1;
+  }
+
+  .glass-tinted.glass-interactive::before {
+    background: radial-gradient(180px circle at var(--light-x, 50%) var(--light-y, 0%), rgb(255 255 255 / 0.2), transparent 70%);
   }
 
   .glass-input {
-    @apply backdrop-blur-xl bg-white/70 border border-white/60 focus:bg-white/90 focus:border-emerald-500/80 focus:ring-4 focus:ring-emerald-500/15 transition-all duration-200 rounded-xl shadow-inner outline-none;
+    @apply rounded-xl outline-none;
+    background-color: rgb(255 255 255 / 0.66);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    backdrop-filter: blur(12px) saturate(160%);
+    box-shadow: inset 0 1px 2px rgb(27 31 25 / 0.06), 0 0 0 1px rgb(27 31 25 / 0.08);
+    transition:
+      background-color var(--dur-base) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out);
   }
-  
-  .gradient-primary {
-    background: var(--gradient-primary);
+
+  .glass-input:focus {
+    background-color: rgb(255 255 255 / 0.92);
+    box-shadow: 0 0 0 1px hsl(var(--ring)), 0 0 0 4px rgb(60 128 81 / 0.16);
   }
-  
-  .gradient-hero {
-    background: var(--gradient-hero);
+
+  /* Round glass control: back, notifications, refresh. 44px touch target. */
+  .glass-icon-button {
+    @apply glass inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-field-800;
+    --glass-alpha: 0.55;
+    box-shadow: 0 4px 14px -8px rgb(27 31 25 / 0.35);
+    transition: transform var(--dur-layout) var(--ease-spring);
   }
-  
-  .gradient-splash {
-    background: var(--gradient-splash);
+
+  .glass-icon-button:active {
+    transform: scale(0.92);
+    transition-duration: var(--dur-quick);
   }
-  
-  .gradient-mesh {
-    background: var(--gradient-mesh);
+
+  /* Neutral tile behind a feature icon. Color is kept for meaning, not decoration. */
+  .icon-tile {
+    @apply inline-flex shrink-0 items-center justify-center rounded-xl text-field-800;
+    background-color: rgb(255 255 255 / 0.7);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 0 0 0.5px rgb(27 31 25 / 0.12), 0 2px 6px -3px rgb(27 31 25 / 0.2);
   }
-  
-  .gradient-glass {
-    background: var(--gradient-glass);
+}
+
+/* Surfaces fall back to solid when a reader asks for less transparency. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-card,
+  .glass-panel,
+  .glass-panel-elevated,
+  .glass-card-interactive,
+  .glass-pill,
+  .glass-dock,
+  .glass-input,
+  .glass-icon-button,
+  .tabbar__bar,
+  .page-header__edge {
+    --glass-alpha: 0.97;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
-  
-  .shadow-glow {
-    box-shadow: var(--shadow-glow);
+}
+
+/* ==========================================================================
+   Page header: transparent at rest, frosted edge once content scrolls under
+   ========================================================================== */
+
+@layer components {
+  .page-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
   }
-  
-  .shadow-soft {
-    box-shadow: var(--shadow-soft);
+
+  .page-header__edge {
+    position: absolute;
+    inset: 0 0 -20px;
+    pointer-events: none;
+    background-color: rgb(244 244 240 / 0.82);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent);
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-out);
   }
-  
-  .shadow-medium {
-    box-shadow: var(--shadow-medium);
+
+  .page-header[data-scrolled='true'] .page-header__edge {
+    opacity: 1;
   }
-  
-  .shadow-large {
-    box-shadow: var(--shadow-large);
+
+  .page-header__inner {
+    position: relative;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: 12px;
   }
-  
-  .transition-smooth {
-    transition: var(--transition-smooth);
+}
+
+/* ==========================================================================
+   Floating tab bar (GlassBottomNav)
+   ========================================================================== */
+
+@layer components {
+  .tabbar {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 50;
+    pointer-events: none;
+    padding: 0 16px max(12px, env(safe-area-inset-bottom));
   }
-  
-  .transition-spring {
-    transition: var(--transition-spring);
+
+  .tabbar__row {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 28rem;
+    margin: 0 auto;
   }
-  
-  /* Button Variants */
+
+  .tabbar__bar {
+    --glass-alpha: 0.6;
+    --glass-blur: 22px;
+    --glass-saturate: 200%;
+    position: relative;
+    display: grid;
+    flex: 1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    height: var(--tabbar-height);
+    padding: 4px;
+    border-radius: 9999px;
+    view-transition-name: tabbar;
+    box-shadow: 0 10px 30px -12px rgb(27 31 25 / 0.42), 0 2px 6px -3px rgb(27 31 25 / 0.18);
+    transition: transform var(--dur-layout) var(--ease-spring);
+  }
+
+  .tabbar__bar:has(.tabbar__tab:active) {
+    transform: scale(1.015);
+  }
+
+  .tabbar__lens {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc((100% - 8px) / 4);
+    transform: translateX(calc(var(--tab-index, 0) * 100%));
+    transition:
+      transform 560ms var(--ease-spring),
+      opacity var(--dur-base) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .tabbar__lens-body {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background-color: rgb(40 103 61 / 0.11);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.75), inset 0 0 0 0.5px rgb(40 103 61 / 0.12);
+  }
+
+  .tabbar__tab {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 0;
+    border-radius: 9999px;
+    color: theme('colors.field.600');
+    transition: color var(--dur-base) var(--ease-out);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .tabbar__tab[data-active='true'] {
+    color: theme('colors.leaf.700');
+  }
+
+  .tabbar__icon {
+    width: 24px;
+    height: 24px;
+    transition: transform var(--dur-layout) var(--ease-spring);
+  }
+
+  .tabbar__tab:active .tabbar__icon {
+    transform: scale(0.86);
+    transition-duration: var(--dur-quick);
+  }
+
+  .tabbar__label {
+    @apply caption-4;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tabbar__tab[data-active='true'] .tabbar__label {
+    font-weight: 600;
+  }
+
+  /* The scan button is its own drop of tinted glass. */
+  .tabbar__action {
+    @apply glass-tinted;
+    display: grid;
+    width: var(--tabbar-height);
+    height: var(--tabbar-height);
+    min-height: 0;
+    flex-shrink: 0;
+    place-items: center;
+    padding: 0;
+    border-radius: 9999px;
+    view-transition-name: tabbar-action;
+    box-shadow: 0 10px 28px -10px rgb(20 51 34 / 0.6), 0 2px 6px -3px rgb(20 51 34 / 0.3);
+    transition: transform var(--dur-layout) var(--ease-spring);
+  }
+
+  .tabbar__action:active {
+    transform: scale(1.08);
+    transition-duration: var(--dur-quick);
+  }
+
+  .tabbar__action[data-active='true'] {
+    box-shadow: 0 0 0 3px rgb(255 255 255 / 0.9), 0 0 0 5px rgb(40 103 61 / 0.35), 0 10px 28px -10px rgb(20 51 34 / 0.6);
+  }
+}
+
+/* ==========================================================================
+   Page transitions (View Transitions API, driven by TransitionRouter)
+
+   Forward: the next page pops out of whatever was tapped while the current
+   page sinks back. Back: the page shrinks into the card it came from and the
+   page underneath rises to meet you. The tab bar never moves; it slides away
+   only when a screen without it opens.
+   ========================================================================== */
+
+::view-transition {
+  background-color: theme('colors.field.200');
+}
+
+html[data-nav]::view-transition-old(root),
+html[data-nav]::view-transition-new(root) {
+  mix-blend-mode: normal;
+  animation-fill-mode: both;
+  animation-timing-function: var(--ease-out);
+}
+
+html[data-nav='forward']::view-transition-old(root) {
+  animation-name: vt-sink;
+  animation-duration: var(--vt-in);
+}
+
+html[data-nav='forward']::view-transition-new(root) {
+  transform-origin: var(--vt-origin-x) var(--vt-origin-y);
+  animation-name: vt-pop-in;
+  animation-duration: var(--vt-in);
+}
+
+html[data-nav='back']::view-transition-old(root) {
+  z-index: 1;
+  transform-origin: var(--vt-origin-x) var(--vt-origin-y);
+  animation-name: vt-pop-out;
+  animation-duration: var(--vt-out);
+}
+
+html[data-nav='back']::view-transition-new(root) {
+  animation-name: vt-rise;
+  animation-duration: var(--vt-out);
+}
+
+/* The bar shows its live state, so the selection lens slides during the transition. */
+::view-transition-group(tabbar),
+::view-transition-group(tabbar-action) {
+  animation: none;
+}
+
+::view-transition-old(tabbar),
+::view-transition-old(tabbar-action) {
+  display: none;
+}
+
+::view-transition-new(tabbar),
+::view-transition-new(tabbar-action) {
+  animation: none;
+}
+
+::view-transition-old(tabbar):only-child,
+::view-transition-old(tabbar-action):only-child {
+  display: block;
+  animation: vt-bar-out var(--vt-out) var(--ease-out) both;
+}
+
+::view-transition-new(tabbar):only-child,
+::view-transition-new(tabbar-action):only-child {
+  animation: vt-bar-in var(--vt-in) var(--ease-out) both;
+}
+
+@keyframes vt-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@keyframes vt-sink {
+  to {
+    opacity: 0.4;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes vt-pop-out {
+  to {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+}
+
+@keyframes vt-rise {
+  from {
+    opacity: 0.5;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes vt-bar-in {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+}
+
+@keyframes vt-bar-out {
+  to {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+}
+
+/* ==========================================================================
+   Older component classes, restyled onto the glass system
+   ========================================================================== */
+
+@layer components {
   .btn-primary {
-    @apply bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.97] shadow-[0_8px_25px_-4px_rgba(16,185,129,0.45)] hover:shadow-[0_12px_30px_-2px_rgba(16,185,129,0.6)] border border-emerald-400/30;
+    @apply glass-tinted rounded-2xl px-6 py-4 font-semibold text-white;
+    transition: transform var(--dur-layout) var(--ease-spring), background-color var(--dur-base) var(--ease-out);
   }
-  
+
+  .btn-primary:hover {
+    --glass-alpha: 1;
+  }
+
+  .btn-primary:active,
+  .btn-secondary:active,
+  .btn-glass:active,
+  .btn-glass-primary:active {
+    transform: scale(0.98);
+    transition-duration: var(--dur-quick);
+  }
+
   .btn-secondary {
-    @apply backdrop-blur-xl bg-white/80 border-2 border-emerald-600/30 text-emerald-800 hover:bg-emerald-50/80 font-semibold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.97] shadow-sm;
+    @apply glass rounded-2xl px-6 py-4 font-semibold text-leaf-800;
+    transition: transform var(--dur-layout) var(--ease-spring);
   }
-  
+
   .btn-glass {
-    @apply backdrop-blur-2xl bg-white/70 hover:bg-white/90 text-emerald-900 border border-white/60 font-semibold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.97] shadow-[0_8px_24px_0_rgba(0,0,0,0.06)];
+    @apply glass rounded-2xl px-6 py-4 font-semibold text-leaf-900;
+    transition: transform var(--dur-layout) var(--ease-spring);
   }
 
   .btn-glass-primary {
-    @apply relative overflow-hidden bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-semibold py-3.5 px-6 rounded-2xl transition-all duration-300 shadow-[0_8px_25px_-4px_rgba(16,185,129,0.45)] hover:shadow-[0_12px_32px_-2px_rgba(16,185,129,0.6)] border border-emerald-400/40 active:scale-[0.97];
+    @apply glass-tinted rounded-2xl px-6 py-3 font-semibold text-white;
+    transition: transform var(--dur-layout) var(--ease-spring);
   }
-  
-  /* Agricultural Theme Components */
+
   .plant-card {
     @apply glass-card-interactive p-6;
   }
-  
+
   .weather-card {
-    @apply backdrop-blur-2xl bg-gradient-to-br from-blue-500/10 via-white/80 to-sky-500/10 rounded-3xl p-6 shadow-[0_10px_30px_0_rgba(59,130,246,0.12)] border border-white/70 relative overflow-hidden;
+    @apply glass-panel-elevated p-6;
   }
-  
+
   .tip-card {
-    @apply backdrop-blur-2xl bg-gradient-to-r from-amber-500/10 via-white/80 to-yellow-500/10 rounded-2xl p-6 shadow-sm border border-amber-300/40 border-l-4 border-l-amber-500;
+    @apply glass rounded-2xl p-6;
+    --glass-tint: 252 246 228;
+    --glass-alpha: 0.78;
   }
-  
+
   .diagnosis-card {
     @apply glass-panel-elevated p-6;
   }
-  
-  /* Floating Animation */
-  .float-animation {
-    animation: float 3s ease-in-out infinite;
-  }
-  
-  .pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-  
-  .grow-animation {
-    animation: grow 2s ease-out forwards;
-  }
-  
-  /* Android Mobile Optimizations */
-  .mobile-container {
-    @apply w-full max-w-full min-h-screen bg-background relative overflow-hidden;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: none;
-  }
-  
-  .mobile-header {
-    @apply flex items-center justify-between p-4 bg-white/95 backdrop-blur-md shadow-soft sticky top-0 z-50;
-    padding-top: max(16px, env(safe-area-inset-top));
-  }
-  
-  .mobile-content {
-    @apply px-4 pb-24;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: max(96px, calc(env(safe-area-inset-bottom) + 96px));
-  }
-  
-  .mobile-bottom-nav {
-    @apply fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-large z-50;
-    padding-bottom: max(0px, env(safe-area-inset-bottom));
+
+  .gradient-primary,
+  .gradient-hero,
+  .gradient-splash,
+  .gradient-mesh {
+    background-color: hsl(var(--leaf));
   }
 
-  /* Android Button Animations */
+  .gradient-glass {
+    background-color: rgb(255 255 255 / 0.6);
+  }
+
+  .shadow-soft {
+    box-shadow: 0 1px 2px rgb(27 31 25 / 0.06);
+  }
+
+  .shadow-medium {
+    box-shadow: 0 4px 12px -6px rgb(27 31 25 / 0.2);
+  }
+
+  .shadow-large,
+  .shadow-glow {
+    box-shadow: var(--glass-depth-raised);
+  }
+
+  .transition-smooth {
+    transition: all var(--dur-base) var(--ease-out);
+  }
+
+  .transition-spring {
+    transition: all var(--dur-layout) var(--ease-spring);
+  }
+
+  /* Looping decoration was removed; these names stay so markup keeps working. */
+  .float-animation,
+  .pulse-glow,
+  .floating-fab {
+    animation: none;
+  }
+
+  .grow-animation {
+    @apply animate-rise-in;
+  }
+
+  .mobile-container {
+    @apply relative min-h-screen w-full max-w-full overflow-hidden bg-background;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-header {
+    @apply sticky top-0 z-40 flex items-center justify-between p-4;
+    padding-top: max(16px, env(safe-area-inset-top));
+    background-color: rgb(244 244 240 / 0.72);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    backdrop-filter: blur(16px) saturate(180%);
+    box-shadow: 0 0.5px 0 rgb(27 31 25 / 0.12);
+  }
+
+  .mobile-content {
+    @apply px-4;
+    padding-bottom: calc(var(--tabbar-offset) + 32px);
+  }
+
+  .mobile-bottom-nav {
+    @apply glass fixed bottom-0 left-0 right-0 z-50 w-full;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
   .android-ripple {
     @apply relative overflow-hidden;
     -webkit-tap-highlight-color: transparent;
-    transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+    transition: transform var(--dur-layout) var(--ease-spring);
   }
 
   .android-ripple:active {
-    transform: scale(0.96);
+    transform: scale(0.97);
+    transition-duration: var(--dur-quick);
   }
 
-  /* Android Card Style */
   .android-card {
-    @apply bg-white rounded-2xl shadow-sm border border-gray-100;
-    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    @apply glass-card-interactive;
   }
 
-  .android-card:active {
-    transform: scale(0.98);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  }
-
-  /* Touch Targets */
   .touch-friendly {
-    min-height: 48px;
-    min-width: 48px;
     @apply flex items-center justify-center;
+    min-height: 44px;
+    min-width: 44px;
   }
-  
-  /* Agriculture Color Utilities */
+
   .text-agri-primary { color: hsl(var(--primary-green)); }
   .text-agri-secondary { color: hsl(var(--secondary-green)); }
   .text-agri-accent { color: hsl(var(--accent-green)); }
@@ -384,7 +815,7 @@ body {
   .text-agri-danger { color: hsl(var(--danger-red)); }
   .text-agri-info { color: hsl(var(--info-blue)); }
   .text-agri-purple { color: hsl(var(--purple)); }
-  
+
   .bg-agri-primary { background-color: hsl(var(--primary-green)); }
   .bg-agri-secondary { background-color: hsl(var(--secondary-green)); }
   .bg-agri-accent { background-color: hsl(var(--accent-green)); }
@@ -400,109 +831,104 @@ body {
   .bg-agri-light-cream { background-color: hsl(var(--light-cream)); }
 }
 
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
 @layer utilities {
-  /* Keyframe Animations */
+  .safe-area-top { padding-top: max(20px, env(safe-area-inset-top)); }
+  .safe-area-bottom { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+  .safe-area-left { padding-left: env(safe-area-inset-left); }
+  .safe-area-right { padding-right: env(safe-area-inset-right); }
+
+  /* Room for content to scroll clear of the floating tab bar. */
+  .pb-tabbar { padding-bottom: calc(var(--tabbar-offset) + 32px); }
+  /* Same, with a floating action button (56px) above the bar. */
+  .pb-tabbar-cta { padding-bottom: calc(var(--tabbar-offset) + 104px); }
+  .bottom-tabbar { bottom: calc(var(--tabbar-offset) + 12px); }
+
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(12px); }
+  }
+
+  /* Sections arrive one after another (60ms apart, capped near 400ms). */
+  .stagger > * {
+    animation: rise-in var(--dur-layout) var(--ease-out) both;
+  }
+  .stagger > :nth-child(2) { animation-delay: 60ms; }
+  .stagger > :nth-child(3) { animation-delay: 120ms; }
+  .stagger > :nth-child(4) { animation-delay: 180ms; }
+  .stagger > :nth-child(5) { animation-delay: 240ms; }
+  .stagger > :nth-child(n + 6) { animation-delay: 300ms; }
+
+  /* Expanding panels: animate between 0fr and 1fr rows. */
+  .disclosure {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--dur-layout) var(--ease-out);
+  }
+  .disclosure[data-open='true'] { grid-template-rows: 1fr; }
+  .disclosure > * { min-height: 0; overflow: hidden; }
+
   @keyframes scan {
-    0% {
-      top: 0%;
-      opacity: 0;
-    }
-    15% {
-      opacity: 1;
-    }
-    85% {
-      opacity: 1;
-    }
-    100% {
-      top: 96%;
-      opacity: 0;
-    }
+    0% { top: 0%; opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { top: 96%; opacity: 0; }
   }
 
   .animate-scan {
-    animation: scan 2.6s ease-in-out infinite;
+    animation: scan 2.6s var(--ease-out) infinite;
   }
-  
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(24px); }
   }
-  
-  @keyframes pulse-glow {
-    0%, 100% {
-      box-shadow: 0 0 5px hsla(var(--primary-green), 0.5);
-    }
-    50% {
-      box-shadow: 0 0 20px hsla(var(--primary-green), 0.8);
-    }
-  }
-  
-  @keyframes grow {
-    0% {
-      transform: scale(0) rotate(-180deg);
-      opacity: 0;
-    }
-    100% {
-      transform: scale(1) rotate(0deg);
-      opacity: 1;
-    }
-  }
-  
-  @keyframes slideUp {
-    0% {
-      transform: translateY(100%);
-      opacity: 0;
-    }
-    100% {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-  
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  @keyframes typing {
-    0% { width: 0; }
-    100% { width: 100%; }
-  }
-  
-  @keyframes shimmer {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 200% 0;
-    }
-  }
-  
+
   .animate-slide-up {
-    animation: slideUp 0.5s ease-out;
+    animation: slide-up var(--dur-layout) var(--ease-out) both;
   }
-  
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease-out;
+
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
   }
-  
+
   .animate-typing {
     animation: typing 2s steps(20, end);
   }
-  
-  .animate-shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
+
+  /* Skeleton placeholder shaped like the content it stands in for. */
+  .animate-shimmer,
+  .skeleton {
+    background-color: rgb(27 31 25 / 0.06);
+    background-image: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.55), transparent);
     background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+    animation: shimmer 1.6s var(--ease-out) infinite;
+  }
+
+  .skeleton {
+    @apply rounded-lg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger > *,
+  .animate-slide-up,
+  .animate-rise-in,
+  .animate-scan,
+  .animate-shimmer,
+  .skeleton {
+    animation: none !important;
+  }
+
+  .disclosure,
+  .tabbar__lens {
+    transition: none;
   }
 }

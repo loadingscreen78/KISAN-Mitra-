@@ -11,9 +11,11 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const CameraCapture = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -219,7 +221,7 @@ const CameraCapture = () => {
           <button 
             onClick={() => {
               stopCamera();
-              navigate('/diagnose');
+              goBack('/diagnose');
             }}
             className="p-2 hover:bg-agri-light rounded-full transition-colors"
           >

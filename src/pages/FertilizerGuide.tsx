@@ -18,14 +18,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { authService } from '@/lib/authService';
 import AmbientBackground from '@/components/AmbientBackground';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const FertilizerGuide = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handleBack = () => {
-    navigate('/home');
+    goBack();
   };
 
   const playVoiceGuidance = () => {
@@ -264,7 +266,7 @@ const FertilizerGuide = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-emerald-50/40 via-background to-emerald-50/20 pb-24">
+    <div className="min-h-screen relative overflow-hidden bg-emerald-50/40 pb-24">
       {/* Ambient background glow */}
       <AmbientBackground />
 
@@ -281,7 +283,7 @@ const FertilizerGuide = () => {
                 <ArrowLeft className="w-4 h-4 text-emerald-900" />
               </button>
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-green-500 text-white flex items-center justify-center shadow-md border border-white/60">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md border border-white/60">
                   <Beaker className="w-5 h-5" />
                 </div>
                 <div>
@@ -297,7 +299,7 @@ const FertilizerGuide = () => {
       {/* Content */}
       <main className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 pt-5 space-y-6">
         {/* Info Card */}
-        <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200">
+        <Card className="bg-green-50 border-2 border-green-200">
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="p-3 bg-white rounded-xl">
@@ -325,7 +327,7 @@ const FertilizerGuide = () => {
             return (
               <Card key={crop.id} className="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
                 {/* Crop Header */}
-                <CardHeader className="bg-gradient-to-r from-green-50 to-green-100 border-b border-green-200">
+                <CardHeader className="bg-green-50 border-b border-green-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <div className="text-4xl">{crop.image}</div>
@@ -397,7 +399,7 @@ const FertilizerGuide = () => {
                   <div className="mt-6">
                     <button
                       onClick={() => toggleExpandCard(crop.id)}
-                      className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl hover:from-blue-100 hover:to-purple-100 transition-colors"
+                      className="w-full flex items-center justify-between p-4 bg-blue-50 rounded-2xl hover:bg-blue-100 transition-colors"
                     >
                       <div className="flex items-center space-x-3">
                         <Leaf className="w-5 h-5 text-green-600" />
@@ -453,7 +455,7 @@ const FertilizerGuide = () => {
                       className={`w-full py-4 rounded-2xl font-bold text-lg transition-all duration-300 ${
                         isSaved
                           ? 'bg-green-100 text-green-700 border-2 border-green-300 hover:bg-green-200'
-                          : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl'
+                          : 'bg-green-500 hover:bg-green-600 text-white shadow-lg hover:shadow-xl'
                       }`}
                     >
                       <div className="flex items-center justify-center space-x-3">

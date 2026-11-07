@@ -40,4 +40,12 @@ i18n
     }
   });
 
+// Keep <html lang> in step so the browser picks Devanagari line metrics and
+// hyphenation rules, and so the Hindi spacing rules in index.css apply.
+const syncDocumentLanguage = (language: string) => {
+  document.documentElement.lang = language?.startsWith('hi') ? 'hi' : 'en';
+};
+syncDocumentLanguage(i18n.resolvedLanguage || i18n.language);
+i18n.on('languageChanged', syncDocumentLanguage);
+
 export default i18n;

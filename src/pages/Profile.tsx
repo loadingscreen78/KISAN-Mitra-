@@ -37,9 +37,11 @@ import { dataService } from '../lib/dataService';
 import { marketData } from '../lib/marketData';
 import { authService } from '../lib/authService';
 import { signOutFirebase } from '../lib/firebase';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const Profile = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
 
   const handleLogout = async () => {
     await signOutFirebase();
@@ -48,7 +50,7 @@ const Profile = () => {
   };
 
   const handleBack = () => {
-    navigate('/home');
+    goBack();
   };
   const [userData, setUserData] = useState(null);
   const [stats, setStats] = useState(null);

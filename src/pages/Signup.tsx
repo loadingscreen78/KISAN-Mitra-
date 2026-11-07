@@ -149,7 +149,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="mobile-container min-h-screen bg-gradient-to-br from-agri-light to-white overflow-y-auto">
+    <div className="mobile-container min-h-screen bg-agri-light overflow-y-auto">
       {/* Subtle Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -178,10 +178,10 @@ const Signup = () => {
 
         {/* Header */}
         <div className="text-center px-6 pt-8 pb-6">
-          <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-xl">
+          <div className="w-24 h-24 bg-green-400 rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-xl">
             <Sprout className="w-12 h-12 text-white" />
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent mb-3">
+          <h1 className="text-3xl font-bold bg-green-600 bg-clip-text text-transparent mb-3">
             🌱 Join 50,000+ Smart Farmers
           </h1>
           <p className="text-lg text-gray-600 leading-relaxed mb-2">
@@ -281,7 +281,7 @@ const Signup = () => {
                   <button
                     type="submit"
                     disabled={loading || !isFormValid()}
-                    className="w-full h-16 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-xl font-bold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full h-16 bg-green-500 hover:bg-green-600 text-white text-xl font-bold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center space-x-2">

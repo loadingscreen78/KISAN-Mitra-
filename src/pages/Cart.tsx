@@ -14,9 +14,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cartManager, CartItem } from '@/lib/cart';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const Cart = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState('');
   
@@ -60,7 +62,7 @@ const Cart = () => {
       <div className="mobile-container bg-background">
         <div className="mobile-header">
           <div className="flex items-center space-x-3">
-            <button onClick={() => navigate('/shop')}>
+            <button onClick={() => goBack('/shop')}>
               <ArrowLeft className="w-6 h-6 text-gray-700" />
             </button>
             <h1 className="text-xl font-bold text-text-secondary">Cart</h1>
@@ -72,7 +74,7 @@ const Cart = () => {
           <h2 className="text-xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
           <p className="text-gray-500 mb-8 text-center">Add some products to get started</p>
           <Button 
-            onClick={() => navigate('/shop')}
+            onClick={() => goBack('/shop')}
             className="bg-green-600 hover:bg-green-700 text-white px-8 py-3"
           >
             Continue Shopping
@@ -87,7 +89,7 @@ const Cart = () => {
       {/* Header */}
       <div className="mobile-header">
         <div className="flex items-center space-x-3">
-          <button onClick={() => navigate('/shop')}>
+          <button onClick={() => goBack('/shop')}>
             <ArrowLeft className="w-6 h-6 text-gray-700" />
           </button>
           <h1 className="text-xl font-bold text-text-secondary">Cart ({cartItems.length})</h1>

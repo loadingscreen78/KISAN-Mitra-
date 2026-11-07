@@ -112,7 +112,7 @@ const NotificationPanel = ({ isOpen, onClose }: NotificationPanelProps) => {
     <div className="fixed inset-0 bg-black/50 z-50 flex justify-end">
       <div className="bg-white w-full max-w-sm h-full overflow-hidden shadow-xl animate-slide-in-right">
         {/* Header */}
-        <div className="bg-gradient-to-r from-green-500 to-green-600 p-4 text-white">
+        <div className="bg-green-500 p-4 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Bell className="w-6 h-6" />

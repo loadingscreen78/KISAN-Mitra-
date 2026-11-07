@@ -18,6 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { toast } from '@/components/ui/use-toast';
+import { useGoBack } from '@/hooks/useGoBack';
 
 interface DiagnosisResult {
   disease: string;
@@ -50,6 +51,7 @@ interface TreatmentStep {
 
 const DiagnoseResults = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [results, setResults] = useState<DiagnosisResult | null>(null);
   const [plantImage, setPlantImage] = useState<string | null>(null);
   const [fertilizers, setFertilizers] = useState<Fertilizer[]>([]);
@@ -283,7 +285,7 @@ const DiagnoseResults = () => {
             <AlertTriangle className="w-16 h-16 text-agri-warning mx-auto mb-4" />
             <h2 className="text-xl font-bold text-agri-accent mb-2">No Results Found</h2>
             <p className="text-agri-gray mb-4">Please diagnose a plant first.</p>
-            <Button onClick={() => navigate('/diagnose')}>
+            <Button onClick={() => goBack('/diagnose')}>
               Start Diagnosis
             </Button>
           </div>
@@ -310,7 +312,7 @@ const DiagnoseResults = () => {
       <div className="mobile-header bg-agri-cream">
         <div className="flex items-center space-x-3">
           <button
-            onClick={() => navigate('/diagnose')}
+            onClick={() => goBack('/diagnose')}
             className="p-2 hover:bg-agri-light rounded-full transition-colors"
           >
             <ArrowLeft className="w-6 h-6 text-agri-accent" />
@@ -347,7 +349,7 @@ const DiagnoseResults = () => {
               alt="Diagnosed plant" 
               className="w-full aspect-[4/3] object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-black/30" />
             <div className="absolute top-4 right-4 bg-green-500 rounded-full p-3 shadow-lg">
               <Leaf className="w-6 h-6 text-white" />
             </div>
@@ -414,7 +416,7 @@ const DiagnoseResults = () => {
                 : results.message || results.error || 'We could not diagnose this photo. Please try again.'}
             </p>
             {!results.isHealthy && (
-              <Button onClick={() => navigate('/diagnose')} className="w-full">
+              <Button onClick={() => goBack('/diagnose')} className="w-full">
                 Try Another Photo
               </Button>
             )}
@@ -424,7 +426,7 @@ const DiagnoseResults = () => {
         {showTreatment && (
         <>
         {/* Treatment Steps */}
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-3xl p-6 border border-green-200">
+        <div className="bg-green-50 rounded-3xl p-6 border border-green-200">
           <div className="flex items-center space-x-3 mb-6">
             <div className="bg-green-500 rounded-full p-3">
               {loadingSteps ? (
@@ -464,7 +466,7 @@ const DiagnoseResults = () => {
         </div>
         
         {/* Add to Active Treatments */}
-        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-3xl p-6 text-white shadow-xl">
+        <div className="bg-green-500 rounded-3xl p-6 text-white shadow-xl">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-bold text-white text-lg mb-2">Save Treatment Plan</h3>
@@ -526,7 +528,7 @@ const DiagnoseResults = () => {
           <h2 className="text-xl font-bold text-agri-accent">Alternative Options</h2>
           
           {/* Nearby Shops */}
-          <div className="plant-card bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+          <div className="plant-card bg-purple-500 text-white">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="text-lg font-bold mb-2">Visit Nearby Fertilizer Shops</h3>

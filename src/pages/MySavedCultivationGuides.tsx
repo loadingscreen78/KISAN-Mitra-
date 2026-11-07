@@ -9,9 +9,11 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const MySavedCultivationGuides = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [savedCultivationGuides, setSavedCultivationGuides] = useState<string[]>([]);
 
   // Load saved guides
@@ -53,11 +55,11 @@ const MySavedCultivationGuides = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50">
+    <div className="min-h-screen bg-green-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-4 shadow-lg">
+      <div className="bg-green-600 px-4 py-4 shadow-lg">
         <div className="flex items-center space-x-3">
-          <button onClick={() => navigate('/advisory')} className="text-white hover:bg-white/20 rounded-full p-2">
+          <button onClick={() => goBack()} className="text-white hover:bg-white/20 rounded-full p-2">
             <ArrowLeft className="w-6 h-6" />
           </button>
           <div className="flex items-center space-x-3">
@@ -77,7 +79,7 @@ const MySavedCultivationGuides = () => {
         {savedCultivationCrops.length > 0 ? (
           <div className="space-y-4">
             {/* Summary Info */}
-            <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200">
+            <Card className="bg-green-50 border-2 border-green-200">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-4">
                   <div className="p-3 bg-white rounded-xl shadow-sm">

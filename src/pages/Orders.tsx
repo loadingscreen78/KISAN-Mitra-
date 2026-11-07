@@ -16,9 +16,11 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { cartManager, Order } from '@/lib/cart';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const FarmerOrdersPage = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [activeFilter, setActiveFilter] = useState('all');
   const [orders, setOrders] = useState<Order[]>([]);
 
@@ -141,7 +143,7 @@ const FarmerOrdersPage = () => {
         <div className="max-w-md mx-auto px-4 py-4">
           <div className="flex items-center space-x-3 mb-2">
             <button 
-              onClick={() => navigate('/home')}
+              onClick={() => goBack()}
               className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors"
             >
               <ArrowLeft className="w-6 h-6 text-gray-700" />

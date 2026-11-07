@@ -23,9 +23,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { marketData as realMarketData, Crop } from '@/lib/marketData';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const SellProduce = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const location = useLocation();
   const [selectedTab, setSelectedTab] = useState('create');
   const [showCreateListingDialog, setShowCreateListingDialog] = useState(false);
@@ -341,13 +343,13 @@ const SellProduce = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 pb-20">
+    <div className="min-h-screen bg-green-50 pb-20">
       {/* Header - Mobile Optimized */}
       <div className="bg-white shadow-sm border-b border-green-100 sticky top-0 z-10">
         <div className="px-4 py-3">
           <div className="flex items-center space-x-3">
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => goBack()}
               className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-gray-600" />

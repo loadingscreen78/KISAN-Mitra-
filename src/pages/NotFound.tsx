@@ -2,10 +2,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Home } from "lucide-react";
+import { useGoBack } from '@/hooks/useGoBack';
 
 const NotFound = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const goBack = useGoBack();
 
   useEffect(() => {
     console.error(
@@ -15,9 +17,9 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50">
+    <div className="min-h-screen bg-red-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-500 to-orange-500 px-4 py-4 shadow-lg">
+      <div className="bg-red-500 px-4 py-4 shadow-lg">
         <div className="flex items-center justify-between">
           <Button
             variant="ghost"
@@ -49,7 +51,7 @@ const NotFound = () => {
               <span>Return to Home</span>
             </Button>
             <Button 
-              onClick={() => navigate(-1)}
+              onClick={() => goBack()}
               variant="outline"
               className="border-green-600 text-green-600 hover:bg-green-50 px-8 py-3 rounded-2xl flex items-center space-x-2 mx-auto"
             >

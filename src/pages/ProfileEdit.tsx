@@ -18,9 +18,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from '@/components/ui/use-toast';
 import CustomInput from '@/components/CustomInput';
 import LocationPicker from '@/components/LocationPicker';
+import { useGoBack } from '@/hooks/useGoBack';
 
 const ProfileEdit = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [userData, setUserData] = useState({
     name: '',
     phone: '',
@@ -133,7 +135,7 @@ const ProfileEdit = () => {
         description: "Your profile has been successfully updated."
       });
       
-      navigate('/profile');
+      goBack('/profile');
       
     } catch (error) {
       console.error('Error saving profile:', error);
@@ -158,7 +160,7 @@ const ProfileEdit = () => {
       <div className="mobile-header bg-white">
         <div className="flex items-center space-x-3">
           <button 
-            onClick={() => navigate('/profile')}
+            onClick={() => goBack('/profile')}
             className="w-10 h-10 bg-agri-light rounded-full flex items-center justify-center"
           >
             <ArrowLeft className="w-5 h-5 text-agri-accent" />
