@@ -123,7 +123,7 @@ const PlantDiagnosis = () => {
 
       {/* Floating Expo-Glass Top Header */}
       <header className="sticky top-0 z-40 backdrop-blur-2xl bg-white/75 border-b border-white/60 shadow-[0_4px_20px_0_rgba(0,0,0,0.03)]">
-        <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <button
             onClick={() => navigate('/home')}
             aria-label="Back"
@@ -156,7 +156,7 @@ const PlantDiagnosis = () => {
       </header>
 
       {/* Main Container */}
-      <main className="max-w-md mx-auto px-4 pt-5 space-y-5">
+      <main className="max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 pt-5 space-y-5">
         {/* Main Capture Action Card in Expo Glass */}
         <div className="glass-panel-elevated p-6 text-center space-y-6">
           <div>
@@ -271,7 +271,7 @@ const PlantDiagnosis = () => {
       {/* Floating Action Dock or Diagnosis Trigger */}
       {selectedImage ? (
         <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-[max(16px,env(safe-area-inset-bottom))] bg-gradient-to-t from-white/95 via-white/80 to-transparent backdrop-blur-xl">
-          <div className="max-w-md mx-auto">
+          <div className="max-w-md mx-auto w-full">
             <button
               onClick={startDiagnosis}
               data-diagnosis-button

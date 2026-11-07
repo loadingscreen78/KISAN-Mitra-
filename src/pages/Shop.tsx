@@ -177,7 +177,7 @@ const Shop = () => {
 
       {/* Floating Expo-Glass Top Header */}
       <header className="sticky top-0 z-40 backdrop-blur-2xl bg-white/75 border-b border-white/60 shadow-[0_4px_20px_0_rgba(0,0,0,0.03)]">
-        <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <button 
               onClick={() => navigate('/home')}
@@ -207,7 +207,7 @@ const Shop = () => {
       </header>
 
       {/* Content Container */}
-      <main className="max-w-md mx-auto px-4 pt-4 space-y-4">
+      <main className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 pt-4 space-y-5">
         {/* Search Bar in Glass */}
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -246,7 +246,7 @@ const Shop = () => {
           })}
         </div>
 
-        {/* Products List in Glass Cards */}
+        {/* Products Grid in Glass Cards */}
         <div className="space-y-3 pt-1">
           <div className="flex items-center justify-between px-1">
             <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
@@ -257,7 +257,7 @@ const Shop = () => {
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {filteredProducts.map((product) => (
               <div
                 key={product.id}

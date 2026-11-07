@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { authService } from '@/lib/authService';
+import AmbientBackground from '@/components/AmbientBackground';
 
 const FertilizerGuide = () => {
   const navigate = useNavigate();
@@ -263,34 +264,38 @@ const FertilizerGuide = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-emerald-50/40 via-background to-emerald-50/20 pb-24">
+      {/* Ambient background glow */}
+      <AmbientBackground />
+
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-green-100 sticky top-0 z-10">
-        <div className="px-6 py-4">
+      <header className="sticky top-0 z-40 backdrop-blur-2xl bg-white/75 border-b border-white/60 shadow-[0_4px_20px_0_rgba(0,0,0,0.03)] transition-all">
+        <div className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 py-3.5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3 sm:space-x-4">
               <button
                 onClick={handleBack}
-                className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                aria-label="Back"
+                className="p-2.5 glass-panel rounded-full hover:bg-white text-slate-700 transition-all active:scale-90 shadow-sm"
               >
-                <ArrowLeft className="w-6 h-6 text-gray-600" />
+                <ArrowLeft className="w-4 h-4 text-emerald-900" />
               </button>
               <div className="flex items-center space-x-3">
-                <div className="p-3 bg-green-100 rounded-xl">
-                  <Beaker className="w-7 h-7 text-green-600" />
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-green-500 text-white flex items-center justify-center shadow-md border border-white/60">
+                  <Beaker className="w-5 h-5" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Fertilizer Guidance</h1>
-                  <p className="text-sm text-gray-600">Crop-specific fertilizer recommendations</p>
+                  <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">Fertilizer Guidance</h1>
+                  <p className="text-xs text-slate-500">Crop-specific nutrient & application schedules</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Content */}
-      <div className="px-6 py-8 space-y-8">
+      <main className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 pt-5 space-y-6">
         {/* Info Card */}
         <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200">
           <CardContent className="p-6">
@@ -471,7 +476,7 @@ const FertilizerGuide = () => {
             );
           })}
         </div>
-      </div>
+      </main>
     </div>
   );
 };

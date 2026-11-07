@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Bell, 
   Camera, 
-  ShoppingCart, 
   MapPin, 
   Package, 
   Sprout, 
@@ -22,7 +21,6 @@ import {
   Wind
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import AmbientBackground from '@/components/AmbientBackground';
 import GlassBottomNav from '@/components/GlassBottomNav';
@@ -145,7 +143,7 @@ const Home = () => {
 
       {/* Floating Expo-Glass Top Header */}
       <header className="sticky top-0 z-40 backdrop-blur-2xl bg-white/75 border-b border-white/60 shadow-[0_4px_20px_0_rgba(0,0,0,0.03)] transition-all">
-        <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           {/* Logo & Greeting */}
           <div className="flex items-center space-x-3 min-w-0">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-green-500 p-0.5 shadow-md flex items-center justify-center flex-shrink-0">
@@ -160,9 +158,9 @@ const Home = () => {
             <div className="min-w-0">
               <div className="text-[11px] font-semibold text-emerald-800 tracking-tight flex items-center gap-1">
                 <span>{getGreeting()}</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
               </div>
-              <h1 className="text-base font-extrabold text-slate-900 truncate tracking-tight">
+              <h1 className="text-base sm:text-lg font-extrabold text-slate-900 truncate tracking-tight">
                 {userName}
               </h1>
             </div>
@@ -177,16 +175,16 @@ const Home = () => {
             <button 
               onClick={() => navigate('/notifications')}
               aria-label="Notifications"
-              className="relative p-2.5 glass-panel rounded-full hover:bg-white/90 text-slate-700 transition-all active:scale-95 shadow-sm"
+              className="relative p-2.5 glass-panel rounded-full hover:bg-white/90 text-slate-700 transition-all active:scale-90 shadow-sm"
             >
               <Bell className="w-4 h-4 text-emerald-800" />
-              <span className="absolute 1 top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white" />
+              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white animate-pulse" />
             </button>
 
             <button 
               onClick={() => navigate('/profile')}
               aria-label="Profile"
-              className="w-9 h-9 rounded-full bg-gradient-to-tr from-emerald-600 to-green-500 text-white font-bold text-xs flex items-center justify-center shadow-md border-2 border-white active:scale-95 transition-transform"
+              className="w-9 h-9 rounded-full bg-gradient-to-tr from-emerald-600 to-green-500 text-white font-bold text-xs flex items-center justify-center shadow-md border-2 border-white active:scale-90 transition-transform hover:shadow-emerald-500/20"
             >
               {userName ? userName.charAt(0).toUpperCase() : 'F'}
             </button>
@@ -194,131 +192,146 @@ const Home = () => {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-md mx-auto px-4 pt-4 space-y-5">
-        {/* Weather Glass Card */}
-        <div 
-          onClick={() => navigate('/weather')}
-          className="cursor-pointer group relative overflow-hidden backdrop-blur-2xl bg-gradient-to-br from-white/85 via-white/70 to-emerald-50/50 border border-white/80 rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.05)] hover:shadow-[0_12px_36px_rgba(16,185,129,0.12)] transition-all duration-300"
-        >
-          {/* Top highlight line */}
-          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white to-transparent" />
+      {/* Main Content - Adaptive Responsive Container */}
+      <main className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 pt-5 space-y-6">
+        
+        {/* Top Section: Responsive Grid for Weather & AI Plant Hero */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
+          {/* Weather Glass Card */}
+          <div 
+            onClick={() => navigate('/weather')}
+            className="cursor-pointer group relative overflow-hidden backdrop-blur-2xl bg-gradient-to-br from-white/90 via-white/75 to-emerald-50/50 border border-white/80 rounded-3xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_36px_rgba(16,185,129,0.14)] active:scale-[0.99] transition-all duration-300 flex flex-col justify-between"
+          >
+            {/* Top highlight line */}
+            <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white to-transparent" />
 
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center space-x-1.5 text-xs font-semibold text-emerald-800">
-              <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-              <span className="truncate max-w-[200px]">
-                {weatherLoading ? 'Detecting location...' : weather?.location || 'India'}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-1.5 text-xs font-semibold text-emerald-800">
+                  <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="truncate max-w-[220px]">
+                    {weatherLoading ? 'Detecting location...' : weather?.location || 'India'}
+                  </span>
+                </div>
+                <span className="glass-pill px-2.5 py-1 text-[11px] font-semibold text-emerald-700 flex items-center gap-1 group-hover:bg-emerald-500/10 transition-colors">
+                  7-Day Forecast <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between my-2">
+                <div className="flex items-center space-x-3.5">
+                  <div className="w-14 h-14 rounded-2xl glass-panel p-2 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform">
+                    {weather && !weatherLoading ? (
+                      <img 
+                        src={weatherService.getWeatherIconUrl(weather.icon)} 
+                        alt={weather.description}
+                        className="w-10 h-10 object-contain drop-shadow"
+                      />
+                    ) : (
+                      <Cloud className="w-9 h-9 text-sky-500" />
+                    )}
+                  </div>
+                  <div>
+                    <div className="text-3xl font-black text-slate-900 tracking-tight">
+                      {weatherLoading ? '--°C' : `${weather?.temperature ?? 28}°C`}
+                    </div>
+                    <div className="text-xs font-medium text-slate-600 capitalize">
+                      {weatherLoading ? 'Updating weather...' : weather?.description || 'Partly Cloudy'}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 pr-1">
+                  <div className="text-right">
+                    <div className="flex items-center justify-end gap-1 text-[11px] text-slate-500">
+                      <Droplets className="w-3 h-3 text-sky-500" /> Humidity
+                    </div>
+                    <div className="text-sm font-bold text-slate-800">
+                      {weatherLoading ? '--%' : `${weather?.humidity ?? 65}%`}
+                    </div>
+                  </div>
+
+                  <div className="text-right pl-3 border-l border-emerald-100">
+                    <div className="flex items-center justify-end gap-1 text-[11px] text-slate-500">
+                      <Wind className="w-3 h-3 text-emerald-500" /> Wind
+                    </div>
+                    <div className="text-sm font-bold text-slate-800">
+                      {weatherLoading ? '--' : `${weather?.windSpeed ?? 12} km/h`}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span className="flex items-center gap-1.5 text-emerald-700 font-semibold">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Optimal Spray Conditions
+              </span>
+              <span className="text-slate-400">Tap for full radar</span>
+            </div>
+          </div>
+
+          {/* AI Plant Diagnosis - Hero Expo-Glass Card */}
+          <div 
+            onClick={() => navigate('/diagnose')}
+            className="cursor-pointer group relative overflow-hidden rounded-3xl p-5 bg-gradient-to-br from-emerald-600 via-green-600 to-teal-700 text-white shadow-[0_12px_36px_-4px_rgba(16,185,129,0.4)] border border-emerald-400/40 transform active:scale-[0.99] transition-all duration-300 flex flex-col justify-between"
+          >
+            {/* Frosted glass internal lighting reflection */}
+            <div className="absolute top-0 right-0 w-44 h-44 bg-white/10 rounded-full blur-2xl transform translate-x-12 -translate-y-12 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-36 h-36 bg-black/10 rounded-full blur-xl pointer-events-none" />
+
+            <div>
+              <div className="relative z-10 flex items-start justify-between">
+                <div className="flex-1 pr-3">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-[11px] font-bold mb-2.5 border border-white/30">
+                    <Sparkles className="w-3 h-3 text-yellow-300" />
+                    <span>MobileNetV2 + Gemini AI</span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-extrabold text-white leading-tight mb-1">
+                    {t('home.diagnose_plant_health')}
+                  </h2>
+                  <p className="text-white/85 text-xs leading-relaxed max-w-sm">
+                    {t('home.take_photo_check_diseases')}
+                  </p>
+                </div>
+
+                <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-xl border border-white/40 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform flex-shrink-0">
+                  <Camera className="w-8 h-8 text-white group-hover:rotate-6 transition-transform" />
+                </div>
+              </div>
+            </div>
+
+            <div className="relative z-10 mt-4 pt-3 border-t border-white/20 flex items-center justify-between text-xs font-semibold">
+              <span className="flex items-center gap-1.5 text-white/90">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-200" /> 38 diseases & treatments
+              </span>
+              <span className="bg-white text-emerald-800 px-3.5 py-1.5 rounded-full font-bold text-xs flex items-center gap-1 shadow-sm group-hover:bg-emerald-50 active:scale-95 transition-all">
+                Scan Leaf <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
               </span>
             </div>
-            <span className="glass-pill px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 flex items-center gap-1 group-hover:bg-emerald-500/10 transition-colors">
-              Forecast <ChevronRight className="w-3 h-3" />
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-13 h-13 rounded-2xl glass-panel p-2 flex items-center justify-center shadow-inner">
-                {weather && !weatherLoading ? (
-                  <img 
-                    src={weatherService.getWeatherIconUrl(weather.icon)} 
-                    alt={weather.description}
-                    className="w-9 h-9 object-contain"
-                  />
-                ) : (
-                  <Cloud className="w-8 h-8 text-sky-500" />
-                )}
-              </div>
-              <div>
-                <div className="text-2xl font-black text-slate-900 tracking-tight">
-                  {weatherLoading ? '--°C' : `${weather?.temperature ?? 28}°C`}
-                </div>
-                <div className="text-xs font-medium text-slate-600 capitalize">
-                  {weatherLoading ? 'Updating weather...' : weather?.description || 'Partly Cloudy'}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 pr-1">
-              <div className="text-right">
-                <div className="flex items-center justify-end gap-1 text-[11px] text-slate-500">
-                  <Droplets className="w-3 h-3 text-sky-500" /> Humidity
-                </div>
-                <div className="text-sm font-bold text-slate-800">
-                  {weatherLoading ? '--%' : `${weather?.humidity ?? 65}%`}
-                </div>
-              </div>
-
-              <div className="text-right pl-2 border-l border-emerald-100">
-                <div className="flex items-center justify-end gap-1 text-[11px] text-slate-500">
-                  <Wind className="w-3 h-3 text-emerald-500" /> Wind
-                </div>
-                <div className="text-sm font-bold text-slate-800">
-                  {weatherLoading ? '--' : `${weather?.windSpeed ?? 12} km/h`}
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* AI Plant Diagnosis - Hero Expo-Glass Card */}
-        <div 
-          onClick={() => navigate('/diagnose')}
-          className="cursor-pointer group relative overflow-hidden rounded-3xl p-5 bg-gradient-to-br from-emerald-600 via-green-600 to-teal-700 text-white shadow-[0_12px_36px_-4px_rgba(16,185,129,0.5)] border border-emerald-400/40 transform active:scale-[0.98] transition-all duration-300"
-        >
-          {/* Frosted glass internal lighting reflection */}
-          <div className="absolute top-0 right-0 w-44 h-44 bg-white/10 rounded-full blur-2xl transform translate-x-12 -translate-y-12 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-36 h-36 bg-black/10 rounded-full blur-xl pointer-events-none" />
-
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex-1 pr-3">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-[11px] font-bold mb-2.5 border border-white/30">
-                <Sparkles className="w-3 h-3 text-yellow-300" />
-                <span>MobileNetV2 + Gemini AI</span>
-              </div>
-              <h2 className="text-xl font-extrabold text-white leading-tight mb-1">
-                {t('home.diagnose_plant_health')}
-              </h2>
-              <p className="text-white/85 text-xs leading-relaxed max-w-[210px]">
-                {t('home.take_photo_check_diseases')}
-              </p>
-            </div>
-
-            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-xl border border-white/40 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform flex-shrink-0">
-              <Camera className="w-8 h-8 text-white group-hover:rotate-6 transition-transform" />
-            </div>
-          </div>
-
-          <div className="relative z-10 mt-4 pt-3 border-t border-white/20 flex items-center justify-between text-xs font-semibold">
-            <span className="flex items-center gap-1 text-white/90">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-200" /> 38 diseases & treatments
-            </span>
-            <span className="bg-white text-emerald-800 px-3 py-1 rounded-full font-bold text-xs flex items-center gap-1 shadow-sm group-hover:bg-emerald-50 transition-colors">
-              Scan Leaf <ChevronRight className="w-3 h-3" />
-            </span>
-          </div>
-        </div>
-
-        {/* Quick Bento Actions Grid */}
+        {/* Quick Bento Actions Grid (2 cols mobile, 4 cols tablet/desktop) */}
         <div>
           <div className="flex items-center justify-between mb-3 px-1">
-            <h2 className="text-sm font-bold text-slate-800 tracking-tight uppercase tracking-wider text-[11px] text-slate-500">
+            <h2 className="font-bold text-slate-800 tracking-tight uppercase tracking-wider text-[11px] text-slate-500">
               Quick Tools
             </h2>
             <span className="text-[11px] font-medium text-emerald-700">All features</span>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:gap-4">
             {/* Action 1: Soil Health */}
             <div 
               onClick={() => navigate('/soil-health')}
-              className="cursor-pointer glass-card-interactive p-4 flex flex-col justify-between h-32"
+              className="cursor-pointer glass-card-interactive p-4 flex flex-col justify-between h-32 hover:-translate-y-0.5 active:scale-95 transition-all"
             >
               <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500/15 to-orange-500/15 border border-amber-400/30 flex items-center justify-center text-amber-700">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500/15 to-orange-500/15 border border-amber-400/30 flex items-center justify-center text-amber-700 shadow-sm">
                   <TestTube className="w-5 h-5" />
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-slate-400" />
+                <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-amber-600 transition-colors" />
               </div>
               <div>
                 <h3 className="font-bold text-slate-900 text-sm">{t('home.soil_health')}</h3>
@@ -329,13 +342,13 @@ const Home = () => {
             {/* Action 2: Fertilizer Guide */}
             <div 
               onClick={() => navigate('/fertilizer-guide')}
-              className="cursor-pointer glass-card-interactive p-4 flex flex-col justify-between h-32"
+              className="cursor-pointer glass-card-interactive p-4 flex flex-col justify-between h-32 hover:-translate-y-0.5 active:scale-95 transition-all"
             >
               <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-teal-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-700">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-teal-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-700 shadow-sm">
                   <Beaker className="w-5 h-5" />
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-slate-400" />
+                <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 transition-colors" />
               </div>
               <div>
                 <h3 className="font-bold text-slate-900 text-sm">{t('home.fertilizer_guide')}</h3>
@@ -346,10 +359,10 @@ const Home = () => {
             {/* Action 3: Mandi Prices */}
             <div 
               onClick={() => navigate('/market-prices')}
-              className="cursor-pointer glass-card-interactive p-4 flex flex-col justify-between h-32"
+              className="cursor-pointer glass-card-interactive p-4 flex flex-col justify-between h-32 hover:-translate-y-0.5 active:scale-95 transition-all"
             >
               <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500/15 to-indigo-500/15 border border-blue-400/30 flex items-center justify-center text-blue-700">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500/15 to-indigo-500/15 border border-blue-400/30 flex items-center justify-center text-blue-700 shadow-sm">
                   <BarChart3 className="w-5 h-5" />
                 </div>
                 <span className="glass-pill px-2 py-0.5 text-[9px] font-extrabold text-blue-700">LIVE</span>
@@ -363,13 +376,13 @@ const Home = () => {
             {/* Action 4: Nearby Shops */}
             <div 
               onClick={() => navigate('/shops')}
-              className="cursor-pointer glass-card-interactive p-4 flex flex-col justify-between h-32"
+              className="cursor-pointer glass-card-interactive p-4 flex flex-col justify-between h-32 hover:-translate-y-0.5 active:scale-95 transition-all"
             >
               <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500/15 to-pink-500/15 border border-purple-400/30 flex items-center justify-center text-purple-700">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500/15 to-pink-500/15 border border-purple-400/30 flex items-center justify-center text-purple-700 shadow-sm">
                   <Store className="w-5 h-5" />
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-slate-400" />
+                <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-purple-600 transition-colors" />
               </div>
               <div>
                 <h3 className="font-bold text-slate-900 text-sm">{t('home.nearby_shops')}</h3>
@@ -379,111 +392,116 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Mandi Price Watch Glass Card */}
-        <div className="glass-panel-elevated p-5">
-          <div className="flex items-center justify-between mb-4">
+        {/* Lower Row: Mandi Price Watch + My Farm in 2-Column Responsive Grid on md+ */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
+          {/* Mandi Price Watch Glass Card */}
+          <div className="glass-panel-elevated p-5 flex flex-col justify-between">
             <div>
-              <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
-                {t('home.todays_mandi_prices')}
-              </h2>
-              <p className="text-xs text-slate-500">Top market movers in your region</p>
-            </div>
-            <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-700 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4" />
-            </div>
-          </div>
-
-          <div className="space-y-2 mb-4">
-            {marketPrices.slice(0, 3).map((item, index) => (
-              <div 
-                key={index} 
-                className="flex items-center justify-between p-3 rounded-2xl bg-white/70 border border-white/60 shadow-sm"
-              >
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <div className="font-bold text-slate-900 text-sm">{item.crop}</div>
-                  <div className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
-                    <span>↗ {t('home.trending_up')}</span>
+                  <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+                    {t('home.todays_mandi_prices')}
+                  </h2>
+                  <p className="text-xs text-slate-500">Top market movers in your region</p>
+                </div>
+                <div className="w-9 h-9 rounded-full bg-emerald-500/10 text-emerald-700 flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4" />
+                </div>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                {marketPrices.slice(0, 3).map((item, index) => (
+                  <div 
+                    key={index} 
+                    className="flex items-center justify-between p-3 rounded-2xl bg-white/70 border border-white/60 shadow-sm hover:bg-white/90 transition-colors"
+                  >
+                    <div>
+                      <div className="font-bold text-slate-900 text-sm">{item.crop}</div>
+                      <div className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+                        <span>↗ {t('home.trending_up')}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-extrabold text-slate-900 text-sm">{item.price}</div>
+                      <div className="text-[11px] font-bold text-emerald-600">{item.change}</div>
+                    </div>
                   </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-extrabold text-slate-900 text-sm">{item.price}</div>
-                  <div className="text-[11px] font-bold text-emerald-600">{item.change}</div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-2 gap-2.5">
-            <Button 
-              onClick={() => navigate('/market-prices')}
-              variant="glass"
-              className="w-full h-11 text-xs font-bold text-emerald-800 rounded-xl border border-white/80"
-            >
-              <BarChart3 className="w-4 h-4" />
-              <span>{t('home.see_prices')}</span>
-            </Button>
-            <Button 
-              onClick={() => navigate('/sell')}
-              className="w-full h-11 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-green-600 rounded-xl shadow-md"
-            >
-              <TrendingUp className="w-4 h-4" />
-              <span>{t('home.sell_crops')}</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* My Farm & Treatments Section */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-              {t('home.sections.my_farm')}
-            </h2>
-          </div>
-
-          <div className="space-y-2.5">
-            <div 
-              onClick={() => navigate('/treatments')}
-              className="cursor-pointer glass-card-interactive p-4 flex items-center space-x-3.5"
-            >
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-green-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-700 relative flex-shrink-0">
-                <Activity className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
-                  2
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-slate-900 text-sm truncate">{t('home.active_treatments')}</h3>
-                <p className="text-xs text-slate-500">2 {t('home.ongoing_sprays')}</p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400" />
             </div>
 
-            <div 
-              onClick={() => navigate('/guides')}
-              className="cursor-pointer glass-card-interactive p-4 flex items-center space-x-3.5"
-            >
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-teal-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-700 flex-shrink-0">
-                <Sprout className="w-5 h-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-slate-900 text-sm truncate">{t('home.cultivation_guides')}</h3>
-                <p className="text-xs text-slate-500">{t('home.growing_tips')}</p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400" />
+            <div className="grid grid-cols-2 gap-2.5 pt-2">
+              <Button 
+                onClick={() => navigate('/market-prices')}
+                variant="glass"
+                className="w-full h-11 text-xs font-bold text-emerald-800 rounded-xl border border-white/80 active:scale-95 transition-all"
+              >
+                <BarChart3 className="w-4 h-4 mr-1.5" />
+                <span>{t('home.see_prices')}</span>
+              </Button>
+              <Button 
+                onClick={() => navigate('/sell')}
+                className="w-full h-11 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-green-600 rounded-xl shadow-md active:scale-95 transition-all"
+              >
+                <TrendingUp className="w-4 h-4 mr-1.5" />
+                <span>{t('home.sell_crops')}</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* My Farm & Treatments Section */}
+          <div className="space-y-3 flex flex-col justify-between">
+            <div className="flex items-center justify-between px-1">
+              <h2 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                {t('home.sections.my_farm')}
+              </h2>
             </div>
 
-            <div 
-              onClick={() => navigate('/orders')}
-              className="cursor-pointer glass-card-interactive p-4 flex items-center space-x-3.5"
-            >
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500/15 to-indigo-500/15 border border-blue-400/30 flex items-center justify-center text-blue-700 flex-shrink-0">
-                <Package className="w-5 h-5" />
+            <div className="space-y-2.5 flex-1 flex flex-col justify-between">
+              <div 
+                onClick={() => navigate('/treatments')}
+                className="cursor-pointer glass-card-interactive p-4 flex items-center space-x-3.5 active:scale-98 transition-all"
+              >
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-green-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-700 relative flex-shrink-0">
+                  <Activity className="w-5 h-5" />
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                    2
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-slate-900 text-sm truncate">{t('home.active_treatments')}</h3>
+                  <p className="text-xs text-slate-500">2 {t('home.ongoing_sprays')}</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-400" />
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-slate-900 text-sm truncate">{t('home.my_orders')}</h3>
-                <p className="text-xs text-slate-500">{t('home.track_purchases')}</p>
+
+              <div 
+                onClick={() => navigate('/guides')}
+                className="cursor-pointer glass-card-interactive p-4 flex items-center space-x-3.5 active:scale-98 transition-all"
+              >
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500/15 to-teal-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-700 flex-shrink-0">
+                  <Sprout className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-slate-900 text-sm truncate">{t('home.cultivation_guides')}</h3>
+                  <p className="text-xs text-slate-500">{t('home.growing_tips')}</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-400" />
               </div>
-              <ChevronRight className="w-4 h-4 text-slate-400" />
+
+              <div 
+                onClick={() => navigate('/orders')}
+                className="cursor-pointer glass-card-interactive p-4 flex items-center space-x-3.5 active:scale-98 transition-all"
+              >
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500/15 to-indigo-500/15 border border-blue-400/30 flex items-center justify-center text-blue-700 flex-shrink-0">
+                  <Package className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-slate-900 text-sm truncate">{t('home.my_orders')}</h3>
+                  <p className="text-xs text-slate-500">{t('home.track_purchases')}</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-400" />
+              </div>
             </div>
           </div>
         </div>

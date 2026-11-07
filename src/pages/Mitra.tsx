@@ -193,7 +193,7 @@ const Mitra = () => {
 
       {/* Floating Expo-Glass Top Header */}
       <header className="sticky top-0 z-40 backdrop-blur-2xl bg-white/75 border-b border-white/60 shadow-[0_4px_20px_0_rgba(0,0,0,0.03)]">
-        <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-2xl lg:max-w-3xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <button
             onClick={handleBack}
             aria-label="Back"
@@ -234,7 +234,7 @@ const Mitra = () => {
       </header>
 
       {/* Main Container */}
-      <main className="max-w-md mx-auto px-4 pt-4 space-y-4">
+      <main className="max-w-2xl lg:max-w-3xl mx-auto px-4 sm:px-6 pt-4 space-y-4">
         {/* Voice Assistant Panel if active */}
         {showVoiceMode && (
           <div className="glass-panel-elevated p-4 border border-emerald-400/40">
@@ -337,7 +337,7 @@ const Mitra = () => {
 
       {/* Floating Glass Input Bar */}
       <div className="fixed bottom-16 left-0 right-0 z-40 p-3 pb-[max(12px,env(safe-area-inset-bottom))] pointer-events-none">
-        <div className="max-w-md mx-auto pointer-events-auto">
+        <div className="max-w-2xl lg:max-w-3xl mx-auto px-4 sm:px-6 pointer-events-auto">
           <div className="backdrop-blur-3xl bg-white/85 border border-white/70 shadow-[0_12px_40px_0_rgba(0,0,0,0.12)] rounded-full p-1.5 pl-4 flex items-center gap-2">
             <input 
               type="text" 

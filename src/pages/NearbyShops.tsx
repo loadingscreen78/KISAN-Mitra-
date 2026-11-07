@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import useLocation from '@/hooks/useLocation';
 import placesService, { type FertilizerShop } from '@/lib/places';
+import AmbientBackground from '@/components/AmbientBackground';
 
 const NearbyShops = () => {
   const navigate = useNavigate();
@@ -105,37 +106,45 @@ const NearbyShops = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-green-600 px-6 py-6 shadow-lg">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-emerald-50/40 via-background to-emerald-50/20 pb-24">
+      {/* Ambient background glow */}
+      <AmbientBackground />
+
+      {/* Floating Expo-Glass Top Header */}
+      <header className="sticky top-0 z-40 backdrop-blur-2xl bg-white/75 border-b border-white/60 shadow-[0_4px_20px_0_rgba(0,0,0,0.03)] transition-all">
+        <div className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
+          <div className="flex items-center space-x-3 sm:space-x-4">
             <button 
               onClick={() => navigate('/home')}
-              className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all"
+              aria-label="Back"
+              className="p-2.5 glass-panel rounded-full hover:bg-white text-slate-700 transition-all active:scale-90 shadow-sm"
             >
-              <ArrowLeft className="w-5 h-5 text-white" />
+              <ArrowLeft className="w-4 h-4 text-emerald-900" />
             </button>
-            <div>
-              <h1 className="text-2xl font-bold text-white">Fertilizer Shops</h1>
-              <p className="text-blue-100 text-sm">Find fertilizer shops near you</p>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-green-500 text-white flex items-center justify-center shadow-md border border-white/60">
+                <Store className="w-5 h-5" />
+              </div>
+              <div>
+                <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight">Fertilizer & Agri Stores</h1>
+                <p className="text-xs text-slate-500">Find verified suppliers near your farm</p>
+              </div>
             </div>
           </div>
           
-          <div className="flex items-center space-x-3">
-            <button 
-              onClick={retryLocation}
-              disabled={locationLoading}
-              className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-all disabled:opacity-50"
-            >
-              <RefreshCw className={`w-5 h-5 text-white ${locationLoading ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
+          <button 
+            onClick={retryLocation}
+            disabled={locationLoading}
+            className="p-2.5 glass-panel rounded-full hover:bg-white text-slate-700 transition-all active:scale-90 shadow-sm disabled:opacity-50"
+            title="Refresh GPS location"
+          >
+            <RefreshCw className={`w-4 h-4 text-emerald-700 ${locationLoading ? 'animate-spin' : ''}`} />
+          </button>
         </div>
-      </div>
+      </header>
 
       {/* Content */}
-      <div className="px-6 py-6 space-y-6 pb-24">
+      <main className="max-w-4xl lg:max-w-5xl mx-auto px-4 sm:px-6 pt-5 space-y-6">
         {/* Search Bar */}
         <div className="relative">
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -395,7 +404,7 @@ const NearbyShops = () => {
             </button>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
