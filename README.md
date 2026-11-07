@@ -23,45 +23,61 @@
 </p>
 
 <p align="center">
-  <a href="#-features">Features</a> ·
-  <a href="#-how-it-works">How it works</a> ·
-  <a href="#-accuracy">Accuracy</a> ·
-  <a href="#-quick-start">Quick start</a> ·
-  <a href="#%EF%B8%8F-deploy-on-aws">Deploy on AWS</a> ·
-  <a href="#-api">API</a> ·
-  <a href="#%EF%B8%8F-roadmap">Roadmap</a>
+  <a href="#see-it-in-action">See it in action</a> ·
+  <a href="#features">Features</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#accuracy">Accuracy</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#deploy-on-aws">Deploy on AWS</a> ·
+  <a href="#api">API</a> ·
+  <a href="#roadmap">Roadmap</a>
 </p>
 
 ---
 
-## 📱 See it in action
+## See it in action
+
+<p align="center">
+  <img src="docs/assets/tutorial.gif" width="340" alt="KisanMitra Interactive App Tutorial Walkthrough" style="border-radius: 20px; box-shadow: 0 16px 36px rgba(0,0,0,0.12);"/>
+  <br/>
+  <sub><b>Interactive Walkthrough: 1-Tap Access, Dashboard, Leaf Scanner, AI Diagnosis & Spray Forecast</b></sub>
+</p>
+
+### Current Interface Design
 
 <table align="center">
   <tr>
-    <td align="center"><img src="docs/assets/screenshots/home.png" width="200" alt="Home screen"/><br/><sub><b>Home</b></sub></td>
-    <td align="center"><img src="docs/assets/screenshots/diagnosis.png" width="200" alt="Late blight diagnosed at 99% confidence"/><br/><sub><b>Disease found</b></sub></td>
-    <td align="center"><img src="docs/assets/screenshots/healthy.png" width="200" alt="Healthy tomato plant"/><br/><sub><b>Healthy plant</b></sub></td>
-    <td align="center"><img src="docs/assets/screenshots/not-identified.png" width="200" alt="Photo that is not a leaf is declined"/><br/><sub><b>Not a leaf? It says so</b></sub></td>
+    <td align="center"><img src="docs/assets/screenshots/landing.png" width="195" alt="Landing page with 3D produce models"/><br/><sub><b>Landing Page</b></sub></td>
+    <td align="center"><img src="docs/assets/screenshots/home.png" width="195" alt="Smart Dashboard with weather and tools"/><br/><sub><b>Home Dashboard</b></sub></td>
+    <td align="center"><img src="docs/assets/screenshots/diagnosis.png" width="195" alt="AI Disease diagnosis and treatment plan"/><br/><sub><b>Diagnosis & Treatment</b></sub></td>
+    <td align="center"><img src="docs/assets/screenshots/weather.png" width="195" alt="Live spray radar and weather forecast"/><br/><sub><b>Weather & Spray Radar</b></sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/assets/screenshots/diagnose.png" width="195" alt="Leaf Scanner and photography guide"/><br/><sub><b>Camera Scanner</b></sub></td>
+    <td align="center"><img src="docs/assets/screenshots/healthy.png" width="195" alt="Healthy plant diagnosis"/><br/><sub><b>Healthy Plant</b></sub></td>
+    <td align="center"><img src="docs/assets/screenshots/not-identified.png" width="195" alt="Non-plant photo identification refusal"/><br/><sub><b>Honest Quality Gate</b></sub></td>
+    <td align="center"><img src="docs/assets/screenshots/market-prices.png" width="195" alt="Mandi commodity rates"/><br/><sub><b>Mandi Rates</b></sub></td>
   </tr>
 </table>
 
-<p align="center"><sub>Screenshots from the live deployment on AWS EC2.</sub></p>
+<p align="center"><sub>Screenshots captured from the live application deployment.</sub></p>
 
-## ✨ Features
+## Features
 
-| | Feature | What it does |
-|---|---|---|
-| 🔬 | **Plant disease detection** | MobileNetV2 trained on PlantVillage recognises 38 diseases and healthy states across 14 crops, with a real confidence score |
-| 🛑 | **Honest "not sure"** | Below 75% confidence it asks for a better photo instead of guessing, so farmers aren't sent to buy the wrong pesticide |
-| ✨ | **Gemini second opinion** | Unclear photos go to Gemini, which can also cover crops outside the model's 14, and is told to reject photos that aren't plants |
-| 💊 | **Treatment plans** | Step-by-step treatment and fertilizer suggestions for the diagnosed disease, saved to *My Treatments* |
-| 💬 | **Mitra, the farming assistant** | Chat about crops, pests, soil, irrigation and markets, tuned for Indian conditions, with voice input |
-| 🌦️ | **Weather** | Local forecasts from OpenWeatherMap to plan spraying and irrigation |
-| 🛒 | **Marketplace & guides** | Shop, sell produce, market prices, crop guides, soil health, nearby fertilizer shops |
-| 🌐 | **English & हिंदी** | Interface in English and Hindi with a one-tap language switch |
-| 📲 | **Android-ready** | Capacitor config included for packaging as a native Android app |
+| Feature | What it does |
+|---|---|
+| **Plant disease detection** | MobileNetV2 trained on PlantVillage recognises 38 diseases and healthy states across 14 crops, with a real confidence score |
+| **Honest "not sure"** | Below 75% confidence it asks for a better photo instead of guessing, so farmers aren't sent to buy the wrong pesticide |
+| **Gemini second opinion** | Unclear photos go to Gemini, which can also cover crops outside the model's 14, and is told to reject photos that aren't plants |
+| **Treatment plans** | Step-by-step treatment and fertilizer suggestions for the diagnosed disease, saved to *My Treatments* |
+| **Mitra, the farming assistant** | Chat about crops, pests, soil, irrigation and markets, tuned for Indian conditions, with voice input |
+| **Weather & Spray Forecast** | Local forecasts from OpenWeatherMap to plan spraying, irrigation, and weather risk management |
+| **Marketplace & guides** | Shop, sell produce, market prices, crop guides, soil health, nearby fertilizer shops |
+| **English & Hindi** | Complete interface in English and Hindi with a one-tap language switch |
+| **Android-ready** | Capacitor configuration included for packaging as a native Android app |
 
-## 🧠 How it works
+## How it works
 
 <p align="center">
   <img src="docs/assets/pipeline.svg" alt="Photo, checks, MobileNetV2, confidence gate, then a diagnosis, a Gemini second opinion, or a request to retake the photo" width="100%"/>
@@ -75,7 +91,7 @@
 
 > **Bring your own model.** Drop a trained Keras `.h5` file at `backend/models/plantvillage_mobilenetv2.h5` (or set `PLANT_MODEL_PATH`) and it replaces the Hugging Face model. Files with untrained, randomly initialised weights are detected and refused at startup.
 
-## 📊 Accuracy
+## Accuracy
 
 <p align="center">
   <img src="docs/assets/stats.svg" alt="98% correct when it answers, 38 classes, 10 of 10 non-plant photos declined, about 1 second per diagnosis" width="100%"/>
@@ -85,44 +101,44 @@ Measured through the real `/api/diagnose` endpoint on 380 labelled photos from t
 
 | Result | Photos |
 |---|---|
-| ✅ Correct | 347 |
-| ❌ Wrong | 7 |
-| 🤔 Declined as "Could not identify" | 26 |
+| Correct | 347 |
+| Wrong | 7 |
+| Declined as "Could not identify" | 26 |
 
 > [!NOTE]
 > PlantVillage photos are single leaves on plain backgrounds, and some may have been part of the model's training data. Expect lower accuracy on real field photos with soil, shadows and several leaves in frame. The model covers 14 crops: **apple, blueberry, cherry, corn, grape, orange, peach, bell pepper, potato, raspberry, soybean, squash, strawberry and tomato.** Rice, wheat and cotton are not in the dataset. Photos of them may be misidentified, or, when the model is unsure and a Gemini key is set, answered by Gemini instead.
 
-## 🏗️ Architecture
+## Architecture
 
 ```mermaid
 flowchart LR
-    U["📱 Farmer's phone<br/>React + Vite PWA"] -->|HTTP :5000| G
+    U["Farmer's phone<br/>React + Vite PWA"] -->|HTTP :5000| G
 
     subgraph EC2["AWS EC2 · t3.medium · us-east-1"]
-        subgraph D["🐳 Docker: kisan-mitra"]
+        subgraph D["Docker: kisan-mitra"]
             G["Gunicorn + Flask API<br/>serves the React build"]
-            M["🧠 MobileNetV2<br/>PyTorch CPU"]
+            M["MobileNetV2<br/>PyTorch CPU"]
             G --> M
         end
     end
 
-    G -->|"photos (IAM role, no keys)"| S3[("🪣 S3<br/>private bucket")]
-    G -->|"second opinion,<br/>chat, treatments"| GM["✨ Google Gemini"]
-    G -->|"login, profiles"| SB[("Supabase<br/>moving to RDS")]
-    U -->|forecasts| W["🌦️ OpenWeatherMap"]
+    G -->|"photos (IAM role, no keys)"| S3[("S3<br/>private bucket")]
+    G -->|"second opinion,<br/>chat, treatments"| GM["Google Gemini"]
+    G -->|"login, profiles"| SB[("Database<br/>PostgreSQL / Supabase")]
+    U -->|forecasts| W["OpenWeatherMap"]
 ```
 
-## 🧰 Tech stack
+## Tech stack
 
 | Layer | Tools |
 |---|---|
-| **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Router, i18next, Capacitor |
+| **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Router, i18next, Capacitor, Three.js |
 | **Backend** | Python 3.11, Flask, Gunicorn, Flask-Limiter, Pillow |
 | **AI** | Hugging Face Transformers + PyTorch (CPU), optional Keras/TensorFlow, Google Gemini |
 | **Cloud** | AWS EC2, S3, IAM instance role, Docker Compose |
-| **Data & auth** | Supabase (being replaced by AWS RDS PostgreSQL) |
+| **Data & auth** | Firebase Authentication, PostgreSQL / Supabase |
 
-## 🚀 Quick start
+## Quick start
 
 ### With Docker (recommended)
 
@@ -148,7 +164,7 @@ python backend/plant_diagnosis_api.py
 ```
 
 <details>
-<summary><b>🔑 Environment variables</b></summary>
+<summary><b>Environment variables</b></summary>
 
 <br/>
 
@@ -172,7 +188,7 @@ On AWS, leave out AWS access keys entirely. The EC2 instance's IAM role gives th
 </details>
 
 <details>
-<summary><b>🧪 Tests</b></summary>
+<summary><b>Tests</b></summary>
 
 <br/>
 
@@ -184,7 +200,7 @@ python -m pytest tests/test_upload_limits.py -q
 
 </details>
 
-## ☁️ Deploy on AWS
+## Deploy on AWS
 
 <details open>
 <summary><b>EC2 + Docker + S3, step by step</b></summary>
@@ -215,11 +231,11 @@ read -rs GEMINI && sed -i '/^GEMINI_API_KEY=/d' .env && printf 'GEMINI_API_KEY=%
 docker compose up -d
 ```
 
-> 💡 **Tip:** the public IP changes whenever the instance stops and starts. Attach an Elastic IP for a stable address.
+> **Tip:** The public IP changes whenever the instance stops and starts. Attach an Elastic IP for a stable address.
 
 </details>
 
-## 🔌 API
+## API
 
 | Method | Endpoint | Description | Limit |
 |---|---|---|---|
@@ -228,7 +244,7 @@ docker compose up -d
 | `POST` | `/api/treatment/steps` | Treatment steps for `{"disease": "..."}` | 20/min · 200/h per IP |
 | `POST` | `/api/treatment/fertilizers` | Fertilizer suggestions for `{"disease": "..."}` | 20/min · 200/h per IP |
 | `POST` | `/api/voice-chat` | Chat reply for voice mode | 20/min · 200/h per IP |
-| `POST` | `/api/auth/register`, `/api/auth/login` | Account sign-up and login (Supabase) | |
+| `POST` | `/api/auth/register`, `/api/auth/login` | Account sign-up and login | |
 | `GET` | `/health` | Health check used by Docker | |
 
 <details>
@@ -263,16 +279,16 @@ Rejected uploads return `400` with a readable `error`, oversize requests `413`, 
 
 </details>
 
-## 🔒 Security
+## Security
 
-- 🧾 **Uploads are checked by content:** only real JPEG, PNG and WebP files, up to 5 MB and 50 megapixels.
-- 🚦 **Per-IP rate limits** on every endpoint that runs a model or calls Gemini, so nobody can drain the API quota.
-- 🪣 **Private photo storage:** the S3 bucket blocks all public access, and the server reaches it through an IAM role, not stored keys.
-- 🙈 **No secrets in git:** `.env`, `*.pem`, `*.key` and model files are ignored, and the Docker image doesn't include `.env`.
-- 🔗 **No URL fetching:** the server never downloads images from user-supplied URLs.
-- ⏱️ **Hard timeouts:** each Gemini call is capped at 20 seconds, so a slow response can't hang the app.
+- **Uploads are checked by content:** only real JPEG, PNG and WebP files, up to 5 MB and 50 megapixels.
+- **Per-IP rate limits** on every endpoint that runs a model or calls Gemini, so nobody can drain the API quota.
+- **Private photo storage:** the S3 bucket blocks all public access, and the server reaches it through an IAM role, not stored keys.
+- **No secrets in git:** `.env`, `*.pem`, `*.key` and model files are ignored, and the Docker image doesn't include `.env`.
+- **No URL fetching:** the server never downloads images from user-supplied URLs.
+- **Hard timeouts:** each Gemini call is capped at 20 seconds, so a slow response can't hang the app.
 
-## 🗺️ Roadmap
+## Roadmap
 
 - [x] Plant disease detection with honest confidence scores
 - [x] Gemini second opinion that refuses non-plant photos
@@ -285,7 +301,7 @@ Rejected uploads return `400` with a readable `error`, oversize requests `413`, 
 - [ ] HTTPS and a stable address, so the live camera works on phones
 - [ ] Fine-tune on field photos and add rice, wheat and cotton
 
-## 📂 Project structure
+## Project structure
 
 ```text
 KISAN-Mitra-/
@@ -299,27 +315,27 @@ KISAN-Mitra-/
 │   ├── components/              # UI components (shadcn/ui)
 │   └── locales/                 # en.json, hi.json
 ├── tests/                       # pytest suite
-├── docs/assets/                 # README graphics and screenshots
+├── docs/assets/                 # README graphics, tutorial gif, and screenshots
 ├── Dockerfile                   # Builds the frontend, then the API image with the model
 ├── docker-compose.yml           # One-command deployment
 └── requirements.docker.txt      # Slim, CPU-only Python dependencies for the image
 ```
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to get started, and open an issue first for big changes.
 
-## 👥 Team
+## Team
 
 Originally built by the Kisan Mitra team. Maintainer: [Dasarigalla-Raviteja](https://github.com/Dasarigalla-Raviteja). See [CONTRIBUTORS.md](CONTRIBUTORS.md) for everyone involved.
 
-## 🙏 Acknowledgements
+## Acknowledgements
 
 [PlantVillage](https://github.com/spMohanty/PlantVillage-Dataset) for the dataset · [linkanjarad](https://huggingface.co/linkanjarad) for the trained MobileNetV2 · Google Gemini · Hugging Face · shadcn/ui · OpenWeatherMap · and the farmers who inspired this project.
 
 The 3D produce models and crop renders in `public/models/produce/` are derived from [NVIDIA SimReady Assets](https://huggingface.co/datasets/nvidia/simready-assets) under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); see that folder's `ATTRIBUTION.md` for the asset list and changes made.
 
-## 📜 License
+## License
 
 [MIT](LICENSE) © 2025 Kisan Mitra Team
 
