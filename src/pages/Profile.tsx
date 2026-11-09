@@ -36,7 +36,7 @@ import {
 import { dataService } from '../lib/dataService';
 import { marketData } from '../lib/marketData';
 import { authService } from '../lib/authService';
-import { signOutFirebase } from '../lib/firebase';
+import { signOutFirebase, continueAsGuest } from '../lib/firebase';
 import { useGoBack } from '@/hooks/useGoBack';
 
 const Profile = () => {
@@ -69,7 +69,12 @@ const Profile = () => {
         if (!user) {
           user = dataService.getCurrentUser();
         }
-        
+
+        // Authentication is mocked, so a visitor without a session becomes a guest
+        if (!user) {
+          user = continueAsGuest();
+        }
+
         if (user) {
           // Ensure user has required fields for profile display
           const profileUser = {

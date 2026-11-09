@@ -136,7 +136,7 @@ flowchart LR
 | **Backend** | Python 3.11, Flask, Gunicorn, Flask-Limiter, Pillow |
 | **AI** | Hugging Face Transformers + PyTorch (CPU), optional Keras/TensorFlow, Google Gemini |
 | **Cloud** | AWS EC2, S3, IAM instance role, Docker Compose |
-| **Data & auth** | Firebase Authentication, PostgreSQL / Supabase |
+| **Data & auth** | Mock login for now: any phone number and PIN, or the Google button, signs in on the device. PostgreSQL / Supabase for diagnosis history |
 
 ## Quick start
 

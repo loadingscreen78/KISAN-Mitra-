@@ -26,56 +26,9 @@ const Signup = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Validation functions
-  const getNameValidation = () => {
-    if (formData.name.length === 0) return undefined;
-    const isValid = formData.name.trim().length >= 2 && /^[A-Za-z\s]+$/.test(formData.name);
-    return {
-      isValid,
-      message: isValid ? "Valid name" : "Name must contain only letters and be at least 2 characters"
-    };
-  };
-
-  const getMobileValidation = () => {
-    if (formData.mobile.length === 0) return undefined;
-    const isValid = formData.mobile.length === 10 && /^[6-9]\d{9}$/.test(formData.mobile);
-    return {
-      isValid,
-      message: isValid ? "Valid mobile number" : "Enter a valid 10-digit Indian mobile number"
-    };
-  };
-
-  const isFormValid = () => {
-    return formData.name.trim() !== "" &&
-           formData.mobile.length === 10 &&
-           formData.state !== "" &&
-           formData.district.trim() !== "" &&
-           formData.pin.length === 4 &&
-           formData.confirmPin.length === 4 &&
-           formData.pin === formData.confirmPin;
-  };
-
+  // Authentication is mocked, so whatever is entered signs up
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (formData.pin !== formData.confirmPin) {
-      toast({
-        title: "PIN Mismatch",
-        description: "PIN and Confirm PIN must match",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    if (!isFormValid()) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill all required fields",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setLoading(true);
     
     try {
@@ -211,11 +164,6 @@ const Signup = () => {
                       className="w-full h-14 pl-12 pr-4 text-lg font-medium bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-200"
                     />
                   </div>
-                  {getNameValidation() && (
-                    <p className={`text-sm ${getNameValidation()?.isValid ? 'text-green-600' : 'text-red-500'}`}>
-                      {getNameValidation()?.message}
-                    </p>
-                  )}
                 </div>
 
                 {/* Mobile Field */}
@@ -229,16 +177,11 @@ const Signup = () => {
                     <input
                       type="tel"
                       value={formData.mobile}
-                      onChange={(e) => handleInputChange("mobile", e.target.value.replace(/\D/g, '').slice(0, 10))}
+                      onChange={(e) => handleInputChange("mobile", e.target.value)}
                       placeholder="10 digit number"
                       className="w-full h-14 pl-24 pr-4 text-lg font-medium bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-200"
                     />
                   </div>
-                  {getMobileValidation() && (
-                    <p className={`text-sm ${getMobileValidation()?.isValid ? 'text-green-600' : 'text-red-500'}`}>
-                      {getMobileValidation()?.message}
-                    </p>
-                  )}
                 </div>
 
                 {/* Location Fields */}
@@ -280,7 +223,7 @@ const Signup = () => {
                 <div className="pt-6">
                   <button
                     type="submit"
-                    disabled={loading || !isFormValid()}
+                    disabled={loading}
                     className="w-full h-16 bg-green-500 hover:bg-green-600 text-white text-xl font-bold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (

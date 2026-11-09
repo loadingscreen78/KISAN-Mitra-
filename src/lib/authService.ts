@@ -1,7 +1,7 @@
 // Authentication Service for KisanMitra App
-// Handles user authentication, session management, and logout
-
-import { getAuthApiUrl } from './apiConfig';
+// Mock authentication: every login and sign-up succeeds and the session lives
+// only in this browser. Nothing is sent to a server, so do not treat a
+// "logged in" user as verified.
 
 export interface AuthUser {
   id: string;
@@ -51,11 +51,14 @@ export interface AuthResponse {
   details?: string;
 }
 
+type MockProfile = Pick<AuthUser, 'name' | 'phone' | 'location' | 'state'>;
+
 class AuthService {
   private storagePrefix = 'kisanmitra_';
   private authKey = `${this.storagePrefix}auth_token`;
   private userKey = `${this.storagePrefix}user`;
-  private baseURL = getAuthApiUrl(); // Backend API base URL ('' in dev to use /api proxy)
+  // Profiles from sign-up, kept so a later login with the same phone shows the same name
+  private accountsKey = `${this.storagePrefix}mock_accounts`;
 
   // Check if user is authenticated
   isAuthenticated(): boolean {
@@ -74,9 +77,9 @@ class AuthService {
     try {
       const userData = localStorage.getItem(this.userKey);
       if (!userData) return null;
-      
+
       const user = JSON.parse(userData);
-      
+
       // Migrate old user data format to new format
       if (user && !user.name && user.user_metadata?.name) {
         user.name = user.user_metadata.name;
@@ -90,7 +93,7 @@ class AuthService {
       if (user && !user.state && user.user_metadata?.state) {
         user.state = user.user_metadata.state;
       }
-      
+
       // Ensure required fields exist with fallbacks
       if (user) {
         user.name = user.name || user.user_metadata?.name || 'Farmer';
@@ -99,11 +102,11 @@ class AuthService {
         user.state = user.state || user.user_metadata?.state || 'India';
         user.joinedDate = user.joinedDate || user.created_at || new Date().toISOString();
         user.createdAt = user.createdAt || user.created_at || new Date().toISOString();
-        
+
         // Save migrated data back to storage
         this.updateUser(user);
       }
-      
+
       return user;
     } catch (error) {
       console.error('Error getting current user:', error);
@@ -111,132 +114,67 @@ class AuthService {
     }
   }
 
-  // Login user with backend API
-  async login(credentials: LoginCredentials): Promise<AuthResponse> {
+  // Start a local session for this profile. Always succeeds.
+  private startSession(profile: MockProfile, message: string): AuthResponse {
+    const now = new Date().toISOString();
+    const user: AuthUser = {
+      id: `local-${profile.phone}`,
+      ...profile,
+      joinedDate: now,
+      createdAt: now,
+      user_metadata: { ...profile },
+    };
+    const token = `mock-token-${Date.now()}`;
+
+    localStorage.setItem(this.authKey, token);
+    localStorage.setItem(this.userKey, JSON.stringify(user));
+
+    return {
+      success: true,
+      message,
+      user,
+      session: { access_token: token, refresh_token: token },
+    };
+  }
+
+  private getSavedAccounts(): Record<string, MockProfile> {
     try {
-      const response = await fetch(`${this.baseURL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        // Store auth token and user data
-        if (data.session?.access_token) {
-          localStorage.setItem(this.authKey, data.session.access_token);
-        }
-        if (data.user) {
-          localStorage.setItem(this.userKey, JSON.stringify(data.user));
-        }
-        return data;
-      } else {
-        return {
-          success: false,
-          message: data.error || 'Login failed',
-          error: data.error,
-          details: data.details
-        };
-      }
-    } catch (error) {
-      console.error('Error during login:', error);
-      return {
-        success: false,
-        message: 'Network error during login',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
+      return JSON.parse(localStorage.getItem(this.accountsKey) || '{}');
+    } catch {
+      return {};
     }
   }
 
-  // Register user with backend API
+  // Login: any email and password are accepted
+  async login(credentials: LoginCredentials): Promise<AuthResponse> {
+    const phone = credentials.email?.split('@')[0] || 'guest';
+    return this.loginWithPhone(phone, credentials.password);
+  }
+
+  // Register: any details are accepted
   async register(userData: RegisterData): Promise<AuthResponse> {
-    try {
-      const response = await fetch(`${this.baseURL}/api/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-      
-      console.log('Registration response:', { status: response.status, data });
-
-      if (response.ok && data.success) {
-        // Store auth token and user data
-        if (data.session?.access_token) {
-          localStorage.setItem(this.authKey, data.session.access_token);
-        }
-        if (data.user) {
-          localStorage.setItem(this.userKey, JSON.stringify(data.user));
-        }
-        return data;
-      } else {
-        // Log error details for debugging
-        console.error('Registration failed:', {
-          status: response.status,
-          error: data.error,
-          details: data.details
-        });
-        
-        return {
-          success: false,
-          message: data.error || 'Registration failed',
-          error: data.error,
-          details: data.details
-        };
-      }
-    } catch (error) {
-      console.error('Error during registration:', error);
-      return {
-        success: false,
-        message: 'Network error during registration',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
-    }
+    return this.registerWithPhone(userData.phone, userData.password, userData.name, userData.location, userData.state);
   }
 
   // Logout user
   async logout(): Promise<void> {
     try {
-      const token = localStorage.getItem(this.authKey);
-      
-      // Call backend logout if token exists
-      if (token) {
-        try {
-          await fetch(`${this.baseURL}/api/auth/logout`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          });
-        } catch (error) {
-          console.error('Backend logout error:', error);
-          // Continue with local cleanup even if backend call fails
-        }
-      }
-      
       // Clear authentication data
       localStorage.removeItem(this.authKey);
       localStorage.removeItem(this.userKey);
-      
+
       // Clear any voice-related data
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
-      
+
       // Clear any ongoing audio
       const audioElements = document.querySelectorAll('audio');
       audioElements.forEach(audio => {
         audio.pause();
         audio.currentTime = 0;
       });
-      
+
       console.log('User logged out successfully');
     } catch (error) {
       console.error('Error during logout:', error);
@@ -264,80 +202,34 @@ class AuthService {
     return localStorage.getItem(this.authKey);
   }
 
-  // Create phone-based login (for backward compatibility)
-  async loginWithPhone(phone: string, pin: string): Promise<AuthResponse> {
-    // Convert phone/pin to email/password format for backend
-    // Supabase requires passwords to be at least 6 characters, so pad the PIN
-    const email = `${phone}@kisanmitra.local`;
-    const password = `KM${pin}${phone.slice(-2)}`; // KM + 4-digit PIN + last 2 digits of phone = 8 chars
-
-    // First try normal backend-based login
-    const result = await this.login({ email, password });
-
-    if (result.success) {
-      return result;
-    }
-
-    // Temporary fallback: allow a default demo login without requiring signup
-    // NOTE: This is only for local/demo use and should be removed or secured for production.
-    // Demo users (phone-based) allowed for local use
-    const demoPhones = ['9347750071'];
-    const isDemoUser = demoPhones.includes(phone) && pin === '1234';
-
-    if (isDemoUser) {
-      const demoUser: AuthUser = {
-        id: 'demo-user-9347750071',
-        name: 'Demo Farmer',
-        phone,
-        location: 'Chennai',
-        state: 'Tamil Nadu',
-        avatar: undefined,
-        joinedDate: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        email: `${phone}@kisanmitra.local`,
-        user_metadata: {
-          name: 'Demo Farmer',
-          phone,
-          location: 'Chennai',
-          state: 'Tamil Nadu',
-        },
-      };
-
-      // Store demo session locally so the rest of the app treats this as logged in
-      localStorage.setItem(this.authKey, 'demo-access-token');
-      localStorage.setItem(this.userKey, JSON.stringify(demoUser));
-
-      return {
-        success: true,
-        message: 'Demo login successful',
-        user: demoUser,
-        session: {
-          access_token: 'demo-access-token',
-          refresh_token: 'demo-refresh-token',
-          expires_at: undefined,
-        },
-      };
-    }
-
-    // If not demo user, return the original backend error
-    return result;
+  // Phone login: any phone number and PIN are accepted
+  async loginWithPhone(phone: string, _pin: string): Promise<AuthResponse> {
+    const cleanPhone = phone.trim() || 'guest';
+    const saved = this.getSavedAccounts()[cleanPhone];
+    const profile: MockProfile = saved || {
+      name: `Farmer ${cleanPhone.slice(-4)}`,
+      phone: cleanPhone,
+      location: 'India',
+      state: 'India',
+    };
+    return this.startSession(profile, 'Login successful');
   }
 
-  // Create phone-based registration (for backward compatibility)
-  async registerWithPhone(phone: string, pin: string, name?: string, location?: string, state?: string): Promise<AuthResponse> {
-    // Convert phone/pin to email/password format for backend
-    // Supabase requires passwords to be at least 6 characters, so pad the PIN
-    const email = `${phone}@kisanmitra.local`;
-    const password = `KM${pin}${phone.slice(-2)}`; // KM + 4-digit PIN + last 2 digits of phone = 8 chars
-    
-    return this.register({
-      email,
-      password,
-      name: name || `Farmer ${phone.slice(-4)}`,
-      phone,
-      location: location || 'Chennai',
-      state: state || 'Tamil Nadu'
-    });
+  // Phone sign-up: any details are accepted
+  async registerWithPhone(phone: string, _pin: string, name?: string, location?: string, state?: string): Promise<AuthResponse> {
+    const cleanPhone = phone.trim() || 'guest';
+    const profile: MockProfile = {
+      name: name?.trim() || `Farmer ${cleanPhone.slice(-4)}`,
+      phone: cleanPhone,
+      location: location?.trim() || 'India',
+      state: state?.trim() || 'India',
+    };
+
+    const accounts = this.getSavedAccounts();
+    accounts[cleanPhone] = profile;
+    localStorage.setItem(this.accountsKey, JSON.stringify(accounts));
+
+    return this.startSession(profile, 'Registration successful');
   }
 
   // Clear all user data (for complete logout)
@@ -353,7 +245,7 @@ class AuthService {
             keysToRemove.push(key);
           }
         }
-        
+
         keysToRemove.forEach(key => localStorage.removeItem(key));
       }
     } catch (error) {

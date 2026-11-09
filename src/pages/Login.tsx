@@ -17,48 +17,9 @@ const Login = () => {
     pin: '1234'
   });
 
-  const getMobileValidation = () => {
-    if (formData.mobile.length === 0) return undefined;
-    // Allow standard 10-digit Indian mobiles, plus the temporary default demo number
-    const isTenDigitValid = formData.mobile.length === 10 && /^[6-9]\d{9}$/.test(formData.mobile);
-    const isDemoNumber = formData.mobile === '93477500071';
-    const isValid = isTenDigitValid || isDemoNumber;
-    return {
-      isValid,
-      message: isValid ? "Valid mobile number" : "Enter a valid 10-digit Indian mobile number"
-    };
-  };
-
+  // Authentication is mocked, so whatever is entered logs in
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.mobile || !formData.pin) {
-      toast({
-        title: "Missing Information",
-        description: "Please enter mobile number and PIN",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (formData.mobile.length !== 10) {
-      toast({
-        title: "Invalid Mobile Number",
-        description: "Please enter 10 digit mobile number",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (formData.pin.length !== 4) {
-      toast({
-        title: "Invalid PIN",
-        description: "PIN must be 4 digits",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setLoading(true);
     
     try {
@@ -175,20 +136,11 @@ const Login = () => {
                   <input
                     type="tel"
                     value={formData.mobile}
-                  onChange={(e) => {
-                    // Allow digits only; keep up to 11 so the demo number 93477500071 works
-                    const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 11);
-                    setFormData(prev => ({ ...prev, mobile: digitsOnly }));
-                  }}
+                  onChange={(e) => setFormData(prev => ({ ...prev, mobile: e.target.value }))}
                   placeholder="Enter mobile number"
                     className="w-full h-16 pl-24 pr-4 text-lg font-medium bg-gray-50 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-200"
                   />
                 </div>
-                {getMobileValidation() && (
-                  <p className={`text-sm ${getMobileValidation()?.isValid ? 'text-green-600' : 'text-red-500'}`}>
-                    {getMobileValidation()?.message}
-                  </p>
-                )}
               </div>
 
               {/* PIN Entry */}
@@ -206,7 +158,7 @@ const Login = () => {
               <div className="pt-6">
                 <button
                   type="submit"
-                  disabled={loading || !formData.mobile || !formData.pin}
+                  disabled={loading}
                   className="w-full h-16 bg-green-500 hover:bg-green-600 text-white text-xl font-bold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
